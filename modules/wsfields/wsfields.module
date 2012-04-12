@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * @file
+ * Defines core functionality for web service powered fields
+ *
+ * @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @copyright 2011 Coldfront Labs Inc.
+ * @license Copyright (c) 2011 All rights reserved
+ */
+
+
+/**
+ * Implements hook_permission().
+ */
+function wsfields_permission() {
+  return array(
+    'administer wsfields' =>  array(
+      'title' => t('Administer Web Service Fields'),
+      'description' => t('Perform administration tasks for Web Service Fields.'),
+    ),
+  );
+}
+
+/**
+ *  Implements hook_menu().
+ */
+function wsfields_menu() {
+  $items = array();
+
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    if ($entity_info['fieldable']) {
+      foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
+        if (isset($bundle_info['admin'])) {
+          // Extract path information from the bundle.
+          $path = $bundle_info['admin']['path'];
+          // Different bundles can appear on the same path (e.g. %node_type and
+          // %comment_node_type). To allow field_ui_menu_load() to extract the
+          // actual bundle object from the translated menu router path
+          // arguments, we need to identify the argument position of the bundle
+          // name string ('bundle argument') and pass that position to the menu
+          // loader. The position needs to be casted into a string; otherwise it
+          // would be replaced with the bundle name string.
+          if (isset($bundle_info['admin']['bundle argument'])) {
+            $bundle_arg = $bundle_info['admin']['bundle argument'];
+            $bundle_pos = (string) $bundle_arg;
+          }
+          else {
+            $bundle_arg = $bundle_name;
+            $bundle_pos = '0';
+          }
+          // This is the position of the %field_ui_menu placeholder in the
+          // items below.
+          $field_position = count(explode('/', $path)) + 1;
+
+          // Extract access information, providing defaults.
+          $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array('access callback', 'access arguments')));
+          $access += array(
+            'access callback' => 'user_access',
+            'access arguments' => array('administer wsfields'),
+          );
+
+          $items["$path/fields/%field_ui_menu/wsfield"] = array(
+            'load arguments' => array($entity_type, $bundle_arg, $bundle_pos, '%map'),
+            'title' => 'Web Service Settings',
+            'page callback' => 'drupal_get_form',
+            'page arguments' => array('wsfields_field_settings_form', $field_position),
+            'type' => MENU_LOCAL_TASK,
+            'file' => 'wsfields.admin.inc',
+          ) + $access;
+        }
+      }
+    }
+  }
+  return $items;
+}
+
+/**
+ * Implements hook_field_storage_pre_load().
+ */
+function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_fields, $options) {
+  $instances = _wsfields_field_info_instances($entity_type);
+
+  foreach ($instances as $instance_name => $instance) {
+    $skip_fields[$instance['field_id']] = TRUE;
+
+    foreach ($entities as $entityid => $entity) {
+      $data = _wsfields_data_load($entity_type, $instance, $entity);
+      if ($data) {
+        $value[LANGUAGE_NONE][0]['value'] = $data;
+        
+      } else {
+        $value[LANGUAGE_NONE][0]['value'] = t('Data Unavailable');
+      }
+      $entities[$entityid]->$instance_name = $value;
+    }
+  }
+}
+
+/**
+ * Implements hook_field_storage_pre_insert().
+ */
+function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields) {
+  $instances = _wsfields_field_info_instances($entity_type);
+
+  foreach ($instances as $instance_name => $instance) {
+    $skip_fields[$instance['field_id']] = TRUE;
+  }
+}
+
+/**
+ * Get the names and ids of field instances that are defined as web service
+ * fields
+ *
+ * @param string $entity_type
+ *  Machine name of the entity
+ * @return array
+ *  Returns the instance info for the given entity fields
+ */
+function _wsfields_field_info_instances($entity_type) {
+  $instances = field_info_instances($entity_type);
+  if (!isset($instances[$entity_type])) {
+    return array();
+  }
+
+  foreach ($instances[$entity_type] as $name => $instance) {
+    if (isset($instance['settings']) and isset($instance['settings']['wsfield']) and $instance['settings']['wsfield']) {
+      // This is a wsfield
+      // Do something?
+    }
+    else {
+      unset($instances[$entity_type][$name]);
+    }
+  }
+  return $instances[$entity_type];
+}
+
+/**
+ * Perform Service Request
+ *
+ * @param string $entity_type
+ *  Machine name of a given entity type
+ * @param array $instance
+ *  Instance info array for the given field
+ * @param object $entity
+ *  Entity object
+ * @return array|boolean
+ *  Returns the formatted field data, FALSE otherwise.
+ */
+function _wsfields_data_load($entity_type, $instance, $entity) {
+
+  // Load required settings from the field instance
+  $wsconfigid = $instance['settings']['wsfield_configset'];
+  $wsremotename = $instance['settings']['wsfield_remotename'];
+  $wsprocessor = $instance['settings']['wsfield_processor'];
+  $wsproperty = $instance['settings']['wsfield_property'];
+  $wsconfig = wsconfig_load($wsconfigid);
+
+  // Check if the web service is enabled
+  if (!isset($wsproperty)) {
+    return FALSE;
+  }
+
+  // Replace any tokens
+  $remotekey = token_replace("[$entity_type:$wsproperty]", array($entity_type => $entity));
+
+  if (!class_exists($wsprocessor)) {
+    watchdog('wsfields', 'Web service fields cannot create class @wsprocessor. Class not found.', array('@wsprocessor' => $wsprocessor), WATCHDOG_ERROR);
+    drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
+    return FALSE;
+  }
+
+  // Create a new processor
+  $processor = new $wsprocessor();
+
+  // Check the subclass of the processor
+  if (!is_subclass_of($processor, 'WsData')) {
+    drupal_set_message(t("Unable to build data processor. See logs for more details"), 'error', FALSE);
+    watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $wsprocessor), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  // Attempt the connection
+  if ($wsconfig->connector) {
+    // Load the list of accepted data formats
+    $type = $processor->accepts();
+
+    // Select the first option
+    // @todo come up with a way for the objects to decide which accept type it should use
+    $type = array_pop($type);
+
+    // Read the data
+    $data = $wsconfig->connector->read($wsconfig->data['read_data_method'], $remotekey, array('accept-type' => $type));
+
+    // Parse out the data
+    $processor->parse($data);
+    
+    // Load the requested data
+    return $processor->getData($wsremotename);
+  }
+  return FALSE;
+}

@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Tests for Web Service Configuration
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @copyright 2011 Coldfront Labs Inc.
+ * @license Copyright (c) 2011 All rights reserved
+ */
+
+class WsconfigTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => t('Web Service Configuration tests'),
+      'description' => t('Test the web service configuration storage.'),
+      'group' => t('Web Services'),
+    );
+  }
+
+  function setUp() {
+    parent::setUp('wsconfig');
+  }
+
+  
+}

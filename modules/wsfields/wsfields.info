@@ -1,0 +1,15 @@
+; @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+; @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
+; @copyright 2012 Coldfront Labs Inc.
+; @license Copyright (c) 2011 All rights reserved
+
+name = Web Service Fields
+description = Fields powered by web services
+core = 7.x
+version = 7.x-1.0-dev
+package = Web Service Fields
+
+dependencies[] = field
+dependencies[] = wsconfig
+
+files[] = tests/wsfields.test

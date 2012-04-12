@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Defines text fields powered by web services
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @copyright 2011 Coldfront Labs Inc.
+ * @license Copyright (c) 2011 All rights reserved
+ */
+
+/**
+ * Implements hook_field_info().
+ */
+function wsfields_text_field_info() {
+  return array(
+    'wstext' => array(
+      'label' => t('Text WS'),
+      'description' => t('This field stores varchar text through a web service.'),
+      'settings' => array('max_length' => 255),
+      'instance_settings' => array('text_processing' => 0),
+      'default_widget' => 'text_textfield',
+      'default_formatter' => 'text_default',
+    ),
+  // @todo add support for other text field types
+/*    'wstext_long' => array(
+      'label' => t('Long text WS'),
+      'description' => t('This field stores long text through a web service.'),
+      'settings' => array('max_length' => ''),
+      'instance_settings' => array('text_processing' => 0),
+      'default_widget' => 'text_textarea',
+      'default_formatter' => 'text_default',
+    ),
+    'wstext_with_summary' => array(
+      'label' => t('Long text and summary WS'),
+      'description' => t('This field stores long text through a web service along with optional summary text.'),
+      'settings' => array('max_length' => ''),
+      'instance_settings' => array('text_processing' => 1, 'display_summary' => 0),
+      'default_widget' => 'text_textarea_with_summary',
+      'default_formatter' => 'text_summary_or_trimmed',
+    ),*/
+  );
+}
+

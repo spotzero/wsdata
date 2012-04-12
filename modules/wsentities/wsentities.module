@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Defines core functionality for web service powered entities
+ *
+ * @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @copyright 2012 Coldfront Labs Inc.
+ * @license Copyright (c) 2011 All rights reserved
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function wsentities_permission() {
+  return array(
+    'administer wsentities' =>  array(
+      'title' => t('Administer Web Service Entities'),
+      'description' => t('Perform administration tasks for Web Service Entities.'),
+    ),
+  );
+}
+
+/**
+ *  Implements hook_menu().
+ */
+function wsentities_menu() {
+  $items = array();
+
+  return $items;
+}
