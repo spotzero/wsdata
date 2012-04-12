@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * @file
+ * Main module for wsconfig
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
+ * @copyright 2012 Coldfront Labs Inc.
+ * @license Copyright (c) 2012 All rights reserved
+ */
+
