@@ -2,11 +2,11 @@
 ; @copyright 2012 Coldfront Labs Inc.
 ; @license Copyright (c) 2012 All rights reserved
 
-name = Web Service Configuration
+name = Web Service Data Configuration
 description = Defines entities to store connection information for web services.
 core = 7.x
 version = 7.x-1.0-dev
-package = Web Services
+package = Web Service Data
 
 dependencies[] = entity
 

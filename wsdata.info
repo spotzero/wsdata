@@ -7,7 +7,7 @@ name = Web Service Data
 description = Defines the modules for web services.
 core = 7.x
 version = 7.x-1.0-dev
-package = Web Services
+package = Web Service Data
 
 dependencies[] = entity
 dependencies[] = wsconfig
