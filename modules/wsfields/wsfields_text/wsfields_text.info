@@ -2,11 +2,11 @@
 ; @copyright 2011 Coldfront Labs Inc.
 ; @license Copyright (c) 2011 All rights reserved
 
-name = Web Service Text Field
+name = Web Service Data Text Field
 description = Text fields using web service storage
 core = 7.x
 version = 7.x-1.0-dev
-package = Web Service Fields
+package = Web Service Data
 
 dependencies[] = wsfields
 
