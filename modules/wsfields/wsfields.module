@@ -87,11 +87,14 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
 
     foreach ($entities as $entityid => $entity) {
       $data = _wsfields_data_load($entity_type, $instance, $entity);
+      
+      // Check if data is returned
       if ($data) {
         $value[LANGUAGE_NONE][0]['value'] = $data;
         
-      } else {
-        $value[LANGUAGE_NONE][0]['value'] = t('Data Unavailable');
+      }
+      else {
+        // Do nothing. Treat the field as empty
       }
       $entities[$entityid]->$instance_name = $value;
     }
@@ -197,7 +200,7 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
     $processor->parse($data);
     
     // Load the requested data
-    return $processor->getData($wsremotename);
+    return $processor->getData($wsremotename, $instance);
   }
   return FALSE;
 }

@@ -458,8 +458,9 @@ abstract class WsData {
   // Parse the web service response data into a structured data object
   abstract public function parse($data);
 
-  // Retrieve the value for the given data key
-  abstract public function getData($key);
+  // Retrieve the value for the given data key. Send the field
+  // instance along to properly detect the return format.
+  abstract public function getData($key, &$instance);
 
   // Returns an array of the content type of the data this processor accepts
   abstract public function accepts();
