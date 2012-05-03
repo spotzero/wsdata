@@ -290,6 +290,35 @@ function wsconfig_get_list() {
   return $list;
 }
 
+
+/**
+ * Gets the list of web service configurations with tokens
+ */
+function wsconfig_get_list_tokens() {
+
+  // @todo add caching layer?
+  $query = db_select('wsconfig', 'w');
+  $query->fields('w', array('wsconfig_id', 'data'))
+        ->orderBy('name', 'DESC');
+  
+  $result = $query->execute();
+
+  $list = array();
+
+  while($record = $result->fetchObject()) {
+    $data = unserialize($record->data);
+    $tokens = array();
+    foreach ($data as $call) {
+      $matches = array();
+      preg_match_all("/%[a-z0-9]+/", $call, $matches);
+      $tokens = array_unique(array_merge($tokens, $matches[0]));
+    }
+    $list[$record->wsconfig_id] = $tokens;
+  }
+
+  return $list;
+}
+
 /**
  * Fetch a wsconfig object. Make sure that the wildcard you choose 
  * in the model entity definition fits the function name here.

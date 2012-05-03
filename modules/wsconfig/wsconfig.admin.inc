@@ -70,40 +70,40 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig) {
       'delete' => t('Delete Data'),
     ),
     // @todo add states support for fields listed below
-    '#default_value' => !empty($wconfig_type->data['available_operations']) ? $wsconfig_type->data['available_operations'] : array(),
+    '#default_value' => !empty($wsconfig->data['available_operations']) ? $wsconfig_type->data['available_operations'] : array(),
   );
 */
   $form['data']['create_data_method'] = array(
     '#type' => 'textfield',
     '#title' => t('Create Data Method Name'),
-    '#description' => t('The method name for creating data. Include an tokens listed below.'),
+    '#description' => t('The method name for deleting data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
     '#size' => 40,
     '#maxlength' => 255,
-    '#default_value' => !empty($wconfig_type->data['create_data_uri']) ? $wsconfig_type->data['create_data_uri'] : '',
+    '#default_value' => !empty($wconfig->data['create_data_method']) ? $wsconfig->data['create_data_method'] : '',
   );
   $form['data']['read_data_method'] = array(
     '#type' => 'textfield',
     '#title' => t('Load Data Method Name'),
-    '#description' => t('The method name for loading data. Include an tokens listed below.'),
+    '#description' => t('The method name for deleting data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
     '#size' => 40,
     '#maxlength' => 255,
-    '#default_value' => !empty($wconfig_type->data['read_data_uri']) ? $wsconfig_type->data['read_data_uri'] : '',
+    '#default_value' => !empty($wsconfig->data['read_data_method']) ? $wsconfig->data['read_data_method'] : '',
   );
   $form['data']['update_data_method'] = array(
     '#type' => 'textfield',
     '#title' => t('Update Data Method Name'),
-    '#description' => t('The method name for updating data. Include an tokens listed below.'),
+    '#description' => t('The method name for deleting data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
     '#size' => 40,
     '#maxlength' => 255,
-    '#default_value' => !empty($wconfig_type->data['update_data_uri']) ? $wsconfig_type->data['update_data_uri'] : '',
+    '#default_value' => !empty($wsconfig->data['update_data_method']) ? $wsconfig->data['update_data_method'] : '',
   );
   $form['data']['delete_data_method'] = array(
     '#type' => 'textfield',
     '#title' => t('Delete Data Method Name'),
-    '#description' => t('The method name for deleting data. Include an tokens listed below.'),
+    '#description' => t('The method name for deleting data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
     '#size' => 40,
     '#maxlength' => 255,
-    '#default_value' => !empty($wconfig_type->data['delete_data_uri']) ? $wsconfig_type->data['delete_data_uri'] : '',
+    '#default_value' => !empty($wsconfig->data['delete_data_method']) ? $wsconfig->data['delete_data_method'] : '',
   );
   
   // Add the field related form elements.
