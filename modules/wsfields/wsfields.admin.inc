@@ -21,6 +21,7 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   $wsremotename = "";
   $wsprocessor = "";
   $wsproperty = "";
+  $wspropertytoken = array();
 
   $instance['entity_type'];
   $instance['bundle'];
@@ -43,6 +44,10 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
 
   if (isset($instance['settings']['wsfield_property'])) {
     $wsproperty = $instance['settings']['wsfield_property'];
+  }
+
+  if (isset($instance['settings']['wsfield_property_tokens'])) {
+    $wspropertytoken = $instance['settings']['wsfield_property_tokens'];
   }
 
   $bundle = $instance['bundle'];
@@ -147,12 +152,15 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   }
 
 
-  $form['wsfields']['wsfield_property_weight'] = array();
+  $form['wsfields']['wsfield_property_token'] = array();
   foreach($wsproperty as $property) {
-    $form['wsfields']['wsfield_property_weight'][$property] = array(
+    $form['wsfields']['wsfield_property_token']['wsfield_property_token_' . $property] = array(
       '#title' => $property,
       '#type' => 'textfield',
-      '#default_value' => '',
+      '#default_value' =>
+        isset($form_state['values']['wsfields']['wsfield_property_token']['wsfield_property_token_' . $property]) ?
+          $form_state['values']['wsfields']['wsfield_property_token']['wsfield_property_token_' . $property] :
+          $wspropertytoken[$property],
       '#description' => t('Token this key should replace in the method call.'),
       '#states' => array(
         'invisible' => array(
@@ -161,8 +169,6 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
       ),
     );
   }
-
-
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
@@ -177,7 +183,6 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
  * Submit function for wsfield_field_settings_form().
  */
 function wsfields_field_settings_form_submit($form, &$form_state) {
-  $form_values = $form_state['values'];
   $bundle = $form['#bundle'];
   $entity_type = $form['#entity_type'];
   $field_name = $form['#field_name'];
@@ -190,6 +195,13 @@ function wsfields_field_settings_form_submit($form, &$form_state) {
     $instance['settings']['wsfield_remotename'] = check_plain($form_state['values']['wsfield_remotename']);
     $instance['settings']['wsfield_processor'] = check_plain($form_state['values']['wsfield_processor']);
     $instance['settings']['wsfield_property'] = $form_state['values']['wsfield_property'];
+    $instance['settings']['wsfield_property_tokens'] = array();
+    $keys = array_keys($form_state['values']);
+    foreach ($keys as $k) {
+      if (strpos($k, 'wsfield_property_token_') !== FALSE) {
+        $instance['settings']['wsfield_property_tokens'][drupal_substr($k,drupal_strlen('wsfield_property_token_'))] = $form_state['values'][$k];
+      }
+    }
   } else {
     unset( $instance['settings']['wsfield']);
   }

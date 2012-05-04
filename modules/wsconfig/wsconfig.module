@@ -484,14 +484,31 @@ abstract class WsData {
     return $error;
   }
   
-  // Parse the web service response data into a structured data object
-  abstract public function parse($data);
-
   // Retrieve the value for the given data key.
-  abstract public function getData($key);
+  public function getData($key) {
+    if (is_array($this->data)) {
+      $return = $this->data;
+      $location = explode(":", $key);
+      foreach ($location as $l) {
+        if (isset($return[$l])) {
+          $return = $return[$l];
+        }
+      }
+      return $return;
+    }
+    return FALSE;
+  }
+
+  // load data
+  public function addData($data) {
+    $this->data = $this->parse($data);
+  }
 
   // Returns an array of the content type of the data this processor accepts
   abstract public function accepts();
+
+  // Parse the web service response string into a structured array and return the array
+  abstract protected function parse($data);
 }
 
 /**

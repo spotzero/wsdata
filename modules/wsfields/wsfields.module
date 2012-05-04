@@ -156,6 +156,8 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
   $wsremotename = $instance['settings']['wsfield_remotename'];
   $wsprocessor = $instance['settings']['wsfield_processor'];
   $wsproperty = $instance['settings']['wsfield_property'];
+  $wspropertytokens = isset($instance['settings']['wsfield_property_tokens'])? $instance['settings']['wsfield_property_tokens'] : array();
+  
   $wsconfig = wsconfig_load($wsconfigid);
 
   // Check if the web service is enabled
@@ -164,7 +166,22 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
   }
 
   // Replace any tokens
-  $remotekey = token_replace("[$entity_type:$wsproperty]", array($entity_type => $entity));
+  $remotekeys = array();
+  foreach ($wsproperty as $p) {
+    // If we don't have a value for a key, exit since we will not be able to resolve the data
+    if (!isset($entity->$p) or empty($entity->$p)) {
+      return FALSE;
+    }
+    $remotekeys[$p] = token_replace("[$entity_type:$p]", array($entity_type => $entity));
+  }
+
+  
+  // Replace the tokens in the method name
+  $remotemethod = $wsconfig->data['read_data_method'];
+  foreach ($wspropertytokens as $prop => $token) {
+    $remotemethod = str_replace($token, $remotekeys[$prop], $remotemethod);
+    unset($remotekeys[$prop]);
+  }
 
   if (!class_exists($wsprocessor)) {
     watchdog('wsfields', 'Web service fields cannot create class @wsprocessor. Class not found.', array('@wsprocessor' => $wsprocessor), WATCHDOG_ERROR);
@@ -192,10 +209,8 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
     $type = array_pop($type);
 
     // Read the data
-    $data = $wsconfig->connector->read($wsconfig->data['read_data_method'], $remotekey, array('accept-type' => $type));
-
-    // Parse out the data
-    $processor->parse($data);
+    $data = $wsconfig->connector->read($remotemethod, $remotekeys, array('accept-type' => $type));
+    $processor->addData($data);
 
     // Load the requested data
     return $processor->getData($wsremotename, $instance, $entity);
