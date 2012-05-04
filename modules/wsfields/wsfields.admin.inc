@@ -136,10 +136,10 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   $tokens = wsconfig_get_list_tokens();
   foreach($tokens as $id => $toks) {
     $form['wsfields']['wsfield_token_list'][$id] = array(
-      '#type' => 'container',
-      '#children' => t('Available Tokens: ') . implode(", ", $toks),
+      '#type' => 'item',
+      '#markup' => t('Available Tokens: ') . implode(", ", $toks),
       '#states' => array(
-        'invisible' => array(
+        'visible' => array(
           ':input[name="wsfield_configset"]' => array('value' => $id),
         ),
       ),
