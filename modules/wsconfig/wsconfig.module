@@ -489,6 +489,9 @@ abstract class WsData {
         if (isset($return[$l])) {
           $return = $return[$l];
         }
+        else {
+          return FALSE;
+        }
       }
       return $return;
     }
