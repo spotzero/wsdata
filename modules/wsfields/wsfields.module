@@ -83,6 +83,10 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
     foreach ($entities as $entityid => $entity) {
       $data = _wsfields_data_load($entity_type, $instance, $entity);
       
+      // Add the default empty field array
+      // @see http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_storage_pre_load/7
+      $entities[$entityid]->$instance_name = array();
+      
       // Check if data is returned
       // Need to be specific on the data checking since certain empty
       // values may be considered valid. Only NULL and FALSE are omited
