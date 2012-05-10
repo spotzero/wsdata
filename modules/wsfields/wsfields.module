@@ -91,8 +91,8 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
       // Need to be specific on the data checking since certain empty
       // values may be considered valid. Only NULL and FALSE are omited
       if (!is_null($data) && FALSE !== $data) {
-        $value[LANGUAGE_NONE][0]['value'] = $data;
-        $entities[$entityid]->$instance_name = $value;        
+        module_invoke_all('wsfields_data_alter', $data, $instance);
+        $entities[$entityid]->$instance_name = $data;        
       }
     }
   }
@@ -107,6 +107,13 @@ function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields)
   foreach ($instances as $instance_name => $instance) {
     $skip_fields[$instance['field_id']] = TRUE;
   }
+}
+
+/**
+ * Implements hook_wsfields_data_alter().
+ */
+function wsfields_wsfields_data_alter(&$data, &$instance) {
+  // @todo
 }
 
 /**
