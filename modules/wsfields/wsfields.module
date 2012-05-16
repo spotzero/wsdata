@@ -5,6 +5,7 @@
  * Defines core functionality for web service powered fields
  */
 
+define(WSFIELD_DEBUG, variable_get('wsfields_debug', FALSE));
 
 /**
  * Implements hook_permission().
@@ -92,6 +93,12 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
       // values may be considered valid. Only NULL and FALSE are omited
       if (!is_null($data) && FALSE !== $data) {
         $data = module_invoke_all('wsfields_data_alter', $data, $instance);
+        
+        // Display debug information if required
+        if (WSFIELDS_DEBUG) {
+          dpm($data);
+        }
+        
         $entities[$entityid]->$instance_name = $data;        
       }
     }
