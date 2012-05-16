@@ -5,7 +5,7 @@
  * Defines core functionality for web service powered fields
  */
 
-define('WSFIELD_DEBUG', variable_get('wsfields_debug', FALSE));
+define('WSFIELDS_DEBUG', variable_get('wsfields_debug', FALSE));
 
 /**
  * Implements hook_permission().
