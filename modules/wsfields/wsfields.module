@@ -92,7 +92,7 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
       // Need to be specific on the data checking since certain empty
       // values may be considered valid. Only NULL and FALSE are omited
       if (!is_null($data) && FALSE !== $data) {
-        $data = module_invoke_all('wsfields_data_alter', $data, $instance);
+        $data = module_invoke_all('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance);
         
         // Display debug information if required
         if (WSFIELDS_DEBUG) {
@@ -117,12 +117,9 @@ function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields)
 }
 
 /**
- * Implements hook_wsfields_data_alter().
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_data_alter($data, $instance) {
-  
-  // @todo detect the type of field being loaded and only alter the data
-  // as required
+function wsfields_wsfields_text_data_alter($data, $instance) {
   
   // Build the field array as required
   if (!is_array($data)) {
@@ -138,6 +135,13 @@ function wsfields_wsfields_data_alter($data, $instance) {
   $data = $field_data;
   
   return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_text_long_data_alter($data, $instance) {
+  
 }
 
 /**
