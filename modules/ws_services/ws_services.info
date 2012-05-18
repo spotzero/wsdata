@@ -1,8 +1,12 @@
 name = Web Service Data Services Intergration
-description = Provides the default wsConnector and wsData classes for integrating with the services module.
+description = Provides the default WsConnector classes for integrating with the services module.
 core = 7.x
 version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = wsdata
 dependencies[] = wsconfig
+
+files[] = includes/WsDataNode.inc
+files[] = includes/WsDataUser.inc
+files[] = includes/WsDataFile.inc
