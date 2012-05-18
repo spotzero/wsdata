@@ -6,6 +6,22 @@
  */
 
 /**
+ * Implements hook_flush_caches().
+ */
+function wsconfig_flush_caches() {
+  // @todo check for any new modules which register hook_wsconfig_connector_info().
+  $connectors = module_invoke_all('wsconfig_connector_info');
+  
+  // @todo see if we should store each connector separately in its own table
+  variable_set('wsconfig_connectors', $connectors);
+
+  // @todo see if we should store each processor separately in its own table  
+  $processors = module_invoke_all('wsconfig_processor_info');
+  
+  variable_set('wsconfig_processors', $processors);
+}
+
+/**
  * Implements hook_modules_enabled().
  */
 function wsconfig_modules_enabled($modules) {
