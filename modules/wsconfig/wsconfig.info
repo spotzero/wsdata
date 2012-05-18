@@ -5,6 +5,7 @@ version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = entity
+dependencies[] = wsdata
 
 files[] = wsconfig.entity.inc
 files[] = tests/wsconfig.test
