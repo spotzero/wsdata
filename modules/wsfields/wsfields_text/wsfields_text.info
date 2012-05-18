@@ -1,9 +1,0 @@
-name = Web Service Data Text Field
-description = Text fields using web service storage
-core = 7.x
-version = 7.x-1.0-dev
-package = Web Service Data
-
-dependencies[] = wsfields
-
-files[] = tests/wsfields_text.test
