@@ -121,6 +121,123 @@ function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields)
  */
 function wsfields_wsfields_text_data_alter($data, $instance) {
   
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_text_with_summary_data_alter($data, $instance) {
+  
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_text_long_data_alter($data, $instance) {
+  
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_number_decimal_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_number_float_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_number_integer_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_list_boolean_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_list_float_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_list_integer_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function wsfields_wsfields_list_text_data_alter($data, $instance) {
+
+  // Use the generalized data formater
+  _wsfields_general_data_alter($data, $instance);
+  
+  return $data;
+}
+
+/**
+ * General data alter function for fields
+ *
+ * Fields which have a basic field format can use this to properly
+ * build out their field instance arrays
+ *
+ * @param array $data [reference]
+ *  Data array
+ * @param array $instance [reference]
+ *  Field instance
+ */
+function _wsfields_general_data_alter(&$data, &$instance) {
   // Build the field array as required
   if (!is_array($data)) {
     $field_data[LANGUAGE_NONE][] = array('value' => $data);
@@ -133,15 +250,6 @@ function wsfields_wsfields_text_data_alter($data, $instance) {
   
   // Save the new field data
   $data = $field_data;
-  
-  return $data;
-}
-
-/**
- * Implements hook_wsfields_FIELD_TYPE_data_alter().
- */
-function wsfields_wsfields_text_long_data_alter($data, $instance) {
-  
 }
 
 /**
