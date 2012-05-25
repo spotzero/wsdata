@@ -50,7 +50,7 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   $field_name = $instance['field_name'];
 
   $field = field_info_field($field_name);
-  $field_type = field_info_field_types($field['type']);
+//  $field_type = field_info_field_types($field['type']);
   $widget_type = field_info_widget_types($instance['widget']['type']);
   $bundles = field_info_bundles();
   $bundle_label = $bundles[$entity_type][$bundle]['label'];
@@ -96,13 +96,14 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
       ),
     ),
   );
-  
+
   $form['wsfields']['wsfield_processor'] = array(
     '#type' => 'select',
     '#title' => t('Processor'),
     '#multiple' => FALSE,
     '#description' => t('Select a data processor.'),
-    '#options' => wsconfig_get_field_processors(array($field_type['property_type'])),
+//    '#options' => wsconfig_get_field_processors(array($field_type['property_type'])),
+    '#options' => wsconfig_get_field_processors(array($field['type'])),
     '#default_value' => isset($form_state['values']['wsfields']['wsfield_processor']) ? $form_state['values']['wsfields']['wsfield_processor'] : $wsprocessor,
     '#states' => array(
       'invisible' => array(
@@ -155,7 +156,7 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
       '#default_value' =>
         isset($form_state['values']['wsfields']['wsfield_property_token']['wsfield_property_token_' . $property]) ?
           $form_state['values']['wsfields']['wsfield_property_token']['wsfield_property_token_' . $property] :
-          $wspropertytoken[$property],
+          isset($wspropertytoken[$property])? $wspropertytoken[$property] : "",
       '#description' => t('Token this key should replace in the method call.'),
       '#states' => array(
         'invisible' => array(

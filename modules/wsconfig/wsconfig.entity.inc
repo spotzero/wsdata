@@ -171,7 +171,6 @@ class WsConfigUIController extends EntityDefaultUIController {
       'weight' => 20,
       'file' => 'wsconfig.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module'])
-
     );
 
     // Add menu items to add each different type of entity.
