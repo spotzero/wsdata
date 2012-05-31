@@ -4,7 +4,6 @@ core = 7.x
 version = 7.x-1.0-dev
 package = Web Service Data
 
-dependencies[] = entity
 dependencies[] = views
 dependencies[] = wsdata
 

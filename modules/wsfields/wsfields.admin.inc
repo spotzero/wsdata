@@ -12,6 +12,7 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   drupal_set_title($instance['label']);
 
   $wsenabled = FALSE;
+  $wstranslated = FALSE;
   $wsconfigset = NULL;
   $wsremotename = "";
   $wsprocessor = "";
@@ -23,6 +24,10 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
 
   if (isset($instance['settings']['wsfield'])) {
     $wsenabled = $instance['settings']['wsfield'];
+  }
+
+  if (isset($instance['settings']['wsfield_translated'])) {
+    $wstranslated = $instance['settings']['wsfield_translated'];
   }
 
   if (isset($instance['settings']['wsfield_configset'])) {
@@ -72,6 +77,20 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
     '#description' => t('Select whether the data from this field should be queried from a web service.'),
   );
 
+  if (module_exists('locale')) {
+    $form['wsfields']['wsfield_translated'] = array(
+      '#title' => t("Translation Available"),
+      '#type' => 'checkbox',
+      '#default_value' =>  isset($form_state['values']['wsfield_translated']['enabled']) ? $form_state['values']['wsfield_translated']['enabled'] : $wstranslated,
+      '#description' => t('The Web Service returns language information for this field.'),
+      '#states' => array(
+        'invisible' => array(
+          'input[name="wsfield_enabled"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+  }
+
   $form['wsfields']['wsfield_configset'] = array (
     '#type' => 'select',
     '#title' => t('Web Service Method'),
@@ -112,7 +131,7 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
     ),
   );
 
-  $properties = entity_metadata_wrapper('user')->getPropertyInfo();
+  $properties = entity_metadata_wrapper($entity_type)->getPropertyInfo();
   foreach ($properties as $pname => $property) {
     if (!isset($property['field'])) {
       $properties_options[$pname] = $pname . '    (' . $property['label'] . ')';
@@ -187,6 +206,7 @@ function wsfields_field_settings_form_submit($form, &$form_state) {
   $instance = field_read_instance($entity_type, $field_name, $bundle);
   if (isset($form_state['values']['wsfield_enabled']) and isset($form_state['values']['wsfield_configset']) and $form_state['values']['wsfield_enabled']) {
     $instance['settings']['wsfield'] = TRUE;
+    $instance['settings']['wsfield_translated'] = $form_state['values']['wsfield_translated'];
     $instance['settings']['wsfield_configset'] = check_plain($form_state['values']['wsfield_configset']);
     $instance['settings']['wsfield_remotename'] = check_plain($form_state['values']['wsfield_remotename']);
     $instance['settings']['wsfield_processor'] = check_plain($form_state['values']['wsfield_processor']);

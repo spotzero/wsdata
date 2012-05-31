@@ -75,31 +75,37 @@ function wsfields_menu() {
 /**
  * Implements hook_field_storage_pre_load().
  */
-function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_fields, $options) {
+function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_fields, $options) { 
   $instances = _wsfields_field_info_instances($entity_type);
+  $entityinfo = entity_get_info($entity_type);
+  $bundlefield = $entityinfo['entity keys']['bundle'];
 
-  foreach ($instances as $instance_name => $instance) {
-    $skip_fields[$instance['field_id']] = TRUE;
+  foreach ($instances as $bundlename => $bundle) {
+    foreach ($bundle as $instance_name => $instance) {
+      $skip_fields[$instance['field_id']] = TRUE;
 
-    foreach ($entities as $entityid => $entity) {
-      $data = _wsfields_data_load($entity_type, $instance, $entity);
-      
-      // Add the default empty field array
-      // @see http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_storage_pre_load/7
-      $entities[$entityid]->$instance_name = array();
-      
-      // Check if data is returned
-      // Need to be specific on the data checking since certain empty
-      // values may be considered valid. Only NULL and FALSE are omited
-      if (!is_null($data) && FALSE !== $data) {
-        $data = module_invoke_all('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance);
-        
-        // Display debug information if required
-        if (WSFIELDS_DEBUG) {
-          dpm($data);
+      foreach ($entities as $entityid => $entity) {
+        if (isset($bundlefield) and !empty($bundlefield) and $entity->$bundlefield =! $bundlename) {
+           continue; // Skip this, it wasn't the right bundle
         }
-        
-        $entities[$entityid]->$instance_name = $data;        
+
+        $data = _wsfields_data_load($entity_type, $instance, $entity);
+        // Add the default empty field array
+        // @see http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_storage_pre_load/7
+        $entities[$entityid]->$instance_name = array();
+        // Check if data is returned
+        // Need to be specific on the data checking since certain empty
+        // values may be considered valid. Only NULL and FALSE are omited
+        if (!is_null($data) && FALSE !== $data) {
+//          dpm(array('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance));
+          $data = module_invoke_all('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance);
+          // Display debug information if required
+          if (WSFIELDS_DEBUG) {
+            dpm($data);
+          }
+
+          $entities[$entityid]->$instance_name = $data;
+        }
       }
     }
   }
@@ -111,8 +117,10 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
 function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields) {
   $instances = _wsfields_field_info_instances($entity_type);
 
-  foreach ($instances as $instance_name => $instance) {
+  foreach ($instances as $bundle) {
+    foreach ($bundle as $instance_name => $instance) {
     $skip_fields[$instance['field_id']] = TRUE;
+    }
   }
 }
 
@@ -243,11 +251,19 @@ function _wsfields_general_data_alter(&$data, &$instance) {
     $field_data[LANGUAGE_NONE][] = array('value' => $data);
   }
   else {
-    foreach($data as $value) {
-      $field_data[LANGUAGE_NONE][] = array('value' => $value);
+    if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
+      foreach($data as $language => $values) {
+        foreach($data as $value) {
+          $field_data[$language] = $value;
+        }
+      }
+    } else {
+      foreach($data as $value) {
+        $field_data[LANGUAGE_NONE][] = array('value' => $value);
+      }
     }
   }
-  
+
   // Save the new field data
   $data = $field_data;
 }
@@ -263,21 +279,20 @@ function _wsfields_general_data_alter(&$data, &$instance) {
  */
 function _wsfields_field_info_instances($entity_type) {
   $instances = field_info_instances($entity_type);
-  if (!isset($instances[$entity_type])) {
-    return array();
-  }
 
-  foreach ($instances[$entity_type] as $name => $instance) {
-    if (isset($instance['settings']) and isset($instance['settings']['wsfield']) and $instance['settings']['wsfield']) {
-      // Add information about the field type for use later during data
-      // processing
-      $instances[$entity_type][$name]['field_info'] = field_info_field($name);
-    }
-    else {
-      unset($instances[$entity_type][$name]);
+  foreach($instances as $bundlename => $bundle) {
+    foreach ($instances[$bundlename] as $name => $instance) {
+      if (isset($instance['settings']) and isset($instance['settings']['wsfield']) and $instance['settings']['wsfield']) {
+        // Add information about the field type for use later during data
+        // processing
+        $instances[$bundlename][$name]['field_info'] = field_info_field($name);
+      }
+      else {
+        unset($instances[$bundlename][$name]);
+      }
     }
   }
-  return $instances[$entity_type];
+  return $instances;
 }
 
 /**
@@ -293,7 +308,7 @@ function _wsfields_field_info_instances($entity_type) {
  *  Returns the formatted field data, FALSE otherwise.
  */
 function _wsfields_data_load($entity_type, $instance, $entity) {
-
+  
   if (!isset($instance['settings']['wsfield_configset'])) {
     return FALSE;
   }
@@ -321,8 +336,7 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
     }
     $remotekeys[$p] = token_replace("[$entity_type:$p]", array($entity_type => $entity));
   }
-
-  
+ 
   // Replace the tokens in the method name
   $remotemethod = $wsconfig->data['read_data_method'];
   foreach ($wspropertytokens as $prop => $token) {

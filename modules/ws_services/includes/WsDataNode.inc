@@ -8,7 +8,18 @@ class WsDataNode extends WsData {
   // Parse the web service response string into a structured array and return the array
   protected function parse($data) {
     $data = json_decode($data);
-    dpm($data);
+    return $this->unwrap($data);
+  }
+
+  private function unwrap($data) {
+    if (is_object($data)) {
+      $data = get_object_vars($data);
+    }
+    if (is_array($data)) {
+      foreach ($data as $k => $v) {
+        $data[$k] = $this->unwrap($v);
+      }
+    }
     return $data;
   }
 }

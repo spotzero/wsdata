@@ -10,7 +10,7 @@
  */
 abstract class WsData {
   // Storage for parsed data
-  protected $data;
+  public $data;
   
   // Storage for error information
   protected $error;
