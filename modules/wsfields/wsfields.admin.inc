@@ -215,7 +215,7 @@ function wsfields_field_settings_form_submit($form, &$form_state) {
     $keys = array_keys($form_state['values']);
     foreach ($keys as $k) {
       if (strpos($k, 'wsfield_property_token_') !== FALSE) {
-        $instance['settings']['wsfield_property_tokens'][drupal_substr($k,drupal_strlen('wsfield_property_token_'))] = $form_state['values'][$k];
+        $instance['settings']['wsfield_property_tokens'][drupal_substr($k,drupal_strlen('wsfield_property_token_'))] = trim($form_state['values'][$k]);
       }
     }
   } else {
