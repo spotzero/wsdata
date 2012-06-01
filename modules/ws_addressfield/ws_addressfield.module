@@ -39,20 +39,26 @@ function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
 /**
  * Map the data values to their address field containers
  *
- * country
- * administrative_area
- * sub_administrative_area
- * locality
- * dependent_locality
- * postal_code
- * thoroughfare
- * premise
- * sub_premise
- * organisation_name
- * name_line
- * first_name
- * last_name
- * data
+ * Maps values to the following array keys:
+ * - country
+ * - administrative_area
+ * - sub_administrative_area
+ * - locality
+ * - dependent_locality
+ * - postal_code
+ * - thoroughfare
+ * - premise
+ * - sub_premise
+ * - organisation_name
+ * - name_line
+ * - first_name
+ * - last_name
+ * - data
+ *
+ * @param array $data [reference]
+ *  Data to parse
+ * @return array
+ *  Returns the structured array
  */
 function _ws_addressfield_map_address(&$data) {
   $address = array();
