@@ -7,8 +7,22 @@ class WsDataNode extends WsData {
 
   // Parse the web service response string into a structured array and return the array
   protected function parse($data) {
-    $data = json_decode($data);
-    return $this->unwrap($data);
+    $data = $this->unwrap(json_decode($data));
+
+    foreach ($data as $name => $value) {
+      if (is_array($value)) {
+        foreach ($data[$name] as $lang => $list) {
+          if (is_array($list)) {
+            foreach ($list as $id => $val) {
+              if (is_array($val) and isset($val['value'])) {
+                $data[$name][$lang][$id] = $val['value'];
+              }
+            }
+          }
+        }
+      }
+    }
+    return $data;
   }
 
   private function unwrap($data) {
@@ -22,4 +36,5 @@ class WsDataNode extends WsData {
     }
     return $data;
   }
+
 }

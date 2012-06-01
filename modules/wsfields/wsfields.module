@@ -253,10 +253,17 @@ function _wsfields_general_data_alter(&$data, &$instance) {
     $field_data[LANGUAGE_NONE][] = array('value' => $data);
   }
   else {
+    /*
+      If the field contains translated data, the field values should be structured like this:
+      [language1][0] = data1
+      [language1][1] = data2
+      [language2][0] = data1
+      [language2][1] = data2
+    */
     if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
       foreach($data as $language => $values) {
-        foreach($data as $value) {
-          $field_data[$language] = $value;
+        foreach ($values as $value) {
+          $field_data[$language][] = $value;
         }
       }
     } else {
