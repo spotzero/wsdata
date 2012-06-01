@@ -37,7 +37,7 @@ function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
 /**
  * Implements hook_wsconfig_processor_info().
  */
-function uo_user_wsconfig_processor_info() {
+function ws_addressfield_wsconfig_processor_info() {
   return array(
     'ws_addressfield_processor' => array(
       'fields' => array(
