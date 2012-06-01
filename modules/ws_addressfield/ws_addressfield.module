@@ -37,6 +37,19 @@ function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
 }
 
 /**
+ * Implements hook_wsconfig_processor_info().
+ */
+function uo_user_wsconfig_processor_info() {
+  return array(
+    'ws_addressfield_processor' => array(
+      'fields' => array(
+        'addressfield' => 'Address Field',
+      ),
+    ),
+  );
+}
+
+/**
  * Map the data values to their address field containers
  *
  * Maps values to the following array keys:
