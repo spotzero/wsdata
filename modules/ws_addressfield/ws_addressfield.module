@@ -31,9 +31,7 @@ function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
   }
 
   // Save the new field data
-  $data = $field_data;
-  
-  return $data;
+  return $field_data;
 }
 
 /**
