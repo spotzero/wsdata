@@ -101,7 +101,9 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
           $data = module_invoke_all('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance);
           // Display debug information if required
           if (WSFIELDS_DEBUG) {
-            dpm($data);
+            if (!drupal_is_cli()) {
+              dpm($data);              
+            }
           }
 
           $entities[$entityid]->$instance_name = $data;
