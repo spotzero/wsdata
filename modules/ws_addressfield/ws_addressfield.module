@@ -1,0 +1,95 @@
+<?php
+
+/**
+ * @file
+ * Add support for addressfield to be used with web service fields
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ */
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
+  // Build the field array as required
+  if (!is_array($data)) {
+    $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($value);
+  }
+  else {
+    if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
+      foreach($data as $language => $values) {
+        foreach($values as $value) {
+          $field_data[$language][] = _ws_addressfield_map_address($value);
+        }
+      }
+    }
+    else {
+      foreach($data as $value) {
+        $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($value);
+      }
+    }
+  }
+
+  // Save the new field data
+  $data = $field_data;
+  
+  return $data;
+}
+
+/**
+ * Implements hook_wsconfig_processor_info().
+ */
+function uo_user_wsconfig_processor_info() {
+  return array(
+    'ws_addressfield_processor' => array(
+      'fields' => array(
+        'addressfield' => 'Address Field',
+      ),
+    ),
+  );
+}
+
+/**
+ * Map the data values to their address field containers
+ *
+ * Maps values to the following array keys:
+ * - country
+ * - administrative_area
+ * - sub_administrative_area
+ * - locality
+ * - dependent_locality
+ * - postal_code
+ * - thoroughfare
+ * - premise
+ * - sub_premise
+ * - organisation_name
+ * - name_line
+ * - first_name
+ * - last_name
+ * - data
+ *
+ * @param array $data [reference]
+ *  Data to parse
+ * @return array
+ *  Returns the structured array
+ */
+function _ws_addressfield_map_address(&$data) {
+  $address = array();
+  
+  $address['country'] = $data['country'];
+  $address['administrative_area'] = $data['administrative_area'];
+  $address['sub_administrative_area'] = $data['sub_administrative_area'];
+  $address['locality'] = $data['locality'];
+  $address['dependent_locality'] = $data['dependent_locality'];
+  $address['postal_code'] = $data['postal_code'];
+  $address['thoroughfare'] = $data['thoroughfare'];
+  $address['premise'] = $data['premise'];
+  $address['sub_premise'] = $data['sub_premise'];
+  $address['organisation_name'] = $data['organisation_name'];
+  $address['name_line'] = $data['name_line'];
+  $address['first_name'] = $data['first_name'];
+  $address['last_name'] = $data['last_name'];
+  $address['data'] = $data['data'];
+  
+  return $address;
+}

@@ -6,8 +6,6 @@
  *
  * @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
  * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
- * @copyright 2011 Coldfront Labs Inc.
- * @license Copyright (c) 2011 All rights reserved
  */
 
 /**
