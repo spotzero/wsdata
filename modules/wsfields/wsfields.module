@@ -141,15 +141,6 @@ function wsfields_wsfields_text_with_summary_data_alter($data, $instance) {
   
   // Use the generalized data formater
   _wsfields_general_data_alter($data, $instance);
-  $format = key(filter_formats());
-  foreach($data as $lan => $values) {
-    foreach ($values as $key => $value) {
-      $data[$lan][$key]['format'] = $format;
-      $data[$lan][$key]['safe_value'] = $data[$lan][$key]['value'];
-      $data[$lan][$key]['summary'] = "";
-      $data[$lan][$key]['safe_summary'] = "";
-    }
-  }
   return $data;
 }
 

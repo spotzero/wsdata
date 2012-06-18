@@ -19,9 +19,6 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   $wsproperty = "";
   $wspropertytoken = array();
 
-  $instance['entity_type'];
-  $instance['bundle'];
-
   if (isset($instance['settings']['wsfield'])) {
     $wsenabled = $instance['settings']['wsfield'];
   }
@@ -77,21 +74,39 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
     '#description' => t('Select whether the data from this field should be queried from a web service.'),
   );
 
-  if (module_exists('locale')) {
-    $form['wsfields']['wsfield_translated'] = array(
-      '#title' => t("Translation Available"),
-      '#type' => 'checkbox',
-      '#default_value' =>  isset($form_state['values']['wsfield_translated']['enabled']) ? $form_state['values']['wsfield_translated']['enabled'] : $wstranslated,
-      '#description' => t('The Web Service returns language information for this field.'),
-      '#states' => array(
-        'invisible' => array(
-          'input[name="wsfield_enabled"]' => array('checked' => FALSE),
-        ),
+  $form['wsfields']['wsfield_translated'] = array(
+    '#title' => t("Translation Available"),
+    '#type' => 'checkbox',
+    '#default_value' =>  isset($form_state['values']['wsfield_translated']['enabled']) ? $form_state['values']['wsfield_translated']['enabled'] : $wstranslated,
+    '#description' => t('The Web Service returns language information for this field.'),
+    '#states' => array(
+      'invisible' => array(
+        'input[name="wsfield_enabled"]' => array('checked' => FALSE),
       ),
-    );
+    ),
+  );
+
+    // If Field Translation isn't available, don't allow languages for this field
+
+  if (!module_exists('locale') or !module_exists('entity_translation')) {
+    $wstranslated = FALSE;
+    $form['wsfields']['wsfield_translated']['#disabled'] = TRUE;
+    $form['wsfields']['wsfield_translated']['#default_value'] = FALSE;
+    $form['wsfields']['wsfield_translated']['#description'] = t('The Locale and Entity Translation modules must be enabled for translated fields.');
+  } else {
+    $field_info = field_info_fields($instance['field_name']);
+
+    if (!isset($field_info[$instance['field_name']]['translatable']) or !$field_info[$instance['field_name']]['translatable']) {
+      $wstranslated = FALSE;
+      $form['wsfields']['wsfield_translated']['#disabled'] = TRUE;
+      $form['wsfields']['wsfield_translated']['#default_value'] = FALSE;
+      $form['wsfields']['wsfield_translated']['#description'] = t('Translation is not enabled on this field.');
+      $form['wsfields']['wsfield_translated']['#description'] .= '  ';
+      $form['wsfields']['wsfield_translated']['#description'] .= l( t('Enable translation'), 'admin/config/regional/entity_translation/translatable/' . $instance['field_name']);
+    }
   }
 
-  $form['wsfields']['wsfield_configset'] = array (
+  $form['wsfields']['wsfield_configset'] = array(
     '#type' => 'select',
     '#title' => t('Web Service Method'),
     '#options' => wsconfig_get_list(array()),
