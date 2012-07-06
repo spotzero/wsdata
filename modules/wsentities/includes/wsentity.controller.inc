@@ -22,6 +22,12 @@ class WSEntityAPIController extends EntityAPIController implements WSEntityAPICo
 
 
   public function __construct($entityType) {
+  /**
+     TODO: Load entity config object here
+     TODO: Find a method of finding out which config object goes with this entity.
+  **/
+
+
     parent::__construct($entityType);
   }
 
