@@ -20,7 +20,16 @@ abstract class WsData {
     return $error;
   }
   
-  // Retrieve the value for the given data key.
+/**
+ * Retrieve the value for the given data key.
+ *
+ * This function retrieves data from the structured array in $this->data
+ *  using $key as a key.  $key should be a string, with the character ':'
+ *  delimiting the parts of the key.
+ *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
+ *  N.B.  This function can be overridden to work with whatever the ->parse function
+ *  is implemented to return. 
+ */
   public function getData($key) {
     if (is_array($this->data)) {
       $return = $this->data;
