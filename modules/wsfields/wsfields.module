@@ -141,6 +141,16 @@ function wsfields_wsfields_text_with_summary_data_alter($data, $instance) {
   
   // Use the generalized data formater
   _wsfields_general_data_alter($data, $instance);
+
+  $formats = array_keys(filter_formats());
+  if (sizeof($formats) > 0) {
+    $formats = $formats[0];
+    foreach($data as $lang => $values) {
+      foreach ($values as $id => $instance) {
+        $data[$lang][$id]['format'] = $formats;
+      }
+    }
+  }
   return $data;
 }
 
