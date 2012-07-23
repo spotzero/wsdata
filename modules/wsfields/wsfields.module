@@ -81,12 +81,11 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
   $bundlefield = $entityinfo['entity keys']['bundle'];
   foreach ($instances as $bundlename => $bundle) {
     foreach ($bundle as $instance_name => $instance) {
-      $skip_fields[$instance['field_id']] = TRUE;
-
       foreach ($entities as $entityid => $entity) {
         if (isset($bundlefield) and !empty($bundlefield) and $entity->$bundlefield != $bundlename) {
            continue; // Skip this, it wasn't the right bundle
         }
+        $skip_fields[$instance['field_id']] = TRUE;
         $data = _wsfields_data_load($entity_type, $instance, $entity);
         // Add the default empty field array
         // @see http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_storage_pre_load/7
