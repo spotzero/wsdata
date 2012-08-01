@@ -146,10 +146,20 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
     ),
   );
 
-  $properties = entity_metadata_wrapper($entity_type)->getPropertyInfo();
-  foreach ($properties as $pname => $property) {
-    if (!isset($property['field'])) {
-      $properties_options[$pname] = $pname . '    (' . $property['label'] . ')';
+  $properties[$entity_type] = entity_metadata_wrapper($entity_type)->getPropertyInfo();
+
+  // @todo scan for references to other entities in the property list
+  // @todo use entity_get_info() and compare the array to the "type" value
+  // in the entity property
+  //$properties = _wsfields_entity_reference_properties($properties);
+  // @todo replace with tested call above
+  $properties = _wsfields_entity_reference_properties($properties);
+
+  foreach ($properties as $etype => $props) {
+    foreach($props as $pname => $property) {
+      if (!isset($property['field'])) {      
+        $properties_options[$pname] = $etype . ':' . $pname . '    (' . $property['label'] . ')';
+      }
     }
   }
 
@@ -241,3 +251,47 @@ function wsfields_field_settings_form_submit($form, &$form_state) {
   drupal_set_message(t('Web service settings saved.'));
 }
 
+/**
+ * Scan through the list of entity properties searching for references
+ * to other entities.
+ *
+ * @param array $properties
+ *  List of entity properties
+ * @param array $entities [optional]
+ *  List of defined entities
+ * @return array
+ *  Returns an array of properties
+ */
+function _wsfields_entity_reference_properties($properties, $entities = NULL) {
+  // Load the list of entities defined in the site
+  // We do this once and pass the value through the recursion to save on
+  // uncessessary processing
+  dpm($properties);
+  if (is_null($entities)) {
+    $entities = entity_get_info();
+  }
+
+  
+  // Compare the list of property type values to those of the entities
+  foreach($entities as $type => $definition) {
+    foreach($properties as $etype => $props) {      
+      if ($type != $etype) {
+        foreach($props as $pname => $property) {
+          if (isset($property['type']) and $property['type'] == $type) {
+            // Store the property info
+            $properties[$type] = entity_metadata_wrapper($type)->getPropertyInfo();
+
+            // Remove the entity from the defined list to avoid looping
+            unset($entities[$type]);
+
+            // Check the new entity for references
+            array_merge($properties, _wsfields_entity_reference_properties(entity_metadata_wrapper($type)->getPropertyInfo(), $entities));
+          }
+        }
+      }
+    }
+  }
+  // Recurse on any defined entity reference property
+  // Merge the values
+  return $properties;
+}
