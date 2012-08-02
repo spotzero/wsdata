@@ -13,7 +13,7 @@
 function ws_addressfield_wsfields_addressfield_data_alter($data, $instance) {
   // Build the field array as required
   if (!is_array($data)) {
-    $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($value);
+    $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($data);
   }
   else {
     if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
