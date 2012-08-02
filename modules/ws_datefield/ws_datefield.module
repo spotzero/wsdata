@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Main module for ws_datefields
+ */
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ *
+ * Prepares data for the 'datestamp' field type
+ */
+function ws_datefield_wsfields_datestamp_data_alter($data, $instance) {
+  dpm($data);
+  dpm($instance);
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ *
+ * Prepares data for the 'datetime' field type
+ */
+function ws_datefield_wsfields_datetime_data_alter() {
+  // @todo
+}
+
+/**
+ * Implements hook_wsconfig_processor_info().
+ */
+function ws_addressfield_wsconfig_processor_info() {
+  return array(
+    'ws_datefield_processor' => array(
+      'fields' => array(
+        'datestamp' => 'Date (Unix Timestamp)',
+        'datetime' => 'Date (ISO)', // @todo verify this is the right display label
+      ),
+    ),
+  );
+}
