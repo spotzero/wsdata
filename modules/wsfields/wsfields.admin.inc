@@ -147,11 +147,13 @@ function wsfields_field_settings_form($form, &$form_state, $instance) {
   );
 
   $properties = entity_metadata_wrapper($entity_type)->getPropertyInfo();
-  foreach ($properties as $pname => $property) {
-    if (!isset($property['field'])) {
+
+  foreach($properties as $pname => $property) {
+    if (!isset($property['field'])) {      
       $properties_options[$pname] = $pname . '    (' . $property['label'] . ')';
     }
   }
+
 
   $form['wsfields']['wsfield_property'] = array(
     '#type' => 'select',
@@ -240,4 +242,3 @@ function wsfields_field_settings_form_submit($form, &$form_state) {
   
   drupal_set_message(t('Web service settings saved.'));
 }
-

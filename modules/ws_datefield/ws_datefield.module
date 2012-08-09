@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * @file
+ * Main module for ws_datefields
+ */
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ *
+ * Prepares data for the 'datestamp' field type
+ */
+function ws_datefield_wsfields_datestamp_data_alter($data, $instance) {
+  // Build the field array as required
+  if (!is_array($data)) {
+    $field_data[LANGUAGE_NONE][] = _ws_datefield_build_field($data, 'datestamp', $instance);
+  }
+  else {
+    if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
+      foreach($data as $language => $values) {
+        foreach($values as $value) {
+          $field_data[$language][] = _ws_datefield_build_field($value, 'datestamp', $instance);
+        }
+      }
+    }
+    else {
+      foreach($data as $value) {
+        $field_data[LANGUAGE_NONE][] = _ws_datefield_build_field($value, 'datestamp', $instance);
+      }
+    }
+  }
+
+  // Save the new field data
+  return $field_data;
+}
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ *
+ * Prepares data for the 'datetime' field type
+ */
+function ws_datefield_wsfields_datetime_data_alter() {
+  // @todo
+}
+
+/**
+ * Implements hook_wsconfig_processor_info().
+ */
+function ws_datefield_wsconfig_processor_info() {
+  return array(
+    'ws_datefield_processor' => array(
+      'fields' => array(
+        'datestamp' => 'Date (Unix Timestamp)',
+        //'datetime' => 'Date (ISO)', // @todo verify this is the right display label
+      ),
+    ),
+  );
+}
+
+/**
+ * Helper function to build the appropriate field array structure
+ */
+function _ws_datefield_build_field(&$data, $type = 'date', &$instance) {
+  // Create a date object to handle the date operations
+  $date = new DateObject($data);
+  $field_array = array();
+  $process = date_process_values($instance['field_info']);
+  switch ($type) {
+    case 'datestamp':
+      $field_array['value'] = $date->getTimestamp();
+      // @todo see if the timezone is set correctly
+      $field_array['timezone'] = date_get_timezone($instance['field_info']['settings']['tz_handling'], $date->getTimezone()->getName());
+      $field_array['timezone_db'] = date_get_timezone_db($instance['field_info']['settings']['tz_handling']); // @todo figure out what the correct value is here
+      $field_array['date_type'] = 'datestamp';
+      $field_array['db']['value'] = $date;
+      //$field_array['db']['value2'] = $field_array['db']['value']; // @todo handle end dates correctly and caching
+      break;
+    case 'datetime':
+      // @todo
+      break;
+    case 'date':
+    default:
+      // @todo
+  }
+  
+  return $field_array;
+}
