@@ -1,0 +1,189 @@
+<?php
+
+/**
+ * @file
+ * Storage controller definitions
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ */
+
+/**
+ * Implements hook_field_storage_info().
+ */
+function wsfields_storage_field_storage_info() {
+  return array(
+    'wsfields_storage_rest' => array(
+      'label' => t('Web Service Storage'),
+      'description' => t('Stores fields via remote web service using REST.'),
+      'settings' => array(),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_storage_details().
+ */
+function wsfields_storage_field_storage_details($field) {
+  // Nothing right now
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_create_field().
+ */
+function wsfields_storage_field_storage_create_field($field) {
+  // @todo act on when a new field is created
+  // Do we need to do anything?
+}
+
+/**
+ * Implements hook_field_storage_update_field().
+ */
+function wsfields_storage_field_storage_update_field($field, $prior_field, $has_data) {
+  // Nothing right now
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_delete_field().
+ */
+function wsfields_storage_field_storage_delete_field($field) {
+  // Nothing right now
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_delete().
+ */
+function wsfields_storage_field_storage_delete($entity_type, $entity, $fields) {
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_delete_revision().
+ */
+function hook_field_storage_delete_revision($entity_type, $entity, $fields) {
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_delete_instance().
+ */
+function wsfields_storage_field_storage_delete_instance($instance) {
+  // @todo something
+}
+
+
+/**
+ * Implements hook_field_storage_load().
+ */
+function wsfields_storage_field_storage_load($entity_type, &$entities, $age, $fields, $options) {
+  $field_info = field_info_field_by_ids();
+  $load_current = $age == FIELD_LOAD_CURRENT;
+
+  foreach ($fields as $field_id => $ids) {
+    $field = $field_info[$field_id];
+    $field_name = $field['field_name'];
+
+// @todo replace with web service call
+/*    $table = $load_current ? _field_sql_storage_tablename($field) : _field_sql_storage_revision_tablename($field);
+
+    $query = db_select($table, 't')
+      ->fields('t')
+      ->condition('entity_type', $entity_type)
+      ->condition($load_current ? 'entity_id' : 'revision_id', $ids, 'IN')
+      ->condition('language', field_available_languages($entity_type, $field), 'IN')
+      ->orderBy('delta');
+
+    if (empty($options['deleted'])) {
+      $query->condition('deleted', 0);
+    }
+
+    $results = $query->execute();
+*/
+    $delta_count = array();
+
+
+    foreach ($results as $row) {
+      if (!isset($delta_count[$row->entity_id][$row->language])) {
+        $delta_count[$row->entity_id][$row->language] = 0;
+      }
+
+      if ($field['cardinality'] == FIELD_CARDINALITY_UNLIMITED || $delta_count[$row->entity_id][$row->language] < $field['cardinality']) {
+        $item = array();
+        // For each column declared by the field, populate the item
+        // from the prefixed database column.
+        foreach ($field['columns'] as $column => $attributes) {
+          $column_name = _field_sql_storage_columnname($field_name, $column);
+          $item[$column] = $row->$column_name;
+        }
+
+        // Add the item to the field values for the entity.
+        $entities[$row->entity_id]->{$field_name}[$row->language][] = $item;
+        $delta_count[$row->entity_id][$row->language]++;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_storage_write().
+ */
+function hook_field_storage_write($entity_type, $entity, $op, $fields) {
+  // @todo something
+}
+
+/**
+ * Implements hook_field_storage_query().
+ */
+function wsfields_storage_field_storage_query($query) {
+  // @todo add support for entity field queries
+}
+
+/**
+ * Implements hook_entity_query_alter().
+ */
+function hook_entity_query_alter($query) {
+  $query->executeCallback = 'wsfields_storage_field_storage_query';
+}
+
+/**
+ * Implements hook_field_attach_rename_bundle().
+ */
+function hook_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_new) {
+  // @todo something
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function hook_entity_insert($entity, $type) {
+  wsfields_storage_field_storage_write($entity_type, $entity, NULL, array(), TRUE);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function hook_entity_update($entity, $type) {
+  wsfields_storage_field_storage_write($entity_type, $entity, NULL, array(), TRUE);
+}
+
+/**
+ * Implements hook_field_attach_delete().
+ */
+function hook_field_attach_delete($entity_type, $entity) {
+  // @todo something
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function hook_entity_info_alter(&$entity_info) {
+  // @todo something
+}
+
+/**
+ * Exception handling for WS Field Storage
+ */
+class WSFieldsStorageException extends Exception {}
+  
