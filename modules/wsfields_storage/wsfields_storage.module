@@ -12,7 +12,7 @@
  */
 function wsfields_storage_field_storage_info() {
   return array(
-    'wsfields_storage_rest' => array(
+    'wsfields_storage' => array(
       'label' => t('Web Service Storage'),
       'description' => t('Stores fields via remote web service using REST.'),
       'settings' => array(),
@@ -73,7 +73,6 @@ function wsfields_storage_field_storage_delete_instance($instance) {
   // @todo something
 }
 
-
 /**
  * Implements hook_field_storage_load().
  */
@@ -100,7 +99,8 @@ function wsfields_storage_field_storage_load($entity_type, $entities, $age, $fie
 
     if (!empty($settings)) {
       // Load the data for each entity
-      foreach ($entities as $entity) {
+      foreach ($entities as $entityid => $entity) {
+        // @todo Change the settings to be loaded from the field storage settings
         $data = _wsfields_data_load($entity_type, $bundle_fields[$field_name], $entity);
 
         if (!is_null($data) && FALSE !== $data) {
