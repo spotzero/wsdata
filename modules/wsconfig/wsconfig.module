@@ -255,6 +255,14 @@ function wsconfig_access($op, $wsconfig = NULL, $account = NULL) {
 }
 
 /**
+ * Get the list of wsconfig types
+ */
+function wsconfig_get_types($type_name = NULL) {
+  $types = entity_load_multiple_by_name('wsconfig_type', isset($type_name) ? array($type_name) : FALSE);
+  return isset($type_name) ? reset($types) : $types;
+}
+
+/**
  * Access callback for the entity API.
  */
 function wsconfig_type_access($op, $type = NULL, $account = NULL) {
@@ -274,11 +282,17 @@ function wsconfig_type_load($type) {
 }
 
 /**
- * Get the list of wsconfig types
+ * Saves a wsconfig type to the db.
  */
-function wsconfig_get_types($type_name = NULL) {
-  $types = entity_load_multiple_by_name('wsconfig_type', isset($type_name) ? array($type_name) : FALSE);
-  return isset($type_name) ? reset($types) : $types;
+function wsconfig_type_save(WsConfigType $type) {
+  $type->save();
+}
+
+/**
+ * Deletes a wsconfig type from the db.
+ */
+function wsconfig_type_delete(WsConfigType $type) {
+  $type->delete();
 }
 
 /**
@@ -400,20 +414,6 @@ function wsconfig_create($values = array()) {
  */
 function wsconfig_save(WsConfig $wsconfig) {
   return $wsconfig->save();
-}
-
-/**
- * Saves a wsconfig type to the db.
- */
-function wsconfig_type_save(WsConfigType $type) {
-  $type->save();
-}
-
-/**
- * Deletes a wsconfig type from the db.
- */
-function wsconfig_type_delete(WsConfigType $type) {
-  $type->delete();
 }
 
 /**

@@ -73,7 +73,7 @@ function ws_addressfield_wsconfig_processor_info() {
  */
 function _ws_addressfield_map_address(&$data) {
   $address = array();
-  
+  // @todo replace with call to field['columns'] to get container map
   $address['country'] = $data['country'];
   $address['administrative_area'] = $data['administrative_area'];
   $address['sub_administrative_area'] = $data['sub_administrative_area'];

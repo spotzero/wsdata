@@ -82,7 +82,6 @@ function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_
   foreach ($instances as $bundlename => $bundle) {
     foreach ($bundle as $instance_name => $instance) {
       $skip_fields[$instance['field_id']] = TRUE;
-
       foreach ($entities as $entityid => $entity) {
         if (isset($bundlefield) and !empty($bundlefield) and $entity->$bundlefield != $bundlename) {
            continue; // Skip this, it wasn't the right bundle
@@ -118,7 +117,7 @@ function wsfields_field_storage_pre_insert($entity_type, $entity, &$skip_fields)
 
   foreach ($instances as $bundle) {
     foreach ($bundle as $instance_name => $instance) {
-    $skip_fields[$instance['field_id']] = TRUE;
+
     }
   }
 }

@@ -31,18 +31,6 @@ class WsConfig extends Entity {
 }
 
 /**
- * The class used for wsconfig type entities
- */
-class WsConfigType extends Entity {
-  public $type;
-  public $label;
-
-  public function __construct($values = array()) {
-    parent::__construct($values, 'wsconfig_type');
-  }
-}
-
-/**
  * The Controller for WsConfig entities
  */
 class WsConfigController extends EntityAPIController {
@@ -90,51 +78,6 @@ class WsConfigController extends EntityAPIController {
 }
 
 /**
- * The Controller for wsconfig type entities
- */
-class WsConfigTypeController extends EntityAPIControllerExportable {
-  public function __construct($entityType) {
-    parent::__construct($entityType);
-  }
-
-  /**
-   * Create a wsconfig type - we first set up the values that are specific
-   * to our wsconfig type schema but then also go through the EntityAPIController
-   * function.
-   *
-   * @param $type
-   *   The machine-readable type of the wsconfig.
-   *
-   * @return
-   *   A wsconfig type object with all default fields initialized.
-   */
-  public function create(array $values = array()) {
-    // Add values that are specific to our Web Service Configuration
-    $values += array(
-      'id' => '',
-      'is_new' => TRUE,
-      'data' => array(),
-    );
-    $wsconfig_type = parent::create($values);
-    return $wsconfig_type;
-  }
-}
-
-/**
- * UI controller
- */
-class WsConfigTypeUIController extends EntityDefaultUIController {
-  /**
-   * Overrides hook_menu() defaults.
-   */
-  public function hook_menu() {
-    $items = parent::hook_menu();
-		$items[$this->path]['description'] = 'Manage wsconfig entity types, including adding and removing fields and the display of fields.';
-    return $items;
-  }
-}
-
-/**
  * UI controller
  */
 class WsConfigUIController extends EntityDefaultUIController {
@@ -143,7 +86,6 @@ class WsConfigUIController extends EntityDefaultUIController {
    * parent class hook_menu() is optimized for entity type administration.
    */
   public function hook_menu() {
-//    $items = array();
     $items = parent::hook_menu();
     $id_count = count(explode('/', $this->path));
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
@@ -246,5 +188,64 @@ class WsConfigUIController extends EntityDefaultUIController {
     }
 
     return theme('wsconfig_add_list', array('content' => $content));
+  }
+}
+
+
+/**
+ * The class used for wsconfig type entities
+ */
+class WsConfigType extends Entity {
+  public $type;
+  public $label;
+
+  public function __construct($values = array()) {
+    parent::__construct($values, 'wsconfig_type');
+  }
+}
+
+
+/**
+ * The Controller for wsconfig type entities
+ */
+class WsConfigTypeController extends EntityAPIControllerExportable {
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+
+  /**
+   * Create a wsconfig type - we first set up the values that are specific
+   * to our wsconfig type schema but then also go through the EntityAPIController
+   * function.
+   *
+   * @param $type
+   *   The machine-readable type of the wsconfig.
+   *
+   * @return
+   *   A wsconfig type object with all default fields initialized.
+   */
+  public function create(array $values = array()) {
+    // Add values that are specific to our Web Service Configuration
+    $values += array(
+      'id' => '',
+      'is_new' => TRUE,
+      'data' => array(),
+    );
+    $wsconfig_type = parent::create($values);
+    return $wsconfig_type;
+  }
+}
+
+/**
+ * UI controller
+ */
+class WsConfigTypeUIController extends EntityDefaultUIController {
+  /**
+   * Overrides hook_menu() defaults.
+   */
+  public function hook_menu() {
+    $items = parent::hook_menu();
+		$items[$this->path]['description'] = 'Manage wsconfig entity types, including adding and removing fields and the display of fields.';
+    return $items;
   }
 }
