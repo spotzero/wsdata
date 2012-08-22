@@ -42,7 +42,7 @@ function wsconfig_delete_form_wrapper($wsconfig) {
  *   The wsconfig object to edit or for a create form an empty wsconfig object
  *     with only a wsconfig type defined.
  */
-function wsconfig_edit_form($form, &$form_state, $wsconfig) {
+function wsconfig_edit_form($form, &$form_state, $wsconfig = NULL) {
   // Add the default field elements.
   $form['title'] = array(
     '#type' => 'textfield',
@@ -62,26 +62,10 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig) {
     '#weight' => -5,
     '#machine_name' => array(
       'exists' => 'wsconfig_exists_by_name',
-      'source' => 'title',
+      'source' => array('title'),
     ),
   );
   
-  $form['data']['#tree'] = TRUE;
-/*
-  $form['data']['data_operations'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Data Operations'),
-    '#description' => t('Select which data operations are available for this service.'),
-    '#options' => array(
-      'create' => t('Create Data'),
-      'read' => t('Read Data'),
-      'update' => t('Update Data'),
-      'delete' => t('Delete Data'),
-    ),
-    // @todo add states support for fields listed below
-    '#default_value' => !empty($wsconfig->data['available_operations']) ? $wsconfig_type->data['available_operations'] : array(),
-  );
-*/
   $form['data']['create_data_method'] = array(
     '#type' => 'textfield',
     '#title' => t('Create Data Method Name'),

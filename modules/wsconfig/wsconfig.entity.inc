@@ -53,6 +53,7 @@ class WsConfigController extends EntityAPIController {
     // Add values that are specific to our WsConfig
     $values += array(
       'wsconfig_id' => '',
+      'name' => '',
       'is_new' => TRUE,
       'title' => '',
       'created' => '',
