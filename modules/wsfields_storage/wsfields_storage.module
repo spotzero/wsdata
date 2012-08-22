@@ -9,13 +9,17 @@
 
 /**
  * Implements hook_field_storage_info().
+ *
+ * The settings array stores the machine name of a wsconfig instance to load.
  */
 function wsfields_storage_field_storage_info() {
   return array(
     'wsfields_storage' => array(
       'label' => t('Web Service Storage'),
       'description' => t('Stores fields via remote web service using REST.'),
-      'settings' => array(),
+      'settings' => array(
+        'wsconfig_name' => '', // The machine-name of a wsconfig instance to load
+      ),
     ),
   );
 }

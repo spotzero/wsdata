@@ -46,7 +46,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig = NULL) {
   // Add the default field elements.
   $form['title'] = array(
     '#type' => 'textfield',
-    '#title' => t('Web Service Configuration Name'),
+    '#title' => t('Web Service Configuration Title'),
     '#default_value' => isset($wsconfig->title) ? $wsconfig->title : '',
     '#maxlength' => 255,
     '#required' => TRUE,
@@ -55,11 +55,11 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig = NULL) {
   
   $form['name'] = array(
     '#type' => 'machine_name',
-    '#title' => t('Web Service Configuration Name'),
+    '#title' => t('Web Service Configuration Machine Name'),
     '#default_value' => isset($wsconfig->name) ? $wsconfig->name : '',
     '#maxlength' => 255,
     '#required' => TRUE,
-    '#weight' => -5,
+    '#weight' => -4,
     '#machine_name' => array(
       'exists' => 'wsconfig_exists_by_name',
       'source' => array('title'),

@@ -392,12 +392,13 @@ function wsconfig_load_multiple($wsconfig_ids = array(), $conditions = array(), 
  *  Returns TRUE if a config exists with that name, FALSE otherwise.
  */
 function wsconfig_exists_by_name($name) {
-  $query = db_select('wsconfig', 'w');
-  $query->fields('w', array('name'))
-    ->condition('name', $name, '=')
-    ->execute();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'wsconfig')
+    ->propertyCondition('name', $name)
+    ->count();
 
-  return $query->rowCount() > 0;
+  $result = $query->execute();
+  return $result > 0;
 }
 
 /**
