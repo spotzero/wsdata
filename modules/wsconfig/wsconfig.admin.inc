@@ -44,13 +44,26 @@ function wsconfig_delete_form_wrapper($wsconfig) {
  */
 function wsconfig_edit_form($form, &$form_state, $wsconfig) {
   // Add the default field elements.
-  $form['name'] = array(
+  $form['title'] = array(
     '#type' => 'textfield',
+    '#title' => t('Web Service Configuration Name'),
+    '#default_value' => isset($wsconfig->title) ? $wsconfig->title : '',
+    '#maxlength' => 255,
+    '#required' => TRUE,
+    '#weight' => -5,    
+  );
+  
+  $form['name'] = array(
+    '#type' => 'machine_name',
     '#title' => t('Web Service Configuration Name'),
     '#default_value' => isset($wsconfig->name) ? $wsconfig->name : '',
     '#maxlength' => 255,
     '#required' => TRUE,
     '#weight' => -5,
+    '#machine_name' => array(
+      'exists' => 'wsconfig_exists_by_name',
+      'source' => 'title',
+    ),
   );
   
   $form['data']['#tree'] = TRUE;
@@ -199,7 +212,7 @@ function wsconfig_delete_form($form, &$form_state, $wsconfig) {
   $form['#submit'][] = 'wsconfig_delete_form_submit';
 
   $form = confirm_form($form,
-    t('Are you sure you want to delete the Web Service Configuration %name?', array('%name' => $wsconfig->name)),
+    t('Are you sure you want to delete the Web Service Configuration %title?', array('%title' => $wsconfig->title)),
     'admin/content/wsconfig/wsconfig',
     '<p>' . t('This action cannot be undone.') . '</p>',
     t('Delete'),
@@ -218,13 +231,11 @@ function wsconfig_delete_form_submit($form, &$form_state) {
 
   wsconfig_delete($wsconfig);
 
-  drupal_set_message(t('The Web Service Configuration %name has been deleted.', array('%name' => $wsconfig->name)));
+  drupal_set_message(t('The Web Service Configuration %title has been deleted.', array('%title' => $wsconfig->title)));
   watchdog('wsconfig', 'Deleted web service configuration %name.', array('%name' => $wsconfig->name));
 
   $form_state['redirect'] = 'admin/content/wsconfig';
 }
-
-
 
 /**
  * Page to add Model Entities.
@@ -235,7 +246,6 @@ function wsconfig_add_page() {
   $controller = entity_ui_controller('wsconfig');
   return $controller->addPage();
 }
-
 
 /**
  * Displays the list of available wsconfig types for wsconfig creation.

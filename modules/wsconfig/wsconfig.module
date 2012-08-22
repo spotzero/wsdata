@@ -85,6 +85,7 @@ function wsconfig_entity_info() {
       'controller class' => 'WsConfigController',
       'base table' => 'wsconfig',
       'fieldable' => FALSE,
+      'exportable' => TRUE,
       'translation' => array(
         'locale' => TRUE,
       ),
@@ -302,7 +303,7 @@ function wsconfig_get_list() {
 
   // @todo add caching layer?
   $query = db_select('wsconfig', 'w');
-  $query->fields('w', array('wsconfig_id', 'name'))
+  $query->fields('w', array('wsconfig_id', 'title', 'name'))
         ->orderBy('name', 'DESC');
   
   $result = $query->execute();
@@ -310,7 +311,7 @@ function wsconfig_get_list() {
   $list = array();
 
   while($record = $result->fetchObject()) {
-    $list[$record->wsconfig_id] = $record->name;
+    $list[$record->wsconfig_id] = $record->title;
   }
 
   return $list;
@@ -383,6 +384,23 @@ function wsconfig_load_multiple($wsconfig_ids = array(), $conditions = array(), 
 }
 
 /**
+ * Check if a wsconfig exists using a machine name
+ *
+ * @param string $name
+ *  Machine name to check for
+ * @return boolean
+ *  Returns TRUE if a config exists with that name, FALSE otherwise.
+ */
+function wsconfig_exists_by_name($name) {
+  $query = db_select('wsconfig', 'w');
+  $query->fields('w', array('name'))
+    ->condition('name', $name, '=')
+    ->execute();
+
+  return $query->rowCount() > 0;
+}
+
+/**
  * Deletes a wsconfig
  */
 function wsconfig_delete(WsConfig $wsconfig) {
@@ -430,7 +448,7 @@ function wsconfig_uri(WsConfig $wsconfig){
  * Menu title callback for showing individual entities
  */
 function wsconfig_page_title(WsConfig $wsconfig){
-  return $wsconfig->name;
+  return $wsconfig->title;
 }
 
 /**
@@ -440,7 +458,7 @@ function wsconfig_page_title(WsConfig $wsconfig){
 function wsconfig_page_view($wsconfig, $view_mode = 'full') {    
   $controller = entity_get_controller('wsconfig');  
   $content = $controller->view(array($wsconfig->wsconfig_id => $wsconfig));
-  drupal_set_title($wsconfig->name);
+  drupal_set_title($wsconfig->title);
   return $content;
 }
 

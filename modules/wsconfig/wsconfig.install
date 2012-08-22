@@ -67,7 +67,7 @@ function wsconfig_schema() {
         'serialize' => TRUE,
         'description' => 'A serialized array of additional data.',
       ),
-    ),
+    ) + entity_exportable_schema_fields(),
     'primary key' => array('wsconfig_id'),
     'unique keys' => array(
       'name' => array('name'),
