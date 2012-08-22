@@ -35,7 +35,14 @@ function wsconfig_schema() {
         'default' => '',
       ),
       'name' => array(
-        'description' => 'The name of the wsconfig - a human-readable identifier.',
+        'description' => 'The machine name of a wsconfig.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'title' => array(
+        'description' => 'Human-readable name of the web service config.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -62,6 +69,9 @@ function wsconfig_schema() {
       ),
     ),
     'primary key' => array('wsconfig_id'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
     'indexes' => array(
       'type' => array('type'),
     ),
@@ -109,4 +119,33 @@ function wsconfig_schema() {
     ),
   );
   return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add a machine name to each wsconfig
+ */
+function wsconfig_update_7001(&$sandbox) {
+  $field = array(
+    'description' => 'Human-readable name of the web service config.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  $keys = array(
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+
+  // Rename existing "name" column to "title"
+  db_change_field('wsconfig', 'name', 'title', $field);
+  
+  // Adjust the column definition for the new 'name' column
+  $field['description'] = 'The machine name of a wsconfig.';
+  
+  // Add new "name" column to store machine name
+  db_add_field('wsconfig', 'name', $field, $keys);
 }

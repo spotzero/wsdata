@@ -180,7 +180,7 @@ function wsfields_storage_field_storage_query($query) {
   foreach ($query->fieldConditions as $key => $condition) {
     // Throw an exception for each field condition which isn't supported
     throw new WSFieldsStorageUnsupportedFieldConditionException('Field condition is unsupported.');
-    
+
     // Original sql based code
     /*
     $table_alias = $table_aliases[$key];
@@ -318,7 +318,7 @@ function _wsfields_storage_columnname($field, $instance_settings) {
  */
 class WSFieldsStorageException extends Exception {}
 class WSFieldsStorageUnsupportedFieldConditionException extends WSFieldsStorageException {}
-class WSFieldsStorageUnsupportedQueryException extends WSFieldsStorageException {}  
+class WSFieldsStorageUnsupportedQueryException extends WSFieldsStorageException {}
 
 /**
  * Debug query
