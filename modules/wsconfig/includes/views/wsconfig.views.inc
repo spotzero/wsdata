@@ -70,34 +70,33 @@ function wsconfig_views_default_views() {
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '50';
   $handler->display->display_options['style_plugin'] = 'table';
-  /* Field: Web Service Configuration: Web service configuration ID */
-  $handler->display->display_options['fields']['wsconfig_id']['id'] = 'wsconfig_id';
-  $handler->display->display_options['fields']['wsconfig_id']['table'] = 'wsconfig';
-  $handler->display->display_options['fields']['wsconfig_id']['field'] = 'wsconfig_id';
-  $handler->display->display_options['fields']['wsconfig_id']['label'] = 'ID';
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['alter_text'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['make_link'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['absolute'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['external'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['replace_spaces'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['trim_whitespace'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['nl2br'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['word_boundary'] = 1;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['ellipsis'] = 1;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['more_link'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['trim'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['alter']['html'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['element_label_colon'] = 1;
-  $handler->display->display_options['fields']['wsconfig_id']['element_default_classes'] = 1;
-  $handler->display->display_options['fields']['wsconfig_id']['hide_empty'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['empty_zero'] = 0;
-  $handler->display->display_options['fields']['wsconfig_id']['hide_alter_empty'] = 1;
-  $handler->display->display_options['fields']['wsconfig_id']['format_plural'] = 0;
+  /* Field: Web Service Configuration: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'wsconfig';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['title']['alter']['more_link'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['title']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['title']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['title']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['title']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['title']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['title']['hide_alter_empty'] = 1;
   /* Field: Web Service Configuration: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'wsconfig';
   $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['label'] = 'Machine Name';
   $handler->display->display_options['fields']['name']['alter']['alter_text'] = 0;
   $handler->display->display_options['fields']['name']['alter']['make_link'] = 0;
   $handler->display->display_options['fields']['name']['alter']['absolute'] = 0;
@@ -145,7 +144,23 @@ function wsconfig_views_default_views() {
   $handler->display->display_options['tab_options']['type'] = 'tab';
   $handler->display->display_options['tab_options']['title'] = 'Web Service Configurations';
   $handler->display->display_options['tab_options']['weight'] = '0';
-  
+  $translatables['web_service_configurations'] = array(
+    t('Master'),
+    t('Web Service Configurations'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort by'),
+    t('Asc'),
+    t('Desc'),
+    t('Items per page'),
+    t('- All -'),
+    t('Offset'),
+    t('Title'),
+    t('Machine Name'),
+    t('Page'),
+  );
+ 
   $views[] = $view;
   
   return $views;
