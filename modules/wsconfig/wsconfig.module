@@ -283,6 +283,18 @@ function wsconfig_type_load($type) {
 }
 
 /**
+ * Create an new instance of WsConfigType
+ *
+ * @param array $values [optional]
+ *  Default configuration settings
+ * @return object
+ *  Returns an instance of WsConfigType
+ */
+function wsconfig_type_create($values = array()) {
+  return entity_get_controller('wsconfig_type')->create($values);
+}
+
+/**
  * Saves a wsconfig type to the db.
  */
 function wsconfig_type_save(WsConfigType $type) {

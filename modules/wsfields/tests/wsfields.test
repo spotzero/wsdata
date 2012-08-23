@@ -10,7 +10,7 @@ class WsfieldsTestCase extends DrupalWebTestCase {
     return array(
       'name' => t('Wsfields tests'),
       'description' => t('One or more complete sentences explaining the test.'),
-      'group' => t('Wsfields'),
+      'group' => t('Web Service Data'),
     );
   }
 

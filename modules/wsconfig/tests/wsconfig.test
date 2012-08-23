@@ -10,7 +10,7 @@ class WsconfigTestCase extends DrupalWebTestCase {
     return array(
       'name' => t('Web Service Configuration tests'),
       'description' => t('Test the web service configuration storage.'),
-      'group' => t('Web Services'),
+      'group' => t('Web Service Data'),
     );
   }
 
