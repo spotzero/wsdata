@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Describe the file
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ */
+
+
+class WsfieldsStorageTestCase extends DrupalWebTestCase {
+  protected $admin
+  protected $user;
+
+  public static function getInfo() {
+    return array(
+      'name' => t('Web Service Fields Storage'),
+      'description' => t('Test storing data using wsfield_storage'),
+      'group' => t('wsdata'),
+    );
+  }
+
+  function setUp() {
+    parent::setUp('wsfields_storage', 'ws_services', 'rest_server', 'restclient', 'devel_generate'); // Note the restclient module is not the one found on Drupal.org. It is the restclient mentioned in the wsdata README file
+    
+    // Enable test server configuration
+    services_endpoint_save(_ws_services_test_endpoint_config())
+    
+    // Create node content using devel_generate
+    $settings = array(
+      'node_types[]' => array('article'),
+      'num_nodes' => 20,
+      'time_range' => 1,
+      'title_length' => 4,
+      'add_language[]' => array('und'),
+    );
+    
+    $this->drupalPost('admin/config/development/generate/content', $settings, t('Generate'));
+    
+    // Create field using wsfields_storage
+    // Create users with instances of wsfields using devel_generate
+  }
+}
+
+/**
+ * Defines a test server to work with
+ */
+function _ws_services_test_endpoint_config() {
+  $endpoint = new stdClass();
+  $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
+  $endpoint->api_version = 3;
+  $endpoint->name = 'testservice';
+  $endpoint->server = 'rest_server';
+  $endpoint->path = 'testservice';
+  $endpoint->authentication = array();
+  $endpoint->server_settings = array();
+  $endpoint->resources = array(
+    'node' => array(
+      'operations' => array(
+        'retrieve' => array(
+          'enabled' => 1,
+        ),
+        'create' => array(
+          'enabled' => 1,
+        ),
+        'update' => array(
+          'enabled' => 1,
+        ),
+        'delete' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
+  );
+  $endpoint->debug = 0;
+  
+  return $endpoint;
+}
