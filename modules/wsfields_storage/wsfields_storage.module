@@ -19,6 +19,15 @@ function wsfields_storage_field_storage_info() {
       'description' => t('Stores fields via remote web service using REST.'),
       'settings' => array(
         'wsconfig_name' => '', // The machine-name of a wsconfig instance to load
+        'translation' => FALSE,
+        'propertymap' => array(
+          'create' => array(),
+          'read' => array(),
+          'update' => array(),
+          'delete' => array(),
+        ), // Mapping of the placeholder elements in the CRUD paths to entity properties
+        'processor' => '', // Data processor
+        'remotekey' => '', // data key to load as the value for this field
       ),
     ),
   );
@@ -83,8 +92,6 @@ function wsfields_storage_field_storage_delete_instance($instance) {
 function wsfields_storage_field_storage_load($entity_type, $entities, $age, $fields, $options) {
   // Load the list of fields
   $field_info = field_info_field_by_ids();
-  // Load the instances so we can read the web service data settings
-  $field_instances = field_info_instances($entity_type);
   $load_current = $age == FIELD_LOAD_CURRENT;
 
   // Loop through the fields
@@ -92,34 +99,10 @@ function wsfields_storage_field_storage_load($entity_type, $entities, $age, $fie
     $field = $field_info[$field_id];
     $field_name = $field['field_name'];
 
-    // Load web service settings from instance settings
-    $settings = array();
-    foreach ($field_instances as $bundle => $bundle_fields) {
-      if (isset($bundle_fields[$field_name]['settings']['wsfield']) and $bundle_fields[$field_name]['settings']['wsfield'] == TRUE) {
-        $settings = $bundle_fields[$field_name]['settings'];
-        break;
-      }
-    }
-
-    if (!empty($settings)) {
-      // Load the data for each entity
-      foreach ($entities as $entityid => $entity) {
-        // @todo Change the settings to be loaded from the field storage settings
-        $data = _wsfields_data_load($entity_type, $bundle_fields[$field_name], $entity);
-
-        if (!is_null($data) && FALSE !== $data) {
-          $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $bundle_fields[$field_name], $field['columns']);
-
-          // Display debug information if required
-          if (WSFIELDS_DEBUG) {
-            if (!drupal_is_cli()) {
-              dpm($data);
-            }
-          }
-
-          $entities[$entityid]->$field_name = $data;
-        }
-      }
+    // Load the data for each entity
+    foreach ($entities as $entityid => $entity) {
+      // Load the field data into the entity
+      $entities[$entityid]->$field_name = wsfields_data_load($entity_type, $field, $entity);
     }
   }
 }

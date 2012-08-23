@@ -21,6 +21,8 @@ function wsfields_permission() {
 
 /**
  *  Implements hook_menu().
+ *
+ * DEPRECATED
  */
 function wsfields_menu() {
   $items = array();
@@ -69,75 +71,33 @@ function wsfields_menu() {
       }
     }
   }
-  return $items;
-}
-
-/**
- * Implements hook_field_storage_pre_load().
- *
- * DEPRECATED
- * @see wsfields_storage_field_storage_load().
- */
-function wsfields_field_storage_pre_load($entity_type, &$entities, $age, &$skip_fields, $options) {
-/*  $instances = _wsfields_field_info_instances($entity_type);
-  $entityinfo = entity_get_info($entity_type);
-  $bundlefield = $entityinfo['entity keys']['bundle'];
-
-  foreach ($instances as $bundlename => $bundle) {
-    foreach ($bundle as $instance_name => $instance) {
-      //$skip_fields[$instance['field_id']] = TRUE;
-      foreach ($entities as $entityid => $entity) {
-        if (isset($bundlefield) and !empty($bundlefield) and $entity->$bundlefield != $bundlename) {
-           continue; // Skip this, it wasn't the right bundle
-        }
-        $data = _wsfields_data_load($entity_type, $instance, $entity);
-        // Add the default empty field array
-        // @see http://api.drupal.org/api/drupal/modules!field!field.api.php/function/hook_field_storage_pre_load/7
-        $entities[$entityid]->$instance_name = array();
-        // Check if data is returned
-        // Need to be specific on the data checking since certain empty
-        // values may be considered valid. Only NULL and FALSE are omited
-        if (!is_null($data) && FALSE !== $data) {
-//          dpm(array('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance));
-          $data = module_invoke_all('wsfields_' . $instance['field_info']['type'] . '_data_alter', $data, $instance);
-          // Display debug information if required
-          if (WSFIELDS_DEBUG) {
-            if (!drupal_is_cli()) {
-              dpm($data);              
-            }
-          }
-          $entities[$entityid]->$instance_name = $data;
-        }
-      }
-    }
-  }
-  */
+  //return $items;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_text_data_alter($data, $instance) {
-  
+function wsfields_wsfields_text_data_alter($data, $field) {
+
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_text_with_summary_data_alter($data, $instance) {
-  
+function wsfields_wsfields_text_with_summary_data_alter($data, $field) {
+
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
+  _wsfields_general_data_alter($data, $field);
 
   $formats = array_keys(filter_formats());
   if (sizeof($formats) > 0) {
     $formats = $formats[0];
     foreach($data as $lang => $values) {
-      foreach ($values as $id => $instance) {
+      foreach ($values as $id => $field) {
         $data[$lang][$id]['format'] = $formats;
       }
     }
@@ -148,88 +108,88 @@ function wsfields_wsfields_text_with_summary_data_alter($data, $instance) {
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_text_long_data_alter($data, $instance) {
-  
+function wsfields_wsfields_text_long_data_alter($data, $field) {
+
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_number_decimal_data_alter($data, $instance) {
+function wsfields_wsfields_number_decimal_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_number_float_data_alter($data, $instance) {
+function wsfields_wsfields_number_float_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_number_integer_data_alter($data, $instance) {
+function wsfields_wsfields_number_integer_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_list_boolean_data_alter($data, $instance) {
+function wsfields_wsfields_list_boolean_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_list_float_data_alter($data, $instance) {
+function wsfields_wsfields_list_float_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_list_integer_data_alter($data, $instance) {
+function wsfields_wsfields_list_integer_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function wsfields_wsfields_list_text_data_alter($data, $instance) {
+function wsfields_wsfields_list_text_data_alter($data, $field) {
 
   // Use the generalized data formater
-  _wsfields_general_data_alter($data, $instance);
-  
+  _wsfields_general_data_alter($data, $field);
+
   return $data;
 }
 
@@ -241,12 +201,12 @@ function wsfields_wsfields_list_text_data_alter($data, $instance) {
  *
  * @param array $data [reference]
  *  Data array
- * @param array $instance [reference]
+ * @param array $field [reference]
  *  Field instance
  * @param array $field [optionstal]
  *  Field settings
  */
-function _wsfields_general_data_alter(&$data, &$instance, $field = NULL) {
+function _wsfields_general_data_alter(&$data, &$field) {
   // Build the field array as required
   if (!is_array($data)) {
     $field_data[LANGUAGE_NONE][] = array('value' => $data);
@@ -259,7 +219,7 @@ function _wsfields_general_data_alter(&$data, &$instance, $field = NULL) {
       [language2][0] = data1
       [language2][1] = data2
     */
-    if (isset($instance['settings']['wsfield_translated']) and $instance['settings']['wsfield_translated']) {
+    if ($field['storage']['settings']['translated']) {
       foreach($data as $language => $values) {
         foreach ($values as $value) {
           $field_data[$language][] = array('value' => $value);
@@ -277,94 +237,61 @@ function _wsfields_general_data_alter(&$data, &$instance, $field = NULL) {
 }
 
 /**
- * Get the names and ids of field instances that are defined as web service
- * fields
- *
- * @param string $entity_type
- *  Machine name of the entity
- * @return array
- *  Returns the instance info for the given entity fields
- */
-function _wsfields_field_info_instances($entity_type) {
-  $instances = field_info_instances($entity_type);
-
-  foreach($instances as $bundlename => $bundle) {
-    foreach ($instances[$bundlename] as $name => $instance) {
-      if (isset($instance['settings']) and isset($instance['settings']['wsfield']) and $instance['settings']['wsfield']) {
-        // Add information about the field type for use later during data
-        // processing
-        $instances[$bundlename][$name]['field_info'] = field_info_field($name);
-      }
-      else {
-        unset($instances[$bundlename][$name]);
-      }
-    }
-  }
-  return $instances;
-}
-
-/**
  * Perform Service Request
  *
  * @param string $entity_type
  *  Machine name of a given entity type
- * @param array $instance
- *  Instance info array for the given field
+ * @param array $field
+ *  Field definition to load data into
  * @param object $entity
  *  Entity object
  * @return array|boolean
  *  Returns the formatted field data, FALSE otherwise.
  */
-function _wsfields_data_load($entity_type, $instance, $entity) {
-  
-  if (!isset($instance['settings']['wsfield_configset'])) {
+function wsfields_data_load($entity_type, $field, $entity) {
+
+  if (!isset($field['storage']['settings']['wsconfig_name'])) {
     return FALSE;
   }
 
   // Load required settings from the field instance
-  $wsconfigid = $instance['settings']['wsfield_configset'];
-  $wsremotename = $instance['settings']['wsfield_remotename'];
-  $wsprocessor = $instance['settings']['wsfield_processor'];
-  $wsproperty = $instance['settings']['wsfield_property'];
-  $wspropertytokens = isset($instance['settings']['wsfield_property_tokens'])? $instance['settings']['wsfield_property_tokens'] : array();
-  
-  $wsconfig = wsconfig_load($wsconfigid);
+  $wsconfig_name = $field['storage']['settings']['wsconfig_name'];
+  $remotename = $field['storage']['settings']['remotekey'];
+  $processor = $field['storage']['settings']['processor'];
+  $propertymap = $field['storage']['settings']['propertymap']['read'];
 
-  // Check if the web service is enabled
-  if (!isset($wsproperty)) {
-    return FALSE;
-  }
+  // Load the web service configuration
+  $wsconfig = wsconfig_load_by_name($wsconfig_name);
 
-  // Replace any tokens
+  // Get the method name for token replacement
+  $remotemethod = $wsconfig->data['read_data_method'];
+
+  // Replace the tokens in the "read" pattern with entity property values
   $remotekeys = array();
-  foreach ($wsproperty as $p) {
+
+  foreach ($propertymap as $pattern => $entity_property) {
     // If we don't have a value for a key, exit since we will not be able to resolve the data
-    if (!isset($entity->$p) or empty($entity->$p)) {
+    if (!isset($entity->$entity_property) or empty($entity->$entity_property)) {
       return FALSE;
     }
-    $remotekeys[$p] = token_replace("[$entity_type:$p]", array($entity_type => $entity));
-  }
- 
-  // Replace the tokens in the method name
-  $remotemethod = $wsconfig->data['read_data_method'];
-  foreach ($wspropertytokens as $prop => $token) {
-    $remotemethod = str_replace($token, $remotekeys[$prop], $remotemethod);
-    unset($remotekeys[$prop]);
+
+    // Replace the placeholders in the URL pattern with values from property key map
+    $remotemethod = str_replace($pattern, $entity->$entity_property, $remotemethod);
   }
 
-  if (!class_exists($wsprocessor)) {
-    watchdog('wsfields', 'Web service fields cannot create class @wsprocessor. Class not found.', array('@wsprocessor' => $wsprocessor), WATCHDOG_ERROR);
+  if (!class_exists($processor)) {
+    watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
     drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
     return FALSE;
   }
 
   // Create a new processor
-  $processor = new $wsprocessor();
+  $processor = new $processor();
 
   // Check the subclass of the processor
   if (!is_subclass_of($processor, 'WsData')) {
     drupal_set_message(t("Unable to build data processor. See logs for more details"), 'error', FALSE);
-    watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $wsprocessor), WATCHDOG_ERROR);
+    watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $processor), WATCHDOG_ERROR);
     return FALSE;
   }
 
@@ -382,7 +309,21 @@ function _wsfields_data_load($entity_type, $instance, $entity) {
     $processor->addData($data);
 
     // Load the requested data
-    return $processor->getData($wsremotename, $instance, $entity);
+    $data = $processor->getData($remotename);
+
+    // Build the field format
+    if (!is_null($data) && FALSE !== $data) {
+      $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
+
+      // Display debug information if required
+      if (WSFIELDS_DEBUG) {
+        if (!drupal_is_cli()) {
+          dpm($data);
+        }
+      }
+      return $data;
+    }
   }
+
   return FALSE;
 }
