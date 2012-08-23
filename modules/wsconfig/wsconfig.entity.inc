@@ -70,9 +70,9 @@ class WsConfigController extends EntityAPIControllerExportable {
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $content = parent::buildContent($entity, $view_mode, $langcode, $content);
-    $content['wsconfig_sample_data'] =  array(
-      '#markup' => theme('wsconfig_sample_data', array('wsconfig_sample_data' => check_plain($entity->data['sample_data']), 'wsconfig' => $entity)),
-    );
+//    $content['wsconfig_sample_data'] =  array(
+//      '#markup' => theme('wsconfig_sample_data', array('wsconfig_sample_data' => check_plain($entity->data['sample_data']), 'wsconfig' => $entity)),
+//    );
 
     return $content;
   }

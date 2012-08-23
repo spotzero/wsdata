@@ -351,7 +351,7 @@ function wsconfig_get_list_tokens() {
  * in the model entity definition fits the function name here.
  *
  * @param $wsconfig_id
- *   Integer specifying the model id.
+ *   Integer specifying the wsconfig id.
  * @param $reset
  *   A boolean indicating that the internal cache should be reset.
  * @return
@@ -362,6 +362,36 @@ function wsconfig_get_list_tokens() {
 function wsconfig_load($wsconfig_id, $reset = FALSE) {
   $wsconfigs = wsconfig_load_multiple(array($wsconfig_id), array(), $reset);
   return reset($wsconfigs);
+}
+
+/**
+ * Fetch a wsconfig object. Make sure that the wildcard you choose 
+ * in the model entity definition fits the function name here.
+ *
+ * @param $name
+ *   Machine name of the wsconfig
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $wsconfig object or FALSE if it cannot be loaded.
+ *
+ * @see wsconfig_load()
+ */
+function wsconfig_load_by_name($name, $reset = FALSE) {
+  $query = new EntityFieldQuery();
+  $result = $query->entityCondition('entity_type', 'wsconfig')
+    ->propertyCondition('name', $name)
+    ->execute();
+
+  // Check the results
+  if (!isset($result['wsconfig']) or !is_array($result['wsconfig'])) {
+    return FALSE;
+  }
+  
+  // Load the entity
+  foreach ($result['wsconfig'] as $key => $wsconfig) {
+    return wsconfig_load($key, $reset);
+  }
 }
 
 /**
