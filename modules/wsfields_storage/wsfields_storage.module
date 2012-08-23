@@ -128,7 +128,7 @@ function wsfields_storage_field_storage_write($entity_type, $entity, $op, $field
  */
 function wsfields_storage_field_storage_query($query) {
   $groups = array();
-  dpm($query);
+  //dpm($query);
   if ($query->age == FIELD_LOAD_CURRENT) {
     $id_key = 'entity_id';
   }
@@ -161,7 +161,7 @@ function wsfields_storage_field_storage_query($query) {
       $select_query->distinct();
     }
   }
-  */
+  
 
   // Add field conditions.
   foreach ($query->fieldConditions as $key => $condition) {
@@ -187,7 +187,7 @@ function wsfields_storage_field_storage_query($query) {
         }
       }
     }
-    */
+    
   }
 
   // Look in list of deleted fields
@@ -238,7 +238,7 @@ function wsfields_storage_field_storage_query($query) {
     }
   }
 
-  return $query->finishQuery($select_query, $id_key);
+  return $query->finishQuery($select_query, $id_key);*/
 }
 
 /**

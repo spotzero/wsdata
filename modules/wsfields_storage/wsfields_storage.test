@@ -9,7 +9,7 @@
 
 
 class WsfieldsStorageTestCase extends DrupalWebTestCase {
-  protected $admin
+  protected $admin;
   protected $user;
 
   public static function getInfo() {
@@ -24,7 +24,7 @@ class WsfieldsStorageTestCase extends DrupalWebTestCase {
     parent::setUp('wsfields_storage', 'ws_services', 'rest_server', 'restclient', 'devel_generate'); // Note the restclient module is not the one found on Drupal.org. It is the restclient mentioned in the wsdata README file
     
     // Enable test server configuration
-    services_endpoint_save(_ws_services_test_endpoint_config())
+    services_endpoint_save(_ws_services_test_endpoint_config());
     
     // Create node content using devel_generate
     $settings = array(
