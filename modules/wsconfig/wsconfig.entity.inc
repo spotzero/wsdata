@@ -33,7 +33,7 @@ class WsConfig extends Entity {
 /**
  * The Controller for WsConfig entities
  */
-class WsConfigController extends EntityAPIController {
+class WsConfigController extends EntityAPIControllerExportable {
   public function __construct($entityType) {
     parent::__construct($entityType);
   }

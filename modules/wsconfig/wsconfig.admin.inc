@@ -42,7 +42,7 @@ function wsconfig_delete_form_wrapper($wsconfig) {
  *   The wsconfig object to edit or for a create form an empty wsconfig object
  *     with only a wsconfig type defined.
  */
-function wsconfig_edit_form($form, &$form_state, $wsconfig = NULL) {
+function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
   // Add the default field elements.
   $form['title'] = array(
     '#type' => 'textfield',
