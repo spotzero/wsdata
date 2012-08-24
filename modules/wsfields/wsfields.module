@@ -259,7 +259,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
   $remotename = $field['storage']['settings']['remotekey'];
   $processor = $field['storage']['settings']['processor'];
   $propertymap = $field['storage']['settings']['propertymap']['read'];
-
+    
   // Load the web service configuration
   $wsconfig = wsconfig_load_by_name($wsconfig_name);
 
@@ -306,6 +306,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
 
     // Read the data
     $data = $wsconfig->connector->read($remotemethod, $remotekeys, array('accept-type' => $type));
+
     $processor->addData($data);
 
     // Load the requested data

@@ -79,6 +79,7 @@ class WsfieldsStorageTestCase extends DrupalWebTestCase {
     foreach ($users['user'] as $uid => $account) {
       $node = node_load($uid);
       $user = user_load($uid);
+      $this->drupalGet('/user/' . $user->uid);
       if (empty($user->field_nodetitle)) {
         $this->verbose('User object contains empty "Node Title" field');
       }
@@ -136,7 +137,7 @@ function _wsfields_storage_test_wsconfig_types($url) {
     'label' => 'Test WSConfig Type',
     'data' => array(
       'endpoint' => $url . '/testservice',
-      'connector' => 'restclient_connector',
+      'connector' => 'restclient_wsconnector',
     ),
   );
 }
@@ -163,7 +164,7 @@ function _wsfields_storage_test_field_definitions() {
       'field_name' => 'field_nodetitle',
       'label' => t('Node Title'),
       'type' => 'text',
-      'locked' => TRUE,
+      'locked' => FALSE,
       'translatable' => FALSE,
       'entity_types' => array(
         'user',

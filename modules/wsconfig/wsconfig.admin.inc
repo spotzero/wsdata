@@ -159,7 +159,14 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
 function wsconfig_edit_form_submit(&$form, &$form_state) {
   
   $wsconfig = entity_ui_controller('wsconfig')->entityFormSubmitBuildEntity($form, $form_state);
+
   // Save the wsconfig and go back to the list of wsconfigs
+  $wsconfig->data['read_data_method'] = $wsconfig->read_data_method;
+  $wsconfig->data['create_data_method'] = $wsconfig->create_data_method;
+  $wsconfig->data['update_data_method'] = $wsconfig->update_data_method;
+  $wsconfig->data['delete_data_method'] = $wsconfig->delete_data_method;
+
+  
   
   // Add in created and changed times.
   if ($wsconfig->is_new = isset($wsconfig->is_new) ? $wsconfig->is_new : 0){
@@ -272,6 +279,3 @@ function wsconfig_set_breadcrumb() {
 
   drupal_set_breadcrumb($breadcrumb);
 }
-
-
-
