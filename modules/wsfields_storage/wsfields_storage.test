@@ -23,7 +23,7 @@ class WsfieldsStorageTestCase extends DrupalWebTestCase {
   function setUp() {
     parent::setUp('wsfields_storage', 'ws_services', 'rest_server', 'restclient', 'devel_generate'); // Note the restclient module is not the one found on Drupal.org. It is the restclient mentioned in the wsdata README file
     
-    $this->admin = $this->drupalCreateUser(array('administer site configuration', 'administer services', 'administer nodes', 'administer users'));
+    $this->admin = $this->drupalCreateUser(array('administer site configuration', 'administer services', 'administer nodes', 'administer users', 'access devel information'));
     $this->drupalLogin($this->admin); 
     
     // Enable test server configuration
@@ -75,7 +75,7 @@ class WsfieldsStorageTestCase extends DrupalWebTestCase {
       
     // Loop through all users and check that their title appears in
     // each corresponding user properly
-    $nodes = $nodes['node'];
+    $fields = field_info_instances('user', 'user');
     foreach ($users['user'] as $uid => $account) {
       $node = node_load($uid);
       $user = user_load($uid);
@@ -149,7 +149,7 @@ function _wsfields_storage_test_wsconfig() {
     'title' => 'Test WSConfig',
     'type' => 'test_wsconfig_type',
     'data' => array(
-      'read_data_method' => 'testservice/node/%nid',
+      'read_data_method' => 'node/%nid',
     ),
   );
 }
