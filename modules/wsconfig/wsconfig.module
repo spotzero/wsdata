@@ -333,7 +333,7 @@ function wsconfig_get_list_by_name() {
   $list = array();
 
   while($record = $result->fetchObject()) {
-    $list[$record-name] = $record->title;
+    $list[$record->name] = $record->title;
   }
 
   return $list;
