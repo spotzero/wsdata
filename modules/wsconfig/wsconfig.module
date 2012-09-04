@@ -309,17 +309,12 @@ function wsconfig_type_delete(WsConfigType $type) {
 }
 
 /**
- * Gets the list of web service configurations
+ * Gets the list of web service configurations keyed by serial id
  */
 function wsconfig_get_list() {
 
-  // @todo add caching layer?
-  $query = db_select('wsconfig', 'w');
-  $query->fields('w', array('wsconfig_id', 'title', 'name'))
-        ->orderBy('name', 'DESC');
+  $result = _wsconfig_get_list();
   
-  $result = $query->execute();
-
   $list = array();
 
   while($record = $result->fetchObject()) {
@@ -329,6 +324,21 @@ function wsconfig_get_list() {
   return $list;
 }
 
+/**
+ * Get list of web service configurations keyed by machine-name
+ */
+function wsconfig_get_list_by_name() {
+  $result = _wsconfig_get_list();
+  
+  $list = array();
+
+  while($record = $result->fetchObject()) {
+    $list[$record-name] = $record->title;
+  }
+
+  return $list;
+  
+}
 
 /**
  * Gets the list of web service configurations with tokens
@@ -540,4 +550,18 @@ function wsconfig_get_field_processors($types = array()) {
   }
   
   return $field_processors;
+}
+
+/**
+ * Generate list of web service configurations
+ */
+function _wsconfig_get_list() {
+  // @todo add caching layer?
+  $query = db_select('wsconfig', 'w');
+  $query->fields('w', array('wsconfig_id', 'title', 'name'))
+        ->orderBy('name', 'DESC');
+  
+  $result = $query->execute();
+
+  return $result;
 }
