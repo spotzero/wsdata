@@ -263,66 +263,68 @@ function wsfields_data_load($entity_type, $field, $entity) {
   // Load the web service configuration
   $wsconfig = wsconfig_load_by_name($wsconfig_name);
 
-  // Get the method name for token replacement
-  $remotemethod = $wsconfig->data['read_data_method'];
+  if (is_object($wsconfig)) {
+    // Get the method name for token replacement
+    $remotemethod = $wsconfig->data['read_data_method'];
 
-  // Replace the tokens in the "read" pattern with entity property values
-  $remotekeys = array();
+    // Replace the tokens in the "read" pattern with entity property values
+    $remotekeys = array();
 
-  foreach ($propertymap as $pattern => $entity_property) {
-    // If we don't have a value for a key, exit since we will not be able to resolve the data
-    if (!isset($entity->$entity_property) or empty($entity->$entity_property)) {
+    foreach ($propertymap as $pattern => $entity_property) {
+      // If we don't have a value for a key, exit since we will not be able to resolve the data
+      if (!isset($entity->$entity_property) or empty($entity->$entity_property)) {
+        return FALSE;
+      }
+
+      // Replace the placeholders in the URL pattern with values from property key map
+      $remotemethod = str_replace($pattern, $entity->$entity_property, $remotemethod);
+    }
+
+    if (!class_exists($processor)) {
+      watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
+      drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
       return FALSE;
     }
 
-    // Replace the placeholders in the URL pattern with values from property key map
-    $remotemethod = str_replace($pattern, $entity->$entity_property, $remotemethod);
-  }
+    // Create a new processor
+    $processor = new $processor();
 
-  if (!class_exists($processor)) {
-    watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
-    drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
-    return FALSE;
-  }
+    // Check the subclass of the processor
+    if (!is_subclass_of($processor, 'WsData')) {
+      drupal_set_message(t("Unable to build data processor. See logs for more details"), 'error', FALSE);
+      watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $processor), WATCHDOG_ERROR);
+      return FALSE;
+    }
 
-  // Create a new processor
-  $processor = new $processor();
+    // Attempt the connection
+    if ($wsconfig->connector) {
+      // Load the list of accepted data formats
+      $type = $processor->accepts();
 
-  // Check the subclass of the processor
-  if (!is_subclass_of($processor, 'WsData')) {
-    drupal_set_message(t("Unable to build data processor. See logs for more details"), 'error', FALSE);
-    watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $processor), WATCHDOG_ERROR);
-    return FALSE;
-  }
+      // Select the first option
+      // @todo come up with a way for the objects to decide which accept type it should use
+      $type = array_pop($type);
 
-  // Attempt the connection
-  if ($wsconfig->connector) {
-    // Load the list of accepted data formats
-    $type = $processor->accepts();
+      // Read the data
+      $data = $wsconfig->connector->read($remotemethod, $remotekeys, array('accept-type' => $type));
 
-    // Select the first option
-    // @todo come up with a way for the objects to decide which accept type it should use
-    $type = array_pop($type);
+      $processor->addData($data);
 
-    // Read the data
-    $data = $wsconfig->connector->read($remotemethod, $remotekeys, array('accept-type' => $type));
+      // Load the requested data
+      $data = $processor->getData($remotename);
 
-    $processor->addData($data);
+      // Build the field format
+      if (!is_null($data) && FALSE !== $data) {
+        $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
 
-    // Load the requested data
-    $data = $processor->getData($remotename);
-
-    // Build the field format
-    if (!is_null($data) && FALSE !== $data) {
-      $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
-
-      // Display debug information if required
-      if (WSFIELDS_DEBUG) {
-        if (!drupal_is_cli()) {
-          dpm($data);
+        // Display debug information if required
+        if (WSFIELDS_DEBUG) {
+          if (!drupal_is_cli()) {
+            dpm($data);
+          }
         }
+        return $data;
       }
-      return $data;
     }
   }
 
