@@ -71,19 +71,19 @@ abstract class WsConnector {
 
   abstract public function wscall($type, $method, $argument, $options);
 
-  public function create( $method, $object, $options) {
+  public function create( $method, $object, $options = array()) {
     return $this->wscall('create', $method, $object, $options);
   }
 
-  public function read( $method, $id, $options) {
+  public function read( $method, $id, $options = array()) {
     return $this->wscall('read', $method, $id, $options);
   }
 
-  public function update ( $id, $method, $object, $options) {
+  public function update ( $id, $method, $object, $options = array()) {
     return $this->wscall('update', $method, array( $id, $object), $options);
   }
 
-  public function delete ( $id, $method, $options) {
+  public function delete ( $id, $method, $options = array()) {
     return $this->wscall('delete', $method, $id, $options);
   }
 }
