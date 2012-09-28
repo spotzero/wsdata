@@ -14,7 +14,11 @@ abstract class WsData {
   
   // Storage for error information
   protected $error;
-  
+
+  public function __construct($data) {
+    $this->addData($data);
+  }
+
   // Return any error messages or error data
   public function getError() {
     return $error;
