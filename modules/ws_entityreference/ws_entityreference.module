@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Add support for addressfield to be used with web service fields
+ *
+ * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ */
+
+/**
+ * Implements hook_wsfields_FIELD_TYPE_data_alter().
+ */
+function ws_entityreference_wsfields_entityreference_data_alter($data, $instance) {
+  $field[LANGUAGE_NONE][] = array('target_id' => $data);
+  return $field;
+}
