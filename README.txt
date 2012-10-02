@@ -43,27 +43,48 @@ Web Service Services (ws_services)
 Web Service Fields - Address Field (ws_addressfield)
 ----------------------------------------------------
 
-todo
+- Adds data formatting for [Address Fields](http://drupal.org/project/addressfield)
 
 Web Service Fields - Date Field (ws_datefield)
 ----------------------------------------------
 
-todo
+- Adds data formatting for [Date Fields](http://drupal.org/project/date)
 
 Web Service Fields - Entity Reference Field (ws_entityreferencefield)
 ---------------------------------------------------------------------
 
-todo
+- Adds data formatting for [Entity Reference Fields](http://drupal.org/project/entityreference)
 
 Installation
 ============
 
-todo
+1. Download all dependencies
+2. Enable the module
 
 Usage
 =====
 
-todo
+Preface
+-------
+
+You need to determine two key factors:
+
+1. What web service request method are you using (ex: SOAP, REST)
+2. What data formats do your web services accept/reply (ex: XML, JSON, text)
+
+Prerequisites
+-------------
+
+- Compatible 'Connector' module
+    - You'll need a means of making the web service requests. A module which implements hook_wsconfig_connector_info() and an implementation of WsConnector which is compatible with your request method.
+    
+- Processor classes
+    - For each web service, you'll need to implement and instance of WsData to parse the returned values into values compatible with Drupal. Typically, after writing a few you'll notice some patterns and be able to reuse significant portions of your code.
+    
+Implementation
+--------------
+
+For details on how to implement each individual API, please see their accompanying README.txt files. (ex: see wsdata/modules/wsfields_storage/README.txt on how to define fields to use the storage controller)
 
 Example Implementations
 =======================
@@ -78,7 +99,7 @@ You can use the [RESTClient](https://github.com/coldfrontlabs/restclient) module
 Processors
 ----------
 
-TODO
+See wsdata/modules/ws_services/includes for a list of sample implementations of WsData.
 
 History
 =======
@@ -145,6 +166,27 @@ Second Attempt
 
 After reviewing the issues with the first implementation, we came to the conclusion that most (if not all) of the issues revolved around EntityFieldQueries failing on wsdata fields. Meaning we needed to implement a proper Field Storage Controller with support for EntityFieldQueries (i.e implement hook_field_storage_query).
 
+All the same principles applied. We used connectors, processors and configurations to interact with web service data. The specific field settings were moved into the "field settings" instead of "field instance settings". Using the "storage" array in the field settings, you define the storage settings, remote key and other information previously only found in the configuration entity. This allowed the configuration entities to act more generically. They could be mapped one-to-one per web service instead of per field.
+
+Here's a snippet from a field definition using the Web Service Fields Storage controller:
+
+<pre><code>
+'storage' => array(
+  'module' => 'wsfields_storage',
+  'settings' => array(
+    'processor' => 'myprocessor',
+    'propertymap' => array(
+      'read' => array(
+        '%uid' => 'uid',
+      ),
+    ),
+    'remotekey' => 'description',
+    'translation' => FALSE,
+    'wsconfig_name' => 'my_wsconfig',
+  ),
+  'type' => 'wsfields_storage',
+</code></pre>
+
 Issues with the Second Attempt
 ------------------------------
 
@@ -157,3 +199,7 @@ No longer were the settings defined on field instances. Instead they were define
 
 Future
 ======
+
+The same concepts could be applied to entities themselves. Build a generic entity controller which uses web services to load all of it's data. This is more complex to accomplish than using fields. With fields, the entity to which they're attached can store information about how to load the appropriate data. If the entity itself is entirely remote, knowing how or where to load the data gets harder. Even knowing if the given entity exists at all is more difficult.
+
+However we do have a basic implementation almost working. It can read from a service which supplies all the entity data already configured (using Services on another Drupal site).
