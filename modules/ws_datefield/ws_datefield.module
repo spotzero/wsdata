@@ -38,7 +38,7 @@ function ws_datefield_wsfields_date_data_alter($data, $field) {
   else {
     foreach($data[LANGUAGE_NONE] as $value) {
       // Populate field data
-      _ws_datefield_populate_date_field_data($field_data, $value);
+      _ws_datefield_populate_date_field_data($field_data, $value, $repeat, $end_date);
     }
   }
 
@@ -53,6 +53,7 @@ function _ws_datefield_populate_date_field_data(&$field_data, &$value, $repeat =
   $field_data[$language][] = array(
     'value' => $value['value']->format(WS_DATEFIELD_DATE_VALUE_FORMAT),
     'timezone' => $value['value']->getTimezone()-getName(),
+    'offset' => $value['value']->getOffset(),
   );
   
   // Check for an end date
