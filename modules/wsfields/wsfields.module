@@ -296,7 +296,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
     }
 
     // Create a new processor
-    $processor = new $processor();
+    $processor = new $processor(array(), $entity);
 
     // Check the subclass of the processor
     if (!is_subclass_of($processor, 'WsData')) {
