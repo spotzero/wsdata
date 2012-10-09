@@ -19,9 +19,9 @@ define('WS_DATEFIELD_DATE_VALUE_FORMAT', 'Y-m-d H:i:s');
  *        )
  *      );
  *
- * Prepares data for the 'date' field type
+ * Prepares data for the 'datetime' field type
  */
-function ws_datefield_wsfields_date_data_alter($data, $field) {
+function ws_datefield_wsfields_datetime_data_alter($data, $field) {
 
   // @todo check the field settings to know if the repeat rules or end dates are enabled on this field
   // @todo determine if the offset needs to be in the field value or not
@@ -32,14 +32,14 @@ function ws_datefield_wsfields_date_data_alter($data, $field) {
     foreach($data as $language => $values) {
       foreach ($values as $value) {
         // Populate the field data
-        _ws_datefield_populate_date_field_data($field_data, $value, $repeat, $end_date, $language);
+        _ws_datefield_populate_datetime_field_data($field_data, $value, $repeat, $end_date, $language);
       }
     }
   }
   else {
     foreach($data[LANGUAGE_NONE] as $value) {
       // Populate field data
-      _ws_datefield_populate_date_field_data($field_data, $value, $repeat, $end_date);
+      _ws_datefield_populate_datetime_field_data($field_data, $value, $repeat, $end_date);
     }
   }
 
@@ -50,7 +50,7 @@ function ws_datefield_wsfields_date_data_alter($data, $field) {
 /**
  * Build the field array
  */
-function _ws_datefield_populate_date_field_data(&$field_data, &$value, $repeat = FALSE, $end_date = FALSE, $language = LANGUAGE_NONE) {
+function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repeat = FALSE, $end_date = FALSE, $language = LANGUAGE_NONE) {
   $field_data[$language][] = array(
     'value' => $value['value']->format(WS_DATEFIELD_DATE_VALUE_FORMAT),
     'timezone' => $value['value']->getTimezone()-getName(),
@@ -73,9 +73,9 @@ function _ws_datefield_populate_date_field_data(&$field_data, &$value, $repeat =
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  *
- * Prepares data for the 'datetime' field type
+ * Prepares data for the 'date' field type
  */
-function ws_datefield_wsfields_datetime_data_alter() {
+function ws_datefield_wsfields_date_data_alter() {
   // @todo
 }
 
