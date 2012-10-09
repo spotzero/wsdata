@@ -11,6 +11,12 @@
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
 function ws_entityreference_wsfields_entityreference_data_alter($data, $instance) {
-  $field[LANGUAGE_NONE][] = array('target_id' => $data);
+  if (!is_array($data)) {
+    $field[LANGUAGE_NONE][] = array('target_id' => $data);
+  } else {
+    foreach($data as $d) {
+      $field[LANGUAGE_NONE][] = array('target_id' => $d);
+    }
+  }
   return $field;
 }
