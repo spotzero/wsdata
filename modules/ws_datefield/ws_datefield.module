@@ -27,8 +27,9 @@ function ws_datefield_wsfields_datetime_data_alter($data, $field) {
   // @todo determine if the offset needs to be in the field value or not
   $repeat = FALSE;
   $end_date = FALSE;
-  
-  if ($field['storage']['settings']['translated']) {
+  $field_data = array();
+
+  if (isset($field['storage']['settings']['translated']) and $field['storage']['settings']['translated']) {
     foreach($data as $language => $values) {
       foreach ($values as $value) {
         // Populate the field data
@@ -53,7 +54,7 @@ function ws_datefield_wsfields_datetime_data_alter($data, $field) {
 function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repeat = FALSE, $end_date = FALSE, $language = LANGUAGE_NONE) {
   $field_data[$language][] = array(
     'value' => $value['value']->format(WS_DATEFIELD_DATE_VALUE_FORMAT),
-    'timezone' => $value['value']->getTimezone()-getName(),
+    'timezone' => $value['value']->getTimezone()->getName(),
     'offset' => $value['value']->getOffset(),
   );
   
