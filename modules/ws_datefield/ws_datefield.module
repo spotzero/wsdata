@@ -24,6 +24,7 @@ define('WS_DATEFIELD_DATE_VALUE_FORMAT', 'Y-m-d H:i:s');
 function ws_datefield_wsfields_date_data_alter($data, $field) {
 
   // @todo check the field settings to know if the repeat rules or end dates are enabled on this field
+  // @todo determine if the offset needs to be in the field value or not
   $repeat = FALSE;
   $end_date = FALSE;
   
