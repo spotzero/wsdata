@@ -15,9 +15,11 @@ abstract class WsData {
   // Storage for error information
   protected $error;
 
-  public function __construct($data = array(), &$entity = NULL) {
+  public function __construct($data = NULL, &$entity = NULL) {
     $this->entity = $entity;
-    $this->addData($data);
+    if (isset($data) and $data) {
+      $this->addData($data);
+    }
   }
 
   // Return any error messages or error data
