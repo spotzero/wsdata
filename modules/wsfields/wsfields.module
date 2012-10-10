@@ -249,8 +249,10 @@ function _wsfields_general_data_alter(&$data, &$field) {
  *  Returns the formatted field data, FALSE otherwise.
  */
 function wsfields_data_load($entity_type, $field, $entity) {
+  if (WSFIELDS_DEBUG) debug("WSFields loading " . $entity->type . "->" . $field['field_name'] . " of type " . $field['type']);
 
   if (!isset($field['storage']['settings']['wsconfig_name'])) {
+    if (WSFIELDS_DEBUG) debug("wsconfig_name not set, wsfield cannot continue.");
     return FALSE;
   }
 
@@ -263,7 +265,10 @@ function wsfields_data_load($entity_type, $field, $entity) {
   // Load the web service configuration
   $wsconfig = wsconfig_load_by_name($wsconfig_name);
 
-  if (is_object($wsconfig)) {
+  if (!is_object($wsconfig)) {
+    if (WSFIELDS_DEBUG) debug("Couldn't find wsconfig: " . $wsconfig_name);
+    return FALSE;
+  } else {
     // Get the method name for token replacement
     $remotemethod = $wsconfig->data['read_data_method'];
 
@@ -281,7 +286,8 @@ function wsfields_data_load($entity_type, $field, $entity) {
         $value = $ws_keys[$entity_property];
       } elseif (isset($entity->$entity_property) and !empty($entity->$entity_property)) {
         $value = $entity->$entity_property;
-      } else { 
+      } else {
+        if (WSFIELDS_DEBUG) debug("Couldn't find pattern: " . $pattern);
         return FALSE;
       }
 
@@ -336,6 +342,4 @@ function wsfields_data_load($entity_type, $field, $entity) {
       }
     }
   }
-
-  return FALSE;
 }

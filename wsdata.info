@@ -5,3 +5,4 @@ version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = entity
+files[] = wsdata_simple_xml.wsdata.processor.inc
