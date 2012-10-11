@@ -74,20 +74,20 @@ function ws_addressfield_wsconfig_processor_info() {
 function _ws_addressfield_map_address(&$data) {
   $address = array();
   // @todo replace with call to field['columns'] to get container map
-  $address['country'] = $data['country'];
-  $address['administrative_area'] = $data['administrative_area'];
-  $address['sub_administrative_area'] = $data['sub_administrative_area'];
-  $address['locality'] = $data['locality'];
-  $address['dependent_locality'] = $data['dependent_locality'];
-  $address['postal_code'] = $data['postal_code'];
-  $address['thoroughfare'] = $data['thoroughfare'];
-  $address['premise'] = $data['premise'];
-  $address['sub_premise'] = $data['sub_premise'];
-  $address['organisation_name'] = $data['organisation_name'];
-  $address['name_line'] = $data['name_line'];
-  $address['first_name'] = $data['first_name'];
-  $address['last_name'] = $data['last_name'];
-  $address['data'] = $data['data'];
+  $address['country'] = isset($data['country']) ? $data['country'] : NULL;
+  $address['administrative_area'] = isset($data['administrative_area']) ? $data['administrative_area'] : NULL;
+  $address['sub_administrative_area'] = isset($data['sub_administrative_area']) ? $data['sub_administrative_area'] : NULL;
+  $address['locality'] = isset($data['locality']) ? $data['locality'] : NULL;
+  $address['dependent_locality'] = isset($data['dependent_locality']) ? $data['dependent_locality'] : NULL;
+  $address['postal_code'] = isset($data['postal_code']) ? $data['postal_code'] : NULL;
+  $address['thoroughfare'] = isset($data['thoroughfare']) ? $data['thoroughfare'] : NULL;
+  $address['premise'] = isset($data['premise']) ? $data['premise'] : NULL;
+  $address['sub_premise'] = isset($data['sub_premise']) ? $data['sub_premise'] : NULL;
+  $address['organisation_name'] = isset($data['organisation_name']) ? $data['organisation_name'] : NULL;
+  $address['name_line'] = isset($data['name_line']) ? $data['name_line'] : NULL;
+  $address['first_name'] = isset($data['first_name']) ? $data['first_name'] : NULL;
+  $address['last_name'] = isset($data['last_name']) ?  $data['last_name'] : NULL;
+  $address['data'] = isset($data['data']) ? $data['data'] : NULL;
   
   return $address;
 }

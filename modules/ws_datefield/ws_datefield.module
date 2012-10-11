@@ -22,11 +22,10 @@ define('WS_DATEFIELD_DATE_VALUE_FORMAT', 'Y-m-d H:i:s');
  * Prepares data for the 'datetime' field type
  */
 function ws_datefield_wsfields_datetime_data_alter($data, $field) {
-
   // @todo check the field settings to know if the repeat rules or end dates are enabled on this field
   // @todo determine if the offset needs to be in the field value or not
-  $repeat = FALSE;
-  $end_date = FALSE;
+  $repeat = TRUE;
+  $end_date = TRUE;
   $field_data = array();
 
   if (isset($field['storage']['settings']['translated']) and $field['storage']['settings']['translated']) {
@@ -52,23 +51,25 @@ function ws_datefield_wsfields_datetime_data_alter($data, $field) {
  * Build the field array
  */
 function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repeat = FALSE, $end_date = FALSE, $language = LANGUAGE_NONE) {
+
   $field_data[$language][] = array(
     'value' => $value['value']->format(WS_DATEFIELD_DATE_VALUE_FORMAT),
     'timezone' => $value['value']->getTimezone()->getName(),
     'offset' => $value['value']->getOffset(),
   );
-  
+
+  // Check for the repeat rule
+  if ($repeat and isset($value['rrule'])) {
+    // Since we're always adding to the end of the array, we can just use count -1
+    $field_data[$language][count($field_data[$language]) -1]['rrule2'] = $value['rrule'];    
+  }  
+
   // Check for an end date
   if ($end_date and isset($value['value2'])) {
     // Since we're always adding to the end of the array, we can just use count -1
     $field_data[$language][count($field_data[$language]) -1]['value2'] = $value['value2']->format(WS_DATEFIELD_DATE_VALUE_FORMAT);
   }
   
-  // Check for the repeat rule
-  if ($repeat and isset($value['rrule'])) {
-    // Since we're always adding to the end of the array, we can just use count -1
-    $field_data[$language][count($field_data[$language]) -1]['value2'] = $value['value2']->format(WS_DATEFIELD_DATE_VALUE_FORMAT);    
-  }
 }
 
 /**

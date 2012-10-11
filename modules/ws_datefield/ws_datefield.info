@@ -8,5 +8,3 @@ package = Web Service Data
 
 dependencies[] = date
 dependencies[] = wsfields
-
-files[] = ws_datefield.wsdata.processor.inc

@@ -9,4 +9,3 @@ package = Web Service Data
 dependencies[] = addressfield
 dependencies[] = wsfields
 
-files[] = ws_addressfield.wsdata.processor.inc
