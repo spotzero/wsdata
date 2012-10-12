@@ -61,7 +61,7 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
   // Check for the repeat rule
   if ($repeat and isset($value['rrule'])) {
     // Since we're always adding to the end of the array, we can just use count -1
-    $field_data[$language][count($field_data[$language]) -1]['rrule2'] = $value['rrule'];    
+    $field_data[$language][count($field_data[$language]) -1]['rrule'] = $value['rrule'];    
   }  
 
   // Check for an end date
