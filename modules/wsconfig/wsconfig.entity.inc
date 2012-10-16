@@ -21,6 +21,17 @@ class WsConfig extends Entity {
     }
   }
 
+  public function getMethod($type, $replacement = array()) {
+    if (!isset($this->data[$type . '_data_method'])) {
+      return FALSE;
+    }
+    $method = $this->data[$type . '_data_method'];
+    foreach ($replacement as $token => $replace) {
+       $method = str_replace( $token, $replace, $method);
+    }
+    return $method;
+  }
+
   protected function defaultLabel() {
     return $this->title;
   }

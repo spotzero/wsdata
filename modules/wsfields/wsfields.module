@@ -269,8 +269,6 @@ function wsfields_data_load($entity_type, $field, $entity) {
     if (WSFIELDS_DEBUG) debug("Couldn't find wsconfig: " . $wsconfig_name);
     return FALSE;
   } else {
-    // Get the method name for token replacement
-    $remotemethod = $wsconfig->data['read_data_method'];
 
     // Replace the tokens in the "read" pattern with entity property values
     $remotekeys = array();
@@ -278,6 +276,8 @@ function wsfields_data_load($entity_type, $field, $entity) {
     if ( isset($entity->ws_keys) and !empty($entity->ws_keys)) {
       $ws_keys = unserialize($entity->ws_keys);
     }
+
+    $replacements = array();
 
     foreach ($propertymap as $pattern => $entity_property) {
       // If we don't have a value for a key, exit since we will not be able to resolve the data
@@ -292,8 +292,11 @@ function wsfields_data_load($entity_type, $field, $entity) {
       }
 
       // Replace the placeholders in the URL pattern with values from property key map
-      $remotemethod = str_replace($pattern, $value, $remotemethod);
+      $replacements[$pattern] = $value;
     }
+
+    // Get the method name for token replacement
+    $remotemethod = $wsconfig->getMethod('read', $replacements);
 
     if (!class_exists($processor)) {
       watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
