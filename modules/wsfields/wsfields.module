@@ -219,7 +219,8 @@ function _wsfields_general_data_alter(&$data, &$field) {
       [language2][0] = data1
       [language2][1] = data2
     */
-    if ($field['storage']['settings']['translated']) {
+    $field_data = array();
+    if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
       foreach($data as $language => $values) {
         foreach ($values as $value) {
           $field_data[$language][] = array('value' => $value);

@@ -28,7 +28,7 @@ function ws_datefield_wsfields_datetime_data_alter($data, $field) {
   $end_date = TRUE;
   $field_data = array();
 
-  if (isset($field['storage']['settings']['translated']) and $field['storage']['settings']['translated']) {
+  if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
     foreach($data as $language => $values) {
       foreach ($values as $value) {
         // Populate the field data
