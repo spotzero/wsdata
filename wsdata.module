@@ -72,6 +72,10 @@ abstract class WsData {
 abstract class WsConnector {
   protected $endpoint;
 
+  public function getEndpoint() {
+    return $this->endpoint;
+  }
+
   public function __construct($endpoint) {
     $this->endpoint = $endpoint;
   }
