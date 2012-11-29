@@ -37,7 +37,7 @@ class WsConfig extends Entity {
   }
 
   protected function defaultUri() {
-    return array('path' => 'wsconfig/' . $this->wsconfig_id);
+    return array('path' => 'wsconfig/' . $this->name);
   }
 }
 
