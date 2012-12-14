@@ -19,6 +19,17 @@ function wsconfig_form_wrapper($wsconfig) {
   return drupal_get_form('wsconfig_edit_form', $wsconfig);
 }
 
+/**
+ * Form callback wrapper: view a wsconfig.
+ *
+ * @param $wsconfig
+ *   The wsconfig object being viewed by this form.
+ *
+ * @see wsconfig_view_form()
+ */
+function wsconfig_view_form_wrapper($wsconfig) {
+  return drupal_get_form('wsconfig_view_form', $wsconfig);
+}
 
 /**
  * Form callback wrapper: delete a wsconfig.
@@ -65,40 +76,19 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       'source' => array('title'),
     ),
   );
-  
-  $form['data']['create_data_method'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Create Data Method Name'),
-    '#description' => t('The method name for creating data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#default_value' => !empty($wconfig->data['create_data_method']) ? $wsconfig->data['create_data_method'] : '',
-  );
-  $form['data']['read_data_method'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Load Data Method Name'),
-    '#description' => t('The method name for retrieving data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#default_value' => !empty($wsconfig->data['read_data_method']) ? $wsconfig->data['read_data_method'] : '',
-  );
-  $form['data']['update_data_method'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Update Data Method Name'),
-    '#description' => t('The method name for updating data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#default_value' => !empty($wsconfig->data['update_data_method']) ? $wsconfig->data['update_data_method'] : '',
-  );
-  $form['data']['delete_data_method'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Delete Data Method Name'),
-    '#description' => t('The method name for deleting data. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course'),
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#default_value' => !empty($wsconfig->data['delete_data_method']) ? $wsconfig->data['delete_data_method'] : '',
-  );
-  
+
+  foreach ($wsconfig->getOperations() as $operation) {
+    $op = $operation . '_data_method';
+    $op_name = ucfirst($operation);
+    $form['data'][$op] = array(
+      '#type' => 'textfield',
+      '#title' => t('!NAME Data Method Name', array('!NAME' => $op_name)),
+      '#description' => t('The method call for !OP. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course', array('!OP' => $operation)),
+      '#size' => 80,
+      '#maxlength' => 255,
+      '#default_value' => !empty($wsconfig->data[$op]) ? $wsconfig->data[$op] : '',
+    );
+  }
   // Add the field related form elements.
   $form_state['wsconfig'] = $wsconfig;
   field_attach_form('wsconfig', $wsconfig, $form, $form_state);
@@ -161,11 +151,10 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
   $wsconfig = entity_ui_controller('wsconfig')->entityFormSubmitBuildEntity($form, $form_state);
 
   // Save the wsconfig and go back to the list of wsconfigs
-  $wsconfig->data['read_data_method'] = $wsconfig->read_data_method;
-  $wsconfig->data['create_data_method'] = $wsconfig->create_data_method;
-  $wsconfig->data['update_data_method'] = $wsconfig->update_data_method;
-  $wsconfig->data['delete_data_method'] = $wsconfig->delete_data_method;
-
+  foreach ($wsconfig->getOperations() as $operation) {
+    $op = $operation . '_data_method';
+    $wsconfig->data[$op] = $wsconfig->$op;
+  }
   
   
   // Add in created and changed times.
@@ -186,6 +175,119 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
  */
 function wsconfig_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/content/wsconfig/wsconfig/' . $form_state['wsconfig']->wsconfig_id . '/delete';
+}
+
+
+/**
+ * Form callback: to view a wsconfig.
+ *
+ * @param $wsconfig
+ *   The wsconfig to use to view 
+ *
+ */
+function wsconfig_view_form($form, &$form_state, $wsconfig) {
+  $form_state['wsconfig'] = $wsconfig;
+  $ws_endpoint = wsconfig_get_types($wsconfig->type);
+  
+  //ws endpoint display
+  $form['endpoint'] = array(
+    '#type' => 'item',
+    '#title' => t('Endpoint'),
+    '#markup' => $wsconfig->type . ' (' . $ws_endpoint->data['endpoint'] . ')',
+  );
+
+  foreach ($wsconfig->getOperations() as $op) {
+    $method = $wsconfig->getMethod($op);
+    if(!empty($method)) {
+      $form[$op] = array(
+        '#type' => 'fieldset',
+        '#title' => t(ucfirst($op)),
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+      );
+
+      $form[$op]['method'] = array(
+        '#type' => 'item',
+        '#title' => t(ucfirst($op)),
+        '#markup' => $method,
+      );
+
+      $matches = array();
+      preg_match_all("/(%\w+)/", $method, $matches);
+
+      foreach ($matches[0] as $var) {
+        $form[$op][$var] = array(
+          '#type' => 'textfield',
+          '#title' => $var,
+          '#required' => TRUE,
+          '#default_value' => isset($form_state['values'][$var]) ? $form_state['values'][$var] : '',
+        );
+      }
+
+      $form[$op]['arguments'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Arguments'),
+        '#description' => t('Arguments as a serialized PHP array'),
+        '#default_value' => isset($form_state['values']['arguments']) ? $form_state['values']['arguments'] : '',
+      );
+
+      $form[$op]['options'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Options'),
+        '#description' => t('Options as a serialized PHP array  (Example: a:1:{s:7:"headers";a:1:{s:12:"Content-Type";s:16:"application/json";}} )'),
+        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : '',
+      );
+
+      $form[$op]['submit'] = array(
+        '#type' => 'submit',
+        '#value' => $op,
+      );
+    }
+  } 
+
+  return $form;
+}
+
+
+/**
+ * Submit callback for wsconfig_view_form
+ */
+function wsconfig_view_form_submit($form, &$form_state) {
+  $wsconfig = $form_state['wsconfig'];
+
+  if (isset($form_state['clicked_button']['#value'])) {
+    $op = $form_state['clicked_button']['#value'];
+    if (in_array($op, $wsconfig->getOperations())) {
+      $variables = array();
+      foreach ($form_state['values'] as $key => $value) {
+        if (strpos($key, '%') === 0) {
+           $variables[$key] = $value;
+        }
+      }
+      $arguments = array();
+      if (isset($form_state['values']['arguments'])) {
+        $arguments = unserialize($form_state['values']['arguments']);
+      }
+
+      $options = array();
+      if (isset($form_state['values']['options'])) {
+        $options = unserialize($form_state['values']['options']);
+      }
+      $method = $wsconfig->getMethod($op, $variables);
+      drupal_set_message(
+        t('Method: !method<br>Variables: !variables<br>Arguments: !arguments<br>Options: !options<br>Result: !results',
+          array(
+            '!method' => $method,
+            '!variables' => print_r($variables, TRUE),
+            '!arguments' => print_r($arguments, TRUE),
+            '!options' => print_r($options, TRUE),
+            '!results' => htmlspecialchars($wsconfig->connector->wscall($op, $method, $arguments, $options)),
+          )
+        )
+      );
+      $form_state['rebuild'] = TRUE;
+    }
+  }
 }
 
 
