@@ -294,7 +294,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
       $value = FALSE;
       if (isset($ws_keys[$entity_property])) {
         $value = $ws_keys[$entity_property];
-      } elseif (isset($entity->$entity_property) and !empty($entity->$entity_property)) {
+      } elseif (isset($entity->$entity_property)) {
         $value = $entity->$entity_property;
       } else {
         if (WSFIELDS_DEBUG) debug("Couldn't find pattern: " . $pattern);

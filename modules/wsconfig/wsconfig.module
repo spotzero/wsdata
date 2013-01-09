@@ -91,6 +91,7 @@ function wsconfig_entity_info() {
       ),
       'entity keys' => array(
         'id' => 'wsconfig_id',
+        'name' => 'name',
         'bundle' => 'type',
       ),
       'bundle keys' => array(

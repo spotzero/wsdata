@@ -32,12 +32,16 @@ class WsConfig extends Entity {
     return $method;
   }
 
+  public function getOperations() {
+    return array('create', 'read', 'update', 'delete');
+  }
+
   protected function defaultLabel() {
     return $this->title;
   }
 
   protected function defaultUri() {
-    return array('path' => 'wsconfig/' . $this->wsconfig_id);
+    return array('path' => 'wsconfig/' . $this->name);
   }
 }
 
@@ -176,11 +180,13 @@ class WsConfigUIController extends EntityDefaultUIController {
       //'title' => 'Title',
       'title callback' => 'wsconfig_page_title',
       'title arguments' => array(1),
-      'page callback' => 'wsconfig_page_view',
+      'page callback' => 'wsconfig_view_form_wrapper',
       'page arguments' => array(1),
       'access callback' => 'wsconfig_access',
       'access arguments' => array('view', 1),
       'type' => MENU_CALLBACK,
+      'file' => 'wsconfig.admin.inc',
+      'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
     return $items;
   }
