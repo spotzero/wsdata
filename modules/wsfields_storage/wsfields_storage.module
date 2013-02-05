@@ -35,6 +35,8 @@ function wsfields_storage_entity_has_wsfields($entity_type) {
   if (!$ret) {
     $ret = _wsfields_storage_entity_has_wsfields($entity_type);
     cache_set('wsfields_storage_entity_has_wsfields:' . $entity_type, $ret, 'cache');
+  } else {
+    $ret = $ret->data;
   }
   return $ret;
 }
