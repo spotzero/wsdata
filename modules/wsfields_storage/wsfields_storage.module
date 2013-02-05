@@ -5,7 +5,64 @@
  * Storage controller definitions
  *
  * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
+ * @author David Pascoe-Deslauriers <dpascoed@coldfrontlabs.ca>
  */
+
+// If configure correctly, replace the default cache class for
+// fields with the wsfield storage versions
+if (class_exists('WsfieldStorageDrupalDatabaseCache')) {
+  $class = variable_get('cache_class_cache_field');
+  if (!isset($class)) {
+    $class = variable_get('cache_default_class', 'DrupalDatabaseCache');
+  }
+
+  if ($class != 'WsfieldStorageDrupalDatabaseCache' and $class != 'WsfieldStorageMemCacheDrupal') {
+    if ($class == 'MemCacheDrupal') {
+      variable_set('cache_class_cache_field', 'WsfieldStorageMemCacheDrupal');
+    } else {
+      variable_set('cache_class_cache_field', 'WsfieldStorageDrupalDatabaseCache');
+    }
+  }
+}
+
+
+/**
+ * Returns whether the entity_type has a wsfield attached to it
+ * and cache the result
+ */
+function wsfields_storage_entity_has_wsfields($entity_type) {
+  $ret = cache_get('wsfields_storage_entity_has_wsfields:' . $entity_type, 'cache');
+  if (!$ret) {
+    $ret = _wsfields_storage_entity_has_wsfields($entity_type);
+    cache_set('wsfields_storage_entity_has_wsfields:' . $entity_type, $ret, 'cache');
+  }
+  return $ret;
+}
+
+/**
+ * Returns whether the entity_type has a wsfield attached to it
+ */
+function _wsfields_storage_entity_has_wsfields($entity_type) {
+  $fields = field_info_fields();
+  $wsfields = array();
+  foreach ($fields as $key => $field) {
+    if ($field['storage']['type'] == 'wsfields_storage') {
+      $wsfields[$key] = $field;
+    }
+  }
+
+  $instances = field_info_instances($entity_type);
+  foreach ($instances as $instance) {
+    foreach ($instance as $field) {
+      if (isset($wsfields[$field['field_name']])) {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}
+
+
 
 /**
  * Implements hook_field_storage_info().
@@ -45,24 +102,22 @@ function wsfields_storage_field_storage_details($field) {
  * Implements hook_field_storage_create_field().
  */
 function wsfields_storage_field_storage_create_field($field) {
-  // @todo act on when a new field is created
-  // Do we need to do anything?
+  // Act on when a new field is created
+  cache_clear_all('wsfields_storage_entity_has_wsfields:*', 'cache', TRUE);
 }
 
 /**
  * Implements hook_field_storage_update_field().
  */
 function wsfields_storage_field_storage_update_field($field, $prior_field, $has_data) {
-  // Nothing right now
-  // @todo something
+  cache_clear_all('wsfields_storage_entity_has_wsfields:*', 'cache', TRUE);
 }
 
 /**
  * Implements hook_field_storage_delete_field().
  */
 function wsfields_storage_field_storage_delete_field($field) {
-  // Nothing right now
-  // @todo something
+  cache_clear_all('wsfields_storage_entity_has_wsfields:*', 'cache', TRUE);
 }
 
 /**
@@ -83,7 +138,7 @@ function wsfields_storage_field_storage_delete_revision($entity_type, $entity, $
  * Implements hook_field_storage_delete_instance().
  */
 function wsfields_storage_field_storage_delete_instance($instance) {
-  // @todo something
+  cache_clear_all('wsfields_storage_entity_has_wsfields:*', 'cache', TRUE);
 }
 
 /**
