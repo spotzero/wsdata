@@ -70,6 +70,8 @@ abstract class WsData {
  * Class definition for Web Service Connector
  */
 abstract class WsConnector {
+  private $expires;
+
   protected $endpoint;
 
   public function getEndpoint() {
@@ -78,23 +80,28 @@ abstract class WsConnector {
 
   public function __construct($endpoint) {
     $this->endpoint = $endpoint;
+    $this->expires = 0;
   }
 
   abstract public function wscall($type, $method, $argument, $options);
 
   public function create( $method, $object, $options = array()) {
+    $this->expires = 0;
     return $this->wscall('create', $method, $object, $options);
   }
 
   public function read( $method, $id, $options = array()) {
+    $this->expires = 0;
     return $this->wscall('read', $method, $id, $options);
   }
 
   public function update ( $id, $method, $object, $options = array()) {
+    $this->expires = 0;
     return $this->wscall('update', $method, array( $id, $object), $options);
   }
 
   public function delete ( $id, $method, $options = array()) {
+    $this->expires = 0;
     return $this->wscall('delete', $method, $id, $options);
   }
 }
