@@ -70,8 +70,7 @@ abstract class WsData {
  * Class definition for Web Service Connector
  */
 abstract class WsConnector {
-  private $expires;
-
+  protected $expires;
   protected $endpoint;
 
   public function getEndpoint() {
@@ -103,5 +102,13 @@ abstract class WsConnector {
   public function delete ( $id, $method, $options = array()) {
     $this->expires = 0;
     return $this->wscall('delete', $method, $id, $options);
+  }
+
+  public function expires() {
+    if ($this->expires > 0) {
+      return $this->expires;
+    } else {
+      return FALSE;
+    }
   }
 }
