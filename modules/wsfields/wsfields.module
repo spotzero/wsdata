@@ -8,6 +8,22 @@
 define('WSFIELDS_DEBUG', variable_get('wsfields_debug', FALSE));
 
 /**
+* Implements hook_rules_event_info().
+*/
+function wsfields_rules_event_info() {
+  return array(
+    'wsfields_entity_update' => array(
+      'group' => t('wsfields'),
+      'module' => 'wsfields',
+      'label' => t('After field data is updated'),
+      'variables' => array(
+        'entity' => array('type' => 'entity', 'label' => t('updated entity')),
+      ),
+    ),
+  );
+}
+
+/**
  * Implements hook_permission().
  */
 function wsfields_permission() {
@@ -271,7 +287,16 @@ function wsfields_data_load($entity_type, $field, $entity) {
   $remotename = $field['storage']['settings']['remotekey'];
   $processor = $field['storage']['settings']['processor'];
   $propertymap = $field['storage']['settings']['propertymap']['read'];
-    
+
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  $cid = 'wsfield:' . $entity_type . ':' . $id . ':' . $field['field_name'];
+  $expirecid = 'wsfield_expire:' . $entity_type . ':' . $id;
+
+  $cachefield = cache_get($cid, 'cache_field');
+  if ($cachefield) {
+    return $cachefield->data;
+  }
+
   // Load the web service configuration
   $wsconfig = wsconfig_load_by_name($wsconfig_name);
 
@@ -350,6 +375,18 @@ function wsfields_data_load($entity_type, $field, $entity) {
           if (!drupal_is_cli()) {
             dpm($data);
           }
+        }
+        rules_invoke_event('wsfields_entity_update', $entity);
+        if (isset($wsconfig->connector->expires)) {
+          $entitycacheexpire = cache_get($expirecid);
+          if ($entitycacheexpire) {
+            if ($wsconfig->connector->expires < $entitycacheexpire->data) {
+              cache_set($expirecid, $wsconfig->connector->expires);
+            }
+          } else {
+            cache_set($expirecid, $wsconfig->connector->expires);
+          }
+          cache_set($cid, $data, 'cache_field', $wsconfig->connector->expires);
         }
         return $data;
       }

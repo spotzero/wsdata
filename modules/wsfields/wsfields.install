@@ -13,4 +13,3 @@
 function wsfields_uninstall() {
   variable_del('wsfields_debug');
 }
-
