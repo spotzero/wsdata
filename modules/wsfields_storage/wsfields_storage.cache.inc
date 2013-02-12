@@ -13,7 +13,7 @@ class WsfieldStorageDrupalDatabaseCache extends DrupalDatabaseCache {
       if ($expire) {
         $expire = $expire->data;
       } else {
-        $expire = time() + 300;
+        $expire = time() + variable_get('wsfields_min_expire', 300);
       }
     }
     parent::set($cid, $data, $expire);
@@ -35,7 +35,7 @@ if (class_exists('MemCacheDrupal')) {
         if ($expire) {
           $expire = $expire->data;
         } else {
-          $expire = time() + 300;
+          $expire = time() + variable_get('wsfields_min_expire', 300);
         }
       }
       parent::set($cid, $data, $expire, $headers);

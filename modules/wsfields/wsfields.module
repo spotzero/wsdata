@@ -8,22 +8,6 @@
 define('WSFIELDS_DEBUG', variable_get('wsfields_debug', FALSE));
 
 /**
-* Implements hook_rules_event_info().
-*/
-function wsfields_rules_event_info() {
-  return array(
-    'wsfields_entity_update' => array(
-      'group' => t('wsfields'),
-      'module' => 'wsfields',
-      'label' => t('After field data is updated'),
-      'variables' => array(
-        'entity' => array('type' => 'entity', 'label' => t('updated entity')),
-      ),
-    ),
-  );
-}
-
-/**
  * Implements hook_permission().
  */
 function wsfields_permission() {
@@ -376,20 +360,37 @@ function wsfields_data_load($entity_type, $field, $entity) {
             dpm($data);
           }
         }
-        rules_invoke_event('wsfields_entity_update', $entity);
+
+        // Update the expires information as needed
         if ($wsconfig->connector->expires()) {
+          // If we have expires information, compare it to the store info
           $entitycacheexpire = cache_get($expirecid);
           if ($entitycacheexpire) {
+            // If it's sooner than the last valid expires, update the information.
             if ($wsconfig->connector->expires() < $entitycacheexpire->data) {
-              cache_set($expirecid, $wsconfig->connector->expires());
+              module_invoke_all('wsfields_entity_expires', $entity_type, $id, $wsconfig->connector->expires());
             }
+          // If it's not set, update the information
           } else {
-            cache_set($expirecid, $wsconfig->connector->expires());
+            module_invoke_all('wsfields_entity_expires', $entity_type, $id, $wsconfig->connector->expires());
           }
+          // Cache this field, in case other fields attached to this entity have shorter expires times
           cache_set($cid, $data, 'cache_field', $wsconfig->connector->expires());
+
+        // If no expires info is available, cache for the minimum amount of time.
+        } else {
+          module_invoke_all('wsfields_entity_expires', $entity_type, $id, time() + variable_get('wsfields_min_expire', 300));
         }
         return $data;
       }
     }
   }
+}
+
+
+/**
+ * Implements hook_wsfields_entity_expires().
+ */
+function wsfields_wsfields_entity_expires($entity_type, $entity_id, $expire) {
+  cache_set('wsfield_expire:' . $entity_type . ':' . $entity_id, $expire);
 }

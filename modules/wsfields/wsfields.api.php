@@ -20,3 +20,10 @@
 function hook_wsfields_FIELD_TYPE_data_alter($data, $instance) {
   
 }
+
+/**
+ * Allows modules to log or otherwise deal with updates to entity expires information
+ */
+function hook_wsfields_entity_expires($entity_type, $entity_id, $expire) {
+
+}
