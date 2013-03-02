@@ -1,7 +1,6 @@
 name = Web Service Data Configuration
 description = Defines entities to store connection information for web services.
 core = 7.x
-version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = views

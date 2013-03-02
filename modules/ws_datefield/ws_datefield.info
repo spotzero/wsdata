@@ -1,9 +1,6 @@
-; @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
-
 name = Web Service Fields - Date Field
 description = Support the 'date' suite of data formats with web service fields
 core = 7.x
-version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = date

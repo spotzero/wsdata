@@ -1,7 +1,6 @@
 name = Web Service Data Fields
 description = Fields powered by web services
 core = 7.x
-version = 7.x-1.0-dev
 package = Web Service Data
 
 dependencies[] = field
