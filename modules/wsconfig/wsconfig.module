@@ -344,12 +344,16 @@ function wsconfig_get_list_by_name() {
 /**
  * Gets the list of web service configurations with tokens
  */
-function wsconfig_get_list_tokens() {
+function wsconfig_get_list_tokens($wsconfig = "") {
 
   // @todo add caching layer?
   $query = db_select('wsconfig', 'w');
-  $query->fields('w', array('wsconfig_id', 'data'))
+  $query->fields('w', array('name', 'data'))
         ->orderBy('name', 'DESC');
+
+  if (!empty($wsconfig)) {
+    $query->condition('name', $wsconfig);
+  }
   
   $result = $query->execute();
 
@@ -358,14 +362,15 @@ function wsconfig_get_list_tokens() {
   while($record = $result->fetchObject()) {
     $data = unserialize($record->data);
     $tokens = array();
-    foreach ($data as $call) {
+    foreach ($data as $calltitle => $call) {
       $matches = array();
-      preg_match_all("/%[a-z0-9]+/", $call, $matches);
-      $tokens = array_unique(array_merge($tokens, $matches[0]));
+      preg_match_all("/%[a-z0-9_]+/", $call, $matches);
+      if (count($matches[0]) > 0) {
+        $calltitle = explode('_data_method', $calltitle);
+        $list[$record->name][$calltitle[0]] = $matches[0];
+      }
     }
-    $list[$record->wsconfig_id] = $tokens;
   }
-
   return $list;
 }
 
