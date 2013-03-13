@@ -9,6 +9,47 @@
  */
 
 /**
+ *  Implements hook_menu().
+ */
+function wsfields_storage_menu() {
+  $items = array();
+
+  $items['admin/config/services/wsfields_storage'] = array(
+    'title' => t('WSField Storage Fields and Settings'),
+    'description' => t('Configure wsfield fields.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wsfields_storage_settings_form'),
+    'file' => 'wsfields_storage.admin.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer wsfields'),
+  );
+
+  $items['admin/config/services/wsfields_storage/edit'] = array(
+    'title' => t('WSField Storage Fields and Settings'),
+    'description' => t('Configure wsfield fields.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wsfields_storage_edit_field_form'),
+    'file' => 'wsfields_storage.admin.inc',
+    'type' => MENU_CALLBACK,
+    'access callback' => 'user_access',
+    'access arguments' => array('administer wsfields'),
+  );
+
+  $items['admin/config/services/wsfields_storage/delete'] = array(
+    'title' => t('WSField Storage Fields and Settings'),
+    'description' => t('Configure wsfield fields.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wsfields_storage_delete_field_form'),
+    'file' => 'wsfields_storage.admin.inc',
+    'type' => MENU_CALLBACK,
+    'access callback' => 'user_access',
+    'access arguments' => array('administer wsfields'),
+  );
+
+  return $items;
+}
+
+/**
  * Returns whether the entity_type has a wsfield attached to it
  * and cache the result
  */
