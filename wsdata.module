@@ -6,6 +6,29 @@
  */
 
 /**
+ * Implememnts hook_wsconfig_processor_info().
+ */
+function wsdata_wsconfig_processor_info() {
+  return array(
+    'wsdata_simple_xml_processor' => array(
+      'fields' => array(
+        'list_boolean' => 'WSData Simple XML Processor',
+        'number_decimal' => 'WSData Simple XML Processor',
+        'number_float' => 'WSData Simple XML Processor',
+        'number_integer' => 'WSData Simple XML Processor',
+        'list_float' => 'WSData Simple XML Processor',
+        'list_integer' => 'WSData Simple XML Processor',
+        'list_text' => 'WSData Simple XML Processor',
+        'text_long' => 'WSData Simple XML Processor',
+        'text_with_summary' => 'WSData Simple XML Processor',
+        'text' => 'WSData Simple XML Processor',
+      ),
+    ),
+  );
+}
+
+
+/**
  * Class definition for Web Service data parser
  */
 abstract class WsData {
