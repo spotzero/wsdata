@@ -115,6 +115,10 @@ function wsfields_storage_settings_form($form, &$form_state) {
   return $form;
 }
 
+
+/**
+ * Creates a new WSField
+ */
 function wsfields_storage_settings_form_submit($form, &$form_state) {
   $field_name = $form_state['values']['wsfields_storage_field_name'];
   $field_type = $form_state['values']['wsfields_storage_field_type'];
@@ -133,10 +137,18 @@ function wsfields_storage_settings_form_submit($form, &$form_state) {
   field_create_field($field);
 }
 
+
+/**
+ * Callback for checking that the field name doesn't already exist
+ */
 function _wsfields_storage_field_name_exists($value) {
   return (bool) field_read_fields(array('field_name' => $value), array('include_inactive' => TRUE));
 }
 
+
+/**
+ * WSField Storage Settings edit form
+ */
 function wsfields_storage_edit_field_form($form, &$form_state) {
   if (!isset($_GET['field'])) {
     return $form;
@@ -148,8 +160,6 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
     return $form;
   }
   $field = $fields[$field];
-
-  dpm($field);
 
   drupal_set_title(t('WSField Storage settings for @field', array('@field' => $field['field_name'])));
 
@@ -172,11 +182,11 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
     '#default_value' => $processor,
   );
 
-  $form['remotename'] = array (
+  $form['remotekey'] = array (
     '#type' => 'textfield',
-    '#title' => t('Web Service Remote Data Name'),
+    '#title' => t('Web Service Remote Data Key'),
     '#default_value' =>
-      isset($form_state['values']['remotename']) ? $form_state['values']['remotename'] :
+      isset($form_state['values']['remotekey']) ? $form_state['values']['remotekey'] :
         isset($field['storage']['settings']['remotekey']) ? $field['storage']['settings']['remotekey'] : '',
     '#description' => t('The name of field in the data return by the remote service.  Notes: Leave this field blank to select all of the data returned.  Seperate element names with a ":" to select nested elements.'),
   );
@@ -254,14 +264,54 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
   return $form;
 }
 
+
+/**
+ * Validate the changes to the field
+ * TODO: this shouldn't be empty
+ */
 function wsfields_storage_edit_field_form_validate($form, &$form_state) {
-
 }
 
+
+/**
+ * Save changes to the field
+ */
 function wsfields_storage_edit_field_form_submit($form, &$form_state) {
+  if (!isset($_GET['field'])) {
+    return $form;
+  }
 
+  $field = $_GET['field'];
+  $fields = field_info_fields();
+  if (!isset($fields[$field])) {
+    return $form;
+  }
+  $field = $fields[$field];
+
+  $field['storage']['settings']['processor'] = $form_state['values']['processor'];
+  $field['storage']['settings']['remotekey'] = $form_state['values']['remotekey'];
+  $field['storage']['settings']['translation'] = (bool)$form_state['values']['translation'];
+  $wsconfig_name = $field['storage']['settings']['wsconfig_name'] = $form_state['values']['wsconfig_name'];
+  $field['storage']['settings']['propertymap'] = array();
+
+  $wstokens = wsconfig_get_list_tokens();
+  $wstokens = $wstokens[$wsconfig_name];
+
+  foreach ($wstokens as $call => $tokens) {
+    foreach ($tokens as $token) {
+      $formfieldname = "$wsconfig_name-$call-$token";
+      $field['storage']['settings']['propertymap'][$call][$token] = $form_state['values'][$formfieldname];
+    }
+  }
+
+  field_update_field($field);
+  drupal_set_message(t('WSField Storage settings for @field have been updated', array('@field' => $field['field_name'])));
 }
 
+
+/**
+ *  WSField delete form
+ */
 function wsfields_storage_delete_field_form($form, &$form_state) {
   if (!isset($_GET['field'])) {
     return $form;
@@ -278,6 +328,10 @@ function wsfields_storage_delete_field_form($form, &$form_state) {
   return $form;
 }
 
+
+/**
+ * Delete's the field
+ */
 function wsfields_storage_delete_field_form_submit($form, &$form_state) {
   if (!isset($_GET['field'])) {
     return;
