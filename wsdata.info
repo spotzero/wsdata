@@ -5,3 +5,4 @@ package = Web Service Data
 
 dependencies[] = entity
 files[] = wsdata_simple_xml.wsdata.processor.inc
+files[] = wsdata_simple_json.wsdata.processor.inc

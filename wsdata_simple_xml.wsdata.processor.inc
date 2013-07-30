@@ -24,7 +24,7 @@ class wsdata_simple_xml_processor extends WsData {
 
 
    function accepts() {
-    return array();
+    return array('xml');
   }
 
   // XML Parsing helper function, converts nested XML objects into arrays

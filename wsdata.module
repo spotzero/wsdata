@@ -24,6 +24,20 @@ function wsdata_wsconfig_processor_info() {
         'text' => 'WSData Simple XML Processor',
       ),
     ),
+    'wsdata_simple_json_processor' => array(
+      'fields' => array(
+        'list_boolean' => 'WSData Simple JSON Processor',
+        'number_decimal' => 'WSData Simple JSON Processor',
+        'number_float' => 'WSData Simple JSON Processor',
+        'number_integer' => 'WSData Simple JSON Processor',
+        'list_float' => 'WSData Simple JSON Processor',
+        'list_integer' => 'WSData Simple JSON Processor',
+        'list_text' => 'WSData Simple JSON Processor',
+        'text_long' => 'WSData Simple JSON Processor',
+        'text_with_summary' => 'WSData Simple JSON Processor',
+        'text' => 'WSData Simple JSON Processor',
+      ),
+    ),
   );
 }
 

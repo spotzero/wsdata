@@ -37,7 +37,7 @@ class WsBean extends BeanPlugin {
       '#type' => 'select',
       '#title' => t('Web Service Config'),
       '#description' => t('The web service config to use to retrieve the data'),
-      '#options' => array(),
+      '#options' => wsconfig_get_list_by_name(),
       '#default_value' => isset($bean->settings['wsconfig']) ? $bean->settings['wsconfig'] : '',
     );
 
@@ -45,7 +45,7 @@ class WsBean extends BeanPlugin {
       '#type' => 'select',
       '#title' => t('Web Service Processor'),
       '#description' => t('The web service processor to parse the data'),
-      '#options' => array(),
+      '#options' => wsconfig_get_field_processors(),
       '#default_value' => isset($bean->settings['wsprocessor']) ? $bean->settings['wsprocessor'] : '',
     );
 
