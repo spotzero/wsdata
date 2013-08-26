@@ -11,7 +11,11 @@ class wsdata_solr_result_processor extends WsData {
     }
     $data = trim($data);
     $data = json_decode($data, TRUE);
-    return $data['response']['docs'];
+    $return = array(
+      'numFound' => $data['response']['numFound'],
+      'docs' => $data['response']['docs'],
+    );
+    return $return;
   }
 
   public function accepts() {
