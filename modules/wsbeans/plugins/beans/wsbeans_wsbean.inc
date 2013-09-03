@@ -62,6 +62,30 @@ class WsBean extends BeanPlugin {
    * Displays the bean.
    */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
+    $form = array('#theme' => $bean->settings['themehook']);
+
+    $wsconfig = wsconfig_load_by_name($bean->settings['wsconfig']);
+    if (!$wsconfig) {
+      $content['bean'][$bean->delta]['form']['#markup'] = t('Unable to load WSConfig @wsconfig', array('@wsconfig' => $bean->settings['wsconfig']));
+      return $content;
+    }
+
+    $processor = $bean->settings['wsprocessor'];
+    if (!class_exists($processor) or !is_subclass_of($processor, 'WsData')) {
+      $content['bean'][$bean->delta]['form']['#markup'] = t('Unable to load wsprocessor @wsprocessor', array('@wsprocessor' => $bean->settings['wsprocessor']));
+      return $content;
+    }
+
+    $url = $wsconfig->getMethod('read',array());
+    $data = $wsconfig->connector->read( $url, NULL);
+
+    // Create a new processor
+    $processor = new $processor($data);
+    foreach ($processor->data as $key => $val) {
+      $form['#' . $key] = $val;
+    }
+
+    $content['bean'][$bean->delta]['form'] = $form;
     return $content;
   }
 }
