@@ -9,7 +9,7 @@
 /**
  * Implememnts hook_wsconfig_processor_info().
  */
-function ndm_solr_data_wsconfig_processor_info() {
+function wsdata_solr_wsconfig_processor_info() {
   return array(
     'wsdata_solr_facet_processor' => array(),
     'wsdata_solr_result_processor' => array(),
