@@ -45,7 +45,7 @@ class WsBean extends BeanPlugin {
       '#type' => 'select',
       '#title' => t('Web Service Processor'),
       '#description' => t('The web service processor to parse the data'),
-      '#options' => wsconfig_get_field_processors(),
+      '#options' => wsconfig_get_form_processors(),
       '#default_value' => isset($bean->settings['wsprocessor']) ? $bean->settings['wsprocessor'] : '',
     );
 
@@ -62,7 +62,9 @@ class WsBean extends BeanPlugin {
    * Displays the bean.
    */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
-    $form = array('#theme' => $bean->settings['themehook']);
+    if (!empty($bean->settings['themehook'])) {
+      $form = array('#theme' => $bean->settings['themehook']);
+    }
 
     $wsconfig = wsconfig_load_by_name($bean->settings['wsconfig']);
     if (!$wsconfig) {
@@ -81,8 +83,13 @@ class WsBean extends BeanPlugin {
 
     // Create a new processor
     $processor = new $processor($data);
+
     foreach ($processor->data as $key => $val) {
-      $form['#' . $key] = $val;
+      if (is_scalar($val)) {
+        $form['#' . $key] = $val;
+      } else {
+        $form[$key] = $val;
+      }
     }
 
     $content['bean'][$bean->delta]['form'] = $form;

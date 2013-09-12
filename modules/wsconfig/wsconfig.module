@@ -559,6 +559,49 @@ function wsconfig_get_field_processors($types = array()) {
 }
 
 /**
+ * Get a list of processors which return forms
+ *
+ * @return array
+ *  Returns an array of key/value pairs of classnames and display names for
+ *  supported processors.
+ */
+function wsconfig_get_form_processors() {
+  $form_processors = array();
+  
+  $defined_proc = variable_get('wsconfig_processors', array());
+  
+  foreach($defined_proc as $classname => $value) {
+    if (isset($value['form'])) {
+      $form_processors[$classname] = $value['form'];
+    }
+  }
+  
+  return $form_processors;
+}
+
+/**
+ * Get a list of processors which return data
+ *
+ * @return array
+ *  Returns an array of key/value pairs of classnames and display names for
+ *  supported processors.
+ */
+function wsconfig_get_data_processors() {
+  $form_processors = array();
+  
+  $defined_proc = variable_get('wsconfig_processors', array());
+  
+  foreach($defined_proc as $classname => $value) {
+    if (isset($value['data'])) {
+      $form_processors[$classname] = $value['data'];
+    }
+  }
+  
+  return $form_processors;
+}
+
+
+/**
  * Generate list of web service configurations
  */
 function _wsconfig_get_list() {
