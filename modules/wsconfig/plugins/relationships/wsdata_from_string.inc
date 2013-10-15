@@ -31,7 +31,7 @@ function wsdata_wsprocessor_from_string($context, $conf) {
 
     // Send it to ctools.
     return ctools_context_create('wsdata', $processor);
-  
+  }  
 }
 
 function wsconfig_wsdata_from_string_edit_form($form, &$form_state) {
