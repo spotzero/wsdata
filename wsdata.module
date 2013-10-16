@@ -121,6 +121,8 @@ abstract class WsConnector {
     $this->expires = 0;
   }
 
+  abstract function getMethods();
+
   abstract public function wscall($type, $method, $argument, $options);
 
   public function create( $method, $object, $options = array()) {

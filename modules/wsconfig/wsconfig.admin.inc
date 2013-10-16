@@ -78,17 +78,48 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
   );
 
   foreach ($wsconfig->getOperations() as $operation) {
-    $op = $operation . '_data_method';
-    $op_name = ucfirst($operation);
+    $op = $wsconfig->getMethodKey($operation);
+
+    $op_name = $wsconfig->getMethodName($operation);
+
     $form['data'][$op] = array(
       '#type' => 'textfield',
-      '#title' => t('!NAME Data Method Name', array('!NAME' => $op_name)),
+      '#title' => t('!NAME Data Method', array('!NAME' => $op_name)),
       '#description' => t('The method call for !OP. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course', array('!OP' => $operation)),
       '#size' => 80,
       '#maxlength' => 255,
       '#default_value' => !empty($wsconfig->data[$op]) ? $wsconfig->data[$op] : '',
     );
   }
+
+  $addmethod_items = $wsconfig->getPossibleMethods();
+
+  if (count($addmethod_items) > 0) {
+    $form['addmethod'] = array(
+      '#type' => 'select',
+      '#title' => t('Add method'),
+      '#options' => $wsconfig->getPossibleMethods(),
+    );
+
+    $allmethods = $wsconfig->connector->getMethods();
+    foreach ($allmethods['multiple'] as $key => $method) {
+      $form['addmethod_name_' . $method] = array(
+        '#type' => 'textfield',
+        '#title' => t('!METHOD Name', array('!METHOD' => $method)),
+        '#states' => array(
+          'visible' => array(
+            ':input[name="addmethod"]' => array('value' => $key),
+          ),
+        ),
+      );
+    }
+
+    $form['addmethod_submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Add method'),
+    );
+  }
+  
   // Add the field related form elements.
   $form_state['wsconfig'] = $wsconfig;
   field_attach_form('wsconfig', $wsconfig, $form, $form_state);
@@ -152,7 +183,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
   // Save the wsconfig and go back to the list of wsconfigs
   foreach ($wsconfig->getOperations() as $operation) {
-    $op = $operation . '_data_method';
+    $op = $wsconfig->getMethodKey($operation);
     $wsconfig->data[$op] = $wsconfig->$op;
   }
   
@@ -201,14 +232,14 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
     if(!empty($method)) {
       $form[$op] = array(
         '#type' => 'fieldset',
-        '#title' => t(ucfirst($op)),
+        '#title' => $wsconfig->getMethodName($op),
         '#collapsible' => TRUE,
         '#collapsed' => FALSE,
       );
 
       $form[$op]['method'] = array(
         '#type' => 'item',
-        '#title' => t(ucfirst($op)),
+        '#title' => $wsconfig->getMethodName($op),
         '#markup' => $method,
       );
 
@@ -240,7 +271,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
 
       $form[$op]['submit'] = array(
         '#type' => 'submit',
-        '#value' => $op,
+        '#value' => $wsconfig->getMethodName($op),
       );
     }
   } 

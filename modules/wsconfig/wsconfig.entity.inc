@@ -21,6 +21,11 @@ class WsConfig extends Entity {
     }
   }
 
+  public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
+    $method = $this->getMethod($type, $replacement);
+    return $this->connector->wscall($type, $method, $argument, $options);
+  }
+
   public function getMethod($type, $replacement = array()) {
     if (!isset($this->data[$type . '_data_method'])) {
       return FALSE;
@@ -33,7 +38,54 @@ class WsConfig extends Entity {
   }
 
   public function getOperations() {
-    return array('create', 'read', 'update', 'delete');
+    $ops = array();
+    foreach ($this->data as $key => $val) {
+      if (drupal_substr($key, -1 * drupal_strlen('_data_method')) == '_data_method') {
+         $ops[] = drupal_substr($key, 0, -1 * drupal_strlen('_data_method'));
+      }
+    }
+    if (empty($ops)) {
+      return array();
+    }
+    return $ops;
+  }
+
+/*
+  public function isNamedOperation($operation) {
+    $supported = $this->connector->getMethods();
+    foreach ($supported['multiple'] as $key => $val) {
+      if (drupal_substr($operation, 0, drupal_strlen($key) + 1) == $key . '_') {
+         return TRUE;
+      }
+    }
+    return FALSE;
+  }
+*/
+
+  public function getPossibleMethods() {
+    $supported = $this->connector->getMethods();
+    $methods = array_merge($supported['single'], $supported['multiple']);
+    foreach ($this->getOperations() as $op) {
+      if (isset($supported['single'][$op])) {
+        unset($methods[$op]);
+      }
+    }
+    return $methods;
+  }
+
+  public function getMethodKey($operation) {
+    return $operation . '_data_method';
+  }
+
+  public function getMethodName($operation) {
+    $supported = $this->connector->getMethods();
+    foreach ($supported['multiple'] as $key => $val) {
+      if (drupal_substr($operation, 0, drupal_strlen($key) + 1) == $key . '_') {
+         $operation = ucfirst($key) . ': ' . ucfirst(drupal_substr($operation, drupal_strlen($key) + 1));
+         return $operation;
+      }
+    }
+    return ucfirst($operation);
   }
 
   protected function defaultLabel() {
