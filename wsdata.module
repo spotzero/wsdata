@@ -145,6 +145,11 @@ abstract class WsConnector {
     return $this->wscall('delete', $method, $id, $options);
   }
 
+  public function index ($method, $options = array()) {
+    $this->expires = 0;
+    return $this->wscall('index', $method, array(), $options);
+  }
+
   public function expires() {
     if ($this->expires > 0) {
       return $this->expires;
