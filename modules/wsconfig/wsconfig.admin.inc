@@ -227,14 +227,14 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
       $form[$op]['arguments'] = array(
         '#type' => 'textfield',
         '#title' => t('Arguments'),
-        '#description' => t('Arguments as a serialized PHP array'),
+        '#description' => t('Arguments as a JSON array'),
         '#default_value' => isset($form_state['values']['arguments']) ? $form_state['values']['arguments'] : '',
       );
 
       $form[$op]['options'] = array(
         '#type' => 'textfield',
         '#title' => t('Options'),
-        '#description' => t('Options as a serialized PHP array  (Example: a:1:{s:7:"headers";a:1:{s:12:"Content-Type";s:16:"application/json";}} )'),
+        '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
         '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : '',
       );
 
@@ -266,12 +266,12 @@ function wsconfig_view_form_submit($form, &$form_state) {
       }
       $arguments = array();
       if (isset($form_state['values']['arguments'])) {
-        $arguments = unserialize($form_state['values']['arguments']);
+        $arguments = json_decode($form_state['values']['arguments'], TRUE);
       }
 
       $options = array();
       if (isset($form_state['values']['options'])) {
-        $options = unserialize($form_state['values']['options']);
+        $options = json_decode($form_state['values']['options'], TRUE);
       }
       $method = $wsconfig->getMethod($op, $variables);
       drupal_set_message(
