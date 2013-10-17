@@ -76,8 +76,11 @@ abstract class WsData {
  *  N.B.  This function can be overridden to work with whatever the ->parse function
  *  is implemented to return. 
  */
-  public function getData($key) {
+  public function getData($key = '') {
     if (is_array($this->data)) {
+      if (empty($key)) {
+        return $this->data;   
+      }
       $return = $this->data;
       $location = explode(":", $key);
       foreach ($location as $l) {
