@@ -54,6 +54,12 @@ function wsconfig_delete_form_wrapper($wsconfig) {
  *     with only a wsconfig type defined.
  */
 function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
+  if (isset($_GET['remove']) and isset($wsconfig->data[$_GET['remove']])) {
+    unset($wsconfig->data[$_GET['remove']]);
+    $wsconfig->save();
+    drupal_set_message(t('Method !METHOD removed', array('!METHOD' => $_GET['remove'])));
+  }
+
   // Add the default field elements.
   $form['title'] = array(
     '#type' => 'textfield',
@@ -79,45 +85,54 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
 
   foreach ($wsconfig->getOperations() as $operation) {
     $op = $wsconfig->getMethodKey($operation);
-
     $op_name = $wsconfig->getMethodName($operation);
+    $remove_link = l(
+      'Remove',
+      current_path(),
+      array(
+        'query' => array('remove' => $op),
+      )
+    );
 
     $form['data'][$op] = array(
       '#type' => 'textfield',
-      '#title' => t('!NAME Data Method', array('!NAME' => $op_name)),
-      '#description' => t('The method call for !OP. If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course', array('!OP' => $operation)),
+      '#title' => t('!NAME Data Method (!OP) - !REMOVE', array('!NAME' => $op_name, '!OP' => $op, '!REMOVE' => $remove_link)),
+      '#description' => t('The method call for "!OP". If keys are included in the method name, include them as tokens starting with a "%".  Example: user/%id/course', array('!OP' => $operation)),
       '#size' => 80,
       '#maxlength' => 255,
       '#default_value' => !empty($wsconfig->data[$op]) ? $wsconfig->data[$op] : '',
     );
   }
 
-  $addmethod_items = $wsconfig->getPossibleMethods();
+  if (!empty($wsconfig->wsconfig_id)) {
+    $addmethod_items = $wsconfig->getPossibleMethods();
 
-  if (count($addmethod_items) > 0) {
-    $form['addmethod'] = array(
-      '#type' => 'select',
-      '#title' => t('Add method'),
-      '#options' => $wsconfig->getPossibleMethods(),
-    );
+    if (count($addmethod_items) > 0) {
+      $form['addmethod'] = array(
+        '#type' => 'select',
+        '#title' => t('Add method'),
+        '#options' => $wsconfig->getPossibleMethods(),
+      );
 
-    $allmethods = $wsconfig->connector->getMethods();
-    foreach ($allmethods['multiple'] as $key => $method) {
-      $form['addmethod_name_' . $method] = array(
-        '#type' => 'textfield',
-        '#title' => t('!METHOD Name', array('!METHOD' => $method)),
-        '#states' => array(
-          'visible' => array(
-            ':input[name="addmethod"]' => array('value' => $key),
+      $allmethods = $wsconfig->connector->getMethods();
+      foreach ($allmethods['multiple'] as $key => $method) {
+        $form['addmethod_name_' . $key] = array(
+          '#type' => 'textfield',
+          '#title' => t('!METHOD Name', array('!METHOD' => $method)),
+          '#description' => t('Must contain only lowercase letters, numbers, or underscores'),
+          '#states' => array(
+            'visible' => array(
+              ':input[name="addmethod"]' => array('value' => $key),
+            ),
           ),
-        ),
+        );
+      }
+
+      $form['addmethod_submit'] = array(
+          '#type' => 'submit',
+          '#value' => t('Add method'),
       );
     }
-
-    $form['addmethod_submit'] = array(
-        '#type' => 'submit',
-        '#value' => t('Add method'),
-    );
   }
   
   // Add the field related form elements.
@@ -156,7 +171,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
 
   // We append the validate handler to #validate in case a form callback_wrapper
   // is used to add validate handlers earlier.
-  $form['#validate'][] = 'wsconfig_edit_form_validate';
+  $form['# '][] = 'wsconfig_edit_form_validate';
   return $form;
 }
 
@@ -169,6 +184,19 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
   
   // Notify field widgets to validate their data.
   field_attach_form_validate('wsconfig', $wsconfig, $form, $form_state);
+
+  if ($form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
+    $name = 'addmethod_name_' . $form_state['values']['addmethod'];
+
+    if (isset($form[$name])) {
+      $methodname = preg_replace('/\W/', '', $form_state['values'][$name]);
+      if (empty($methodname) or !preg_match('/[A-Za-z0-9]/', $methodname)) {
+        form_error($form[$name], t('Method requires a name'));
+      } elseif (isset($wsconfig->data[$wsconfig->getMethodKey($form_state['values']['addmethod'] . '_' . $methodname)])) {
+        form_error($form[$name], t('Method name already used'));
+      }
+    }
+  }
 }
 
 
@@ -178,7 +206,7 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
  * @todo remove hard-coded link
  */
 function wsconfig_edit_form_submit(&$form, &$form_state) {
-  
+
   $wsconfig = entity_ui_controller('wsconfig')->entityFormSubmitBuildEntity($form, $form_state);
 
   // Save the wsconfig and go back to the list of wsconfigs
@@ -186,17 +214,37 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
     $op = $wsconfig->getMethodKey($operation);
     $wsconfig->data[$op] = $wsconfig->$op;
   }
-  
-  
+
+  if ($form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
+    $methodname = '';
+    $name = 'addmethod_name_' . $form_state['values']['addmethod'];
+
+    if (isset($form[$name])) {
+      $methodname = $form_state['values'][$name];
+    }
+
+    $wsconfig->addMethod($form_state['values']['addmethod'], $methodname);
+    drupal_set_message(t('Added !METHOD', array('!METHOD' => $form_state['values']['addmethod'])));
+  }
+
+  $new_wsconfig = FALSE;
+
   // Add in created and changed times.
-  if ($wsconfig->is_new = isset($wsconfig->is_new) ? $wsconfig->is_new : 0){
+  if (isset($wsconfig->is_new) and $wsconfig->is_new){
+    $new_wsconfig = TRUE;
     $wsconfig->created = time();
   }
 
   $wsconfig->changed = time();
-  
+
   $wsconfig->save();
-  $form_state['redirect'] = 'admin/content/wsconfig';
+
+  if ($new_wsconfig or $form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
+    $form_state['redirect'] = 'admin/content/wsconfig/wsconfig/' . $wsconfig->wsconfig_id . '/edit';
+  } else {
+    drupal_set_message(t('WsConfig saved'));
+    $form_state['redirect'] = 'admin/content/wsconfig';
+  }
 }
 
 /**

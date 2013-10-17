@@ -62,6 +62,28 @@ class WsConfig extends Entity {
   }
 */
 
+  public function addMethod($type, $name = '') {
+    $methods = $this->getPossibleMethods();
+    if (!isset($methods[$type])) {
+      return FALSE;
+    }
+
+    $methodname = $type;
+
+    $supported = $this->connector->getMethods();
+    if (isset($supported['multiple'][$type])) {
+      $name = drupal_strtolower(preg_replace('/\W/', '', $name));
+      if (empty($name)) {
+        return FALSE;
+      }
+
+      $methodname .= '_' . $name;
+    }
+
+    $this->data[$this->getMethodKey($methodname)] = '';
+    return TRUE;
+  }
+
   public function getPossibleMethods() {
     $supported = $this->connector->getMethods();
     $methods = array_merge($supported['single'], $supported['multiple']);
@@ -207,15 +229,16 @@ class WsConfigUIController extends EntityDefaultUIController {
       'file' => 'wsconfig.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module'])
     );
+
     $items[$this->path . '/wsconfig/' . $wildcard . '/edit'] = array(
-      'title' => 'Edit',
+      'title' => t('Edit'),
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'weight' => -10,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     );
 
     $items[$this->path . '/wsconfig/' . $wildcard . '/delete'] = array(
-      'title' => 'Delete',
+      'title' => t('Delete'),
       'page callback' => 'wsconfig_delete_form_wrapper',
       'page arguments' => array($id_count + 1),
       'access callback' => 'wsconfig_access',
