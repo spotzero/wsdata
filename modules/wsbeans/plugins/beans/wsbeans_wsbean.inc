@@ -12,7 +12,11 @@ class WsBean extends BeanPlugin {
   public function values() {
     $values = array(
       'settings' => array(
-        'wsconfig' => '',
+        'wsconfig_settings' => array(
+          'wsconfig' => '',
+          'arguments' => '',
+          'options' => '',
+        ),
         'wsprocessor' => '',
         'themehook' => '',
       ),
@@ -33,12 +37,54 @@ class WsBean extends BeanPlugin {
       '#description' => t('To render content into a wsbean, the data is retrived by the selected Web Service Configure, then if is parsed by the Web Service Processor, the result of that is then passed to the given theme hook to be rendered.'),
     );
 
-    $form['settings']['wsconfig'] = array(
+    $form['settings']['wsconfig_settings'] = array(
+      '#type' => 'fieldset',
+      '#tree' => 1,
+      '#title' => t('WsConfig Settings'),
+    );
+
+    $form['settings']['wsconfig_settings']['wsconfig'] = array(
       '#type' => 'select',
       '#title' => t('Web Service Config'),
       '#description' => t('The web service config to use to retrieve the data'),
       '#options' => wsconfig_get_list_by_name(),
       '#default_value' => isset($bean->settings['wsconfig']) ? $bean->settings['wsconfig'] : '',
+    );
+
+    foreach (wsconfig_get_list_by_name() as $machinename => $name) {
+       $wsconfig = wsconfig_load_by_name($machinename);
+
+       $items = array();
+       foreach ($wsconfig->getOperations() as $opname) {
+         $items[$opname] = $wsconfig->getMethodName($opname);
+       }
+
+      $form['settings']['wsconfig_settings']['wsconfig_method_' . $machinename] = array(
+        '#type' => 'select',
+        '#title' => t('Web Service Config Method'),
+        '#description' => t('The web service method to use'),
+        '#options' => $items,
+        '#default_value' => isset($bean->settings['wsconfig_method']) ? $bean->settings['wsconfig_method'] : '',
+        '#states' => array(
+          'visible' => array(
+            ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
+          ),
+        ),
+      );
+    }
+
+    $form['settings']['wsconfig_settings']['arguments'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Arguments'),
+      '#description' => t('JSON encoded arguments to pass to the wsconfig'),
+      '#default_value' => isset($bean->settings['arguments']) ? $bean->settings['arguments'] : '',
+    );
+
+    $form['settings']['wsconfig_settings']['options'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Options'),
+      '#description' => t('JSON encoded options'),
+      '#default_value' => isset($bean->settings['options']) ? $bean->settings['options'] : '',
     );
 
     $form['settings']['wsprocessor'] = array(
@@ -66,7 +112,8 @@ class WsBean extends BeanPlugin {
       $form = array('#theme' => $bean->settings['themehook']);
     }
 
-    $wsconfig = wsconfig_load_by_name($bean->settings['wsconfig']);
+    $wsconfig = wsconfig_load_by_name($bean->settings['wsconfig_settings']['wsconfig']);
+
     if (!$wsconfig) {
       $content['bean'][$bean->delta]['form']['#markup'] = t('Unable to load WSConfig @wsconfig', array('@wsconfig' => $bean->settings['wsconfig']));
       return $content;
@@ -78,8 +125,14 @@ class WsBean extends BeanPlugin {
       return $content;
     }
 
-    $url = $wsconfig->getMethod('read',array());
-    $data = $wsconfig->connector->read( $url, NULL);
+    $method = 'wsconfig_method_' . $bean->settings['wsconfig_settings']['wsconfig'];
+
+    $data = $wsconfig->call(
+      $bean->settings['wsconfig_settings'][$method],
+      array(),
+      json_decode($bean->settings['wsconfig_settings']['arguments']),
+      json_decode($bean->settings['wsconfig_settings']['options'])
+   );
 
     // Create a new processor
     $processor = new $processor($data);
