@@ -126,10 +126,10 @@ class WsBean extends BeanPlugin {
     }
 
     $method = 'wsconfig_method_' . $bean->settings['wsconfig_settings']['wsconfig'];
-    $arguments = json_decode($bean->settings['wsconfig_settings']['arguments']);
+    $arguments = json_decode($bean->settings['wsconfig_settings']['arguments'], TRUE);
     $arguments = isset($arguments) ? $arguments : array();
 
-    $options = json_decode($bean->settings['wsconfig_settings']['options']);
+    $options = json_decode($bean->settings['wsconfig_settings']['options'], TRUE);
     $options = isset($options) ? $options : array();
 
     $data = $wsconfig->call(
@@ -141,16 +141,7 @@ class WsBean extends BeanPlugin {
 
     // Create a new processor
     $processor = new $processor($data);
-
-    foreach ($processor->data as $key => $val) {
-      if (is_scalar($val)) {
-        $form['#' . $key] = $val;
-      } else {
-        $form[$key] = $val;
-      }
-    }
-
-    $content['bean'][$bean->delta]['form'] = $form;
+    $content['bean'][$bean->delta]['form'] = $processor->getData();
     return $content;
   }
 }
