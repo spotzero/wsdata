@@ -23,19 +23,16 @@ function wshybridfield_field_schema($field) {
         'description' => t('JSON encode replacements'),
         'type' => 'text',
         'size' => 'big',
-        'default' => '',
       ),
       'arguments' => array(
         'description' => t('JSON encode arguments'),
         'type' => 'text',
         'size' => 'big',
-        'default' => '',
       ),
       'options' => array(
         'description' => t('JSON encode options'),
         'type' => 'text',
         'size' => 'big',
-        'default' => '',
       ),
     ),
   );

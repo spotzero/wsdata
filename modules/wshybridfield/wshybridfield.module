@@ -70,9 +70,9 @@ function wshybridfield_field_widget_form(&$form, &$form_state, $field, $instance
 
   $element['replacements'] = array(
     '#type' => 'textfield',
-    '#title' => t('Arguments'),
+    '#title' => t('Replacements'),
     '#description' => t('JSON encoded replacements to pass to the wsconfig'),
-    '#default_value' => isset($items[$delta]['arguments']) ? $items[$delta]['arguments'] : '',
+    '#default_value' => isset($items[$delta]['replacements']) ? $items[$delta]['replacements'] : '',
   );
 
   $element['arguments'] = array(
@@ -163,13 +163,13 @@ function wshybridfield_field_formatter_prepare_view($entity_type, $entities, $fi
         continue;
       }
 
-      $replacements = json_decode($settings['replacements']);
+      $replacements = json_decode($settings['replacements'], TRUE);
       $replacements = isset($replacements) ? $replacements : array();
 
-      $arguments = json_decode($settings['arguments']);
+      $arguments = json_decode($settings['arguments'], TRUE);
       $arguments = isset($arguments) ? $arguments : array();
 
-      $options = json_decode($settings['options']);
+      $options = json_decode($settings['options'], TRUE);
       $options = isset($options) ? $options : array();
 
       $data = $wsconfig->call(
@@ -210,15 +210,8 @@ function wshybridfield_field_formatter_view($entity_type, $entity, $field, $inst
 
     $processor = new $processor($settings['wsdata'], $settings);
     $form = array();
-
-    foreach ($processor->data as $key => $val) {
-      if (is_scalar($val)) {
-        $form['#' . $key] = $val;
-      } else {
-        $form[$key] = $val;
-      }
-    }
-    $element[$delta] = $form;
+     
+    $element[$delta] = $processor->getData();
   }
 
   return $element;
