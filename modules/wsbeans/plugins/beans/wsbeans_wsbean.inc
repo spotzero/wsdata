@@ -126,12 +126,17 @@ class WsBean extends BeanPlugin {
     }
 
     $method = 'wsconfig_method_' . $bean->settings['wsconfig_settings']['wsconfig'];
+    $arguments = json_decode($bean->settings['wsconfig_settings']['arguments']);
+    $arguments = isset($arguments) ? $arguments : array();
+
+    $options = json_decode($bean->settings['wsconfig_settings']['options']);
+    $options = isset($options) ? $options : array();
 
     $data = $wsconfig->call(
       $bean->settings['wsconfig_settings'][$method],
       array(),
-      json_decode($bean->settings['wsconfig_settings']['arguments']),
-      json_decode($bean->settings['wsconfig_settings']['options'])
+      $arguments,
+      $options
    );
 
     // Create a new processor
