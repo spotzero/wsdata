@@ -335,7 +335,13 @@ function wsconfig_view_form_submit($form, &$form_state) {
   $wsconfig = $form_state['wsconfig'];
 
   if (isset($form_state['clicked_button']['#value'])) {
-    $op = $form_state['clicked_button']['#value'];
+    foreach($form as $title => $contents) {
+      if (isset($contents['submit']['#value']) and $contents['submit']['#value'] == $form_state['clicked_button']['#value']) {
+        $op = $title;
+        break;
+      }
+    }
+
     if (in_array($op, $wsconfig->getOperations())) {
       $variables = array();
       foreach ($form_state['values'] as $key => $value) {
@@ -352,15 +358,16 @@ function wsconfig_view_form_submit($form, &$form_state) {
       if (isset($form_state['values']['options'])) {
         $options = json_decode($form_state['values']['options'], TRUE);
       }
-      $method = $wsconfig->getMethod($op, $variables);
+      $url = '';
+      $results = $wsconfig->call($op, $variables, $arguments, $options, $url);
       drupal_set_message(
         t('Method: !method<br>Variables: !variables<br>Arguments: !arguments<br>Options: !options<br>Result: !results',
           array(
-            '!method' => $method,
+            '!method' => $url,
             '!variables' => print_r($variables, TRUE),
             '!arguments' => print_r($arguments, TRUE),
             '!options' => print_r($options, TRUE),
-            '!results' => htmlspecialchars($wsconfig->connector->wscall($op, $method, $arguments, $options)),
+            '!results' => htmlspecialchars($results),
           )
         )
       );
