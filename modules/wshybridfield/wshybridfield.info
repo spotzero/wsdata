@@ -1,0 +1,7 @@
+name = Web Service Hybrid Field
+description = Fields were the field data is the is a web service request, and the result is displayed by the field formatter.
+core = 7.x
+package = Web Service Data
+
+dependencies[] = field
+dependencies[] = wsconfig

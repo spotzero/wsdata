@@ -344,12 +344,16 @@ function wsconfig_get_list_by_name() {
 /**
  * Gets the list of web service configurations with tokens
  */
-function wsconfig_get_list_tokens() {
+function wsconfig_get_list_tokens($wsconfig = "") {
 
   // @todo add caching layer?
   $query = db_select('wsconfig', 'w');
-  $query->fields('w', array('wsconfig_id', 'data'))
+  $query->fields('w', array('name', 'data'))
         ->orderBy('name', 'DESC');
+
+  if (!empty($wsconfig)) {
+    $query->condition('name', $wsconfig);
+  }
   
   $result = $query->execute();
 
@@ -358,14 +362,15 @@ function wsconfig_get_list_tokens() {
   while($record = $result->fetchObject()) {
     $data = unserialize($record->data);
     $tokens = array();
-    foreach ($data as $call) {
+    foreach ($data as $calltitle => $call) {
       $matches = array();
-      preg_match_all("/%[a-z0-9]+/", $call, $matches);
-      $tokens = array_unique(array_merge($tokens, $matches[0]));
+      preg_match_all("/%[a-z0-9_]+/", $call, $matches);
+      if (count($matches[0]) > 0) {
+        $calltitle = explode('_data_method', $calltitle);
+        $list[$record->name][$calltitle[0]] = $matches[0];
+      }
     }
-    $list[$record->wsconfig_id] = $tokens;
   }
-
   return $list;
 }
 
@@ -552,6 +557,49 @@ function wsconfig_get_field_processors($types = array()) {
   
   return $field_processors;
 }
+
+/**
+ * Get a list of processors which return forms
+ *
+ * @return array
+ *  Returns an array of key/value pairs of classnames and display names for
+ *  supported processors.
+ */
+function wsconfig_get_form_processors() {
+  $form_processors = array();
+  
+  $defined_proc = variable_get('wsconfig_processors', array());
+  
+  foreach($defined_proc as $classname => $value) {
+    if (isset($value['form'])) {
+      $form_processors[$classname] = $value['form'];
+    }
+  }
+  
+  return $form_processors;
+}
+
+/**
+ * Get a list of processors which return data
+ *
+ * @return array
+ *  Returns an array of key/value pairs of classnames and display names for
+ *  supported processors.
+ */
+function wsconfig_get_data_processors() {
+  $form_processors = array();
+  
+  $defined_proc = variable_get('wsconfig_processors', array());
+  
+  foreach($defined_proc as $classname => $value) {
+    if (isset($value['data'])) {
+      $form_processors[$classname] = $value['data'];
+    }
+  }
+  
+  return $form_processors;
+}
+
 
 /**
  * Generate list of web service configurations

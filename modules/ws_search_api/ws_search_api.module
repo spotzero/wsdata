@@ -33,28 +33,46 @@ function ws_search_api_cron() {
  */
 function ws_search_api_wsfields_entity_expires($entity_type, $entity_id, $expire) {
   // Tell search api we've received new information
-  search_api_track_item_change($entity_type, array($entity_id));
 
-  // Log the expires time
-  db_merge('ws_search_api_item')
-    ->key(array('entity_id' => $entity_id, 'entity_type' => $entity_type))
-    ->fields(array(
-      'expire' => $expire,
-    ))
-    ->execute();
+  search_api_track_item_change($entity_type, array($entity_id));
+  
+  $record = array(
+    'entity_id' => $entity_id,
+    'entity_type' => $entity_type,
+    'expire' => $expire,
+  );
+
+  ws_search_api_update_record($record);
 }
 
 /**
  * Implements hook_search_api_index_items_alter().
  */
 function ws_search_api_search_api_index_items_alter(array &$items, SearchApiIndex $index) {
-  if (wsfields_storage_entity_has_wsfields($index->item_type)) {
-    $ids = array_keys($items);
-    db_merge('ws_search_api_item')
-      ->key(array('entity_id' => $ids, 'entity_type' => $index->item_type))
-      ->fields(array(
+  if (!wsfields_storage_entity_has_wsfields($index->item_type)) {
+    return;
+  }
+
+  $ids = array_keys($items);
+  foreach ($ids as $id) {
+    ws_search_api_update_record(array(
+      'entity_id' => $id,
+      'entity_type' => $index->item_type,
       'indexed' => time(),
-    ))
-    ->execute();
+    ));
+  }
+}
+
+function ws_search_api_update_record($record) {
+   // Log the expires time
+  $exists = db_select('ws_search_api_item')
+    ->condition( 'entity_id', $record['entity_id'])
+    ->condition( 'entity_type', $record['entity_type'])
+    ->countQuery()->execute()->fetchField();
+
+  if ($exists > 0) {
+    return drupal_write_record( 'ws_search_api_item', $record, array('entity_id', 'entity_type'));
+  } else {
+    return drupal_write_record( 'ws_search_api_item', $record);
   }
 }
