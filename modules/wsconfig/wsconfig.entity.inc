@@ -27,7 +27,7 @@ class WsConfig extends Entity {
     }
     $method = $this->data[$type . '_data_method'];
     foreach ($replacement as $token => $replace) {
-       $method = str_replace( $token, $replace, $method);
+       $method = str_replace($token, $replace, $method);
     }
     return $method;
   }
