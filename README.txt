@@ -34,6 +34,26 @@ Web Service Fields (wsfields)
 
 - Contains implementations of the core fields to parse data coming from an implementation of "WsData" into the proper format expected by each field type.
 
+Web Service Beans (wsbeans)
+---------------------------
+
+- Adds a bean type called "wsbean" which is a bean that will render the results of a web service call.
+
+Web Service Hybrid Fields (wshybridfield)
+-----------------------------------------
+
+Adds a new field type "WS Hybrid Field".  This field contains web service connection info, and the web service is result is rendered when the field is displayed.
+This field should be used when it is ony desired that extra remote data should be displayed when a entity is viewed.
+
+It cannot afford any of the integration available with wsfields and wsfields_storage, however the use and configuration is more straight forward.
+
+
+Web Service Solr Integration (wsdata_solr)
+------------------------------------------
+
+Provides default processors for parsing JSON data returned by solr queries.
+
+
 Web Service Entities (wsentities)
 ---------------------------------
 
