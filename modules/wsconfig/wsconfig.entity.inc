@@ -27,6 +27,7 @@ class WsConfig extends Entity {
    *  Overide's the wsconfig_type's default endpoint
    */
   public function setEndpoint($endpoint) {
+    $type = wsconfig_type_load($this->type);
     if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
       $this->connector = new $type->data['connector']($endpoint);
       return TRUE;
@@ -38,6 +39,7 @@ class WsConfig extends Entity {
    * Method wsconfig->getEndpoint().
    */
   public function getEndpoint() {
+    $type = wsconfig_type_load($this->type);
     if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
       return $this->connector->getEndpoint();
     }
