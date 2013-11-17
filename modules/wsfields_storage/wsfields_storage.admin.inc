@@ -68,7 +68,7 @@ function wsfields_storage_settings_form($form, &$form_state) {
     $instances = array();
     foreach ($field['bundles'] as $entity_type => $bundles) {
       foreach ($bundles as $bundle) {
-        $intances[] = "$entity_type->$bundle";
+        $instances[] = "$entity_type->$bundle";
       }
     }
     $row['data']['instances'] = implode(', ', $instances);
