@@ -38,6 +38,7 @@ function wsfields_storage_settings_form($form, &$form_state) {
   $header[] = array('data' => t('Type'), 'field' => 'type');
   $header[] = array('data' => t('Processor'), 'field' => 'processor');
   $header[] = array('data' => t('WSConfig'), 'field' => 'wsconfig');
+  $header[] = array('data' => t('Instances'), 'field' => 'instances');
   $header[] = array('data' => t('Operations'));
 
   foreach ($fields as $field) {
@@ -48,16 +49,29 @@ function wsfields_storage_settings_form($form, &$form_state) {
     $row['data']['field_name'] = $field['field_name'];
     $row['data']['type'] = $fieldtypes[$field['type']]['label'];
 
+
+    // Processor
     if (isset($processors[$field['storage']['settings']['processor']])) {
       $row['data']['processor'] = $processors[$field['storage']['settings']['processor']];
     } else {
       $row['data']['processor'] = $field['storage']['settings']['processor'];
     }
+
+    // WSConfig
     if (isset($wsconfigs[$field['storage']['settings']['wsconfig_name']])) {
       $row['data']['wsconfig'] = l( $wsconfigs[$field['storage']['settings']['wsconfig_name']]->title, $wsconfigs[$field['storage']['settings']['wsconfig_name']]->path['path']);
     } else {
       $row['data']['wsconfig'] = '';
     }
+
+    // Instances
+    $instances = array();
+    foreach ($field['bundles'] as $entity_type => $bundles) {
+      foreach ($bundles as $bundle) {
+        $intances[] = "$entity_type->$bundle";
+      }
+    }
+    $row['data']['instances'] = implode(', ', $instances);
 
     $operations = array();
     $operations['edit'] = array(
@@ -172,6 +186,10 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
     isset($form_state['values']['processor']) ? $form_state['values']['processor'] :
       isset($field['storage']['settings']['processor']) ? $field['storage']['settings']['processor'] : '';
 
+  $passaccepts = 
+   isset($form_state['values']['passaccepts']) ? $form_state['values']['passaccepts'] :
+      isset($field['storage']['settings']['passaccepts']) ? $field['storage']['settings']['passaccepts'] : FALSE;
+
 
   $form['processor'] = array(
     '#type' => 'select',
@@ -180,6 +198,13 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
     '#description' => t('Select a data processor.'),
     '#options' => wsconfig_get_field_processors(),
     '#default_value' => $processor,
+  );
+
+  $form['passaccepts'] = array(
+    '#title' => t('Accept-Type Options'),
+    '#description' => t('Pass the accept-type from the process to the connector (i.e. If the selected processor accepts json and the wsconfig is a rest service, this option will make the rest client append .json to the request url.'),
+    '#type' => 'checkbox',
+    '#default_value' => $passaccepts,
   );
 
   $form['remotekey'] = array (
@@ -192,7 +217,6 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
   );
 
   // If Field Translation isn't available, don't allow languages for this field
-
   $form['translation'] = array(
     '#title' => t("Translation Available"),
     '#type' => 'checkbox',
@@ -257,6 +281,21 @@ function wsfields_storage_edit_field_form($form, &$form_state) {
     }
   }
 
+  $entitybundles = array('none' => t('None'));
+  foreach (entity_get_info() as $entity_type => $entityinfo) {
+   foreach ($entityinfo['bundles'] as $bundlename => $bundleinfo) {
+     $entitybundles["$entity_type:$bundlename"] = $entityinfo['label'] . ' -> ' . $bundleinfo['label'];
+   }
+  }
+
+  $form['addinstance'] = array(
+    '#title' => t('Create field instance'),
+    '#descrption' => t('Creates a instance of this field and attach it to an entity'),
+    '#type' => 'select',
+    '#options' => $entitybundles,
+    '#default_value' => 'none',
+  );
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
   $form['actions']['cancel'] = array('#type' => 'item', '#markup' => l(t('Cancel'), 'admin/config/services/wsfields_storage'));
@@ -289,6 +328,7 @@ function wsfields_storage_edit_field_form_submit($form, &$form_state) {
   $field = $fields[$field];
 
   $field['storage']['settings']['processor'] = $form_state['values']['processor'];
+  $field['storage']['settings']['passaccepts'] = $form_state['values']['passaccepts'];
   $field['storage']['settings']['remotekey'] = $form_state['values']['remotekey'];
   $field['storage']['settings']['translation'] = (bool)$form_state['values']['translation'];
   $wsconfig_name = $field['storage']['settings']['wsconfig_name'] = $form_state['values']['wsconfig_name'];
@@ -306,6 +346,39 @@ function wsfields_storage_edit_field_form_submit($form, &$form_state) {
 
   field_update_field($field);
   drupal_set_message(t('WSField Storage settings for @field have been updated', array('@field' => $field['field_name'])));
+
+  if ($form_state['values']['addinstance'] != 'none') {
+    list($entity_type, $bundle_name) = explode(':', $form_state['values']['addinstance']);
+
+    $bundles = field_info_bundles($entity_type);
+
+    if (!isset($bundles[$bundle_name])) {
+      return;
+    }
+
+    $bundle_info = $bundles[$bundle_name];
+    if (isset($bundle_info['admin'])) {
+      $admin_path = isset($bundle_info['admin']['real path']) ? $bundle_info['admin']['real path'] : $bundle_info['admin']['path'];
+    }
+
+    $instance = array(
+      'field_name' => $field['field_name'],
+      'entity_type' => $entity_type,
+      'bundle' => $bundle_name,
+    );
+
+    try {
+      $existing = field_info_instance($entity_type, $field['field_name'], $bundle_name);
+      if (!isset($existing)) {
+        field_create_instance($instance);
+      }
+      if (module_exists('field_ui')) {
+        drupal_goto($admin_path . '/fields/' . $instance['field_name'] . '/edit');
+      }
+    } catch (Exception $e) {
+      drupal_set_message(t('There was a problem creating field instance %label: @message.', array('%label' => $instance['label'], '@message' => $e->getMessage())), 'error');
+    }
+  }
 }
 
 

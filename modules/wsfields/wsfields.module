@@ -214,6 +214,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
   // Load required settings from the field instance
   $wsconfig_name = $field['storage']['settings']['wsconfig_name'];
   $remotename = $field['storage']['settings']['remotekey'];
+  $passaccepts = isset($field['storage']['settings']['passaccepts']) ? $field['storage']['settings']['passaccepts'] : TRUE;
   $processor = $field['storage']['settings']['processor'];
   $propertymap = $field['storage']['settings']['propertymap']['read'];
 
@@ -280,15 +281,19 @@ function wsfields_data_load($entity_type, $field, $entity) {
 
     // Attempt the connection
     if ($wsconfig->connector) {
-      // Load the list of accepted data formats
-      $type = $processor->accepts();
+      $options = array();
 
-      // Select the first option
-      // @todo come up with a way for the objects to decide which accept type it should use
-      $type = array_pop($type);
+      if ($passaccepts) {
+        // Load the list of accepted data formats
+        $type = $processor->accepts();
+
+        // Select the first option
+        // @todo come up with a way for the objects to decide which accept type it should use
+        $options['accept-type'] = array_pop($type);
+      }
 
       // Read the data
-      $data = $wsconfig->connector->read($remotemethod, $remotekeys, array('accept-type' => $type));
+      $data = $wsconfig->connector->read($remotemethod, $remotekeys, $options);
 
       $processor->addData($data);
 
