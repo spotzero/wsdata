@@ -1,0 +1,12 @@
+name = Web Service Data Fields Views Handlers
+description = Views Handles for fields powered by Web Service Data
+core = 7.x
+package = Web Service Data
+
+dependencies[] = field
+dependencies[] = wsfields
+dependencies[] = wsfields_storage
+dependencies[] = views
+
+files[] = handlers/wsfields_views_handler_field.inc
+files[] = handlers/wsfields_views_handler_sort.inc
