@@ -26,7 +26,7 @@ function wsfields_wsfields_text_data_alter($data, $field) {
 
   // Use the generalized data formater
   _wsfields_general_data_alter($data, $field);
-
+  _wsfields_set_text_format($data, $field);
   return $data;
 }
 
@@ -37,16 +37,7 @@ function wsfields_wsfields_text_with_summary_data_alter($data, $field) {
 
   // Use the generalized data formater
   _wsfields_general_data_alter($data, $field);
-
-  $formats = array_keys(filter_formats());
-  if (sizeof($formats) > 0) {
-    $formats = $formats[0];
-    foreach($data as $lang => $values) {
-      foreach ($values as $id => $field) {
-        $data[$lang][$id]['format'] = $formats;
-      }
-    }
-  }
+  _wsfields_set_text_format($data, $field);
   return $data;
 }
 
@@ -57,16 +48,7 @@ function wsfields_wsfields_text_long_data_alter($data, $field) {
 
   // Use the generalized data formater
   _wsfields_general_data_alter($data, $field);
-
-  $formats = array_keys(filter_formats());
-  if (sizeof($formats) > 0) {
-    $formats = $formats[0];
-    foreach($data as $lang => $values) {
-      foreach ($values as $id => $field) {
-        $data[$lang][$id]['format'] = $formats;
-      }
-    }
-  }
+  _wsfields_set_text_format($data, $field);
   return $data;
 }
 
@@ -343,4 +325,23 @@ function wsfields_data_load($entity_type, $field, $entity) {
  */
 function wsfields_wsfields_entity_expires($entity_type, $entity_id, $expire) {
   cache_set('wsfield_expire:' . $entity_type . ':' . $entity_id, $expire);
+}
+
+/**
+ * Find the best text format possible
+ */
+function _wsfields_set_text_format(&$data, &$field) {
+  $formats = array_keys(filter_formats());
+  if (sizeof($formats) > 0) {
+    if (in_array('full_html', $formats)) {
+      $format = 'full_html';
+    } else {
+      $format = $formats[0];
+    }
+    foreach($data as $lang => $values) {
+      foreach ($values as $id => $field) {
+        $data[$lang][$id]['format'] = $format;
+      }
+    }
+  }
 }
