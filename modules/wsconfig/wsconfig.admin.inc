@@ -350,12 +350,12 @@ function wsconfig_view_form_submit($form, &$form_state) {
         }
       }
       $arguments = array();
-      if (isset($form_state['values']['arguments'])) {
+      if (isset($form_state['values']['arguments']) and !empty($form_state['values']['arguments'])) {
         $arguments = json_decode($form_state['values']['arguments'], TRUE);
       }
 
       $options = array();
-      if (isset($form_state['values']['options'])) {
+      if (isset($form_state['values']['options']) and !empty($form_state['values']['options'])) {
         $options = json_decode($form_state['values']['options'], TRUE);
       }
       $url = '';
