@@ -52,12 +52,12 @@ class WsBean extends BeanPlugin {
     );
 
     foreach (wsconfig_get_list_by_name() as $machinename => $name) {
-       $wsconfig = wsconfig_load_by_name($machinename);
+      $wsconfig = wsconfig_load_by_name($machinename);
 
-       $items = array();
-       foreach ($wsconfig->getOperations() as $opname) {
-         $items[$opname] = $wsconfig->getMethodName($opname);
-       }
+      $items = array();
+      foreach ($wsconfig->getOperations() as $opname) {
+        $items[$opname] = $wsconfig->getMethodName($opname);
+      }
 
       $form['settings']['wsconfig_settings']['wsconfig_method_' . $machinename] = array(
         '#type' => 'select',
@@ -71,8 +71,31 @@ class WsBean extends BeanPlugin {
           ),
         ),
       );
-    }
 
+      if (module_exists('bean_panels_context')) {
+        ctools_include('context');
+        $converters = ctools_context_get_all_converters();
+
+        foreach ($wsconfig->getOperations() as $opname) {
+          foreach ($wsconfig->getReplacements($opname) as $arg) {
+            $form['settings']['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg] = array(
+              '#type' => 'select',
+              '#title' => t('@arg from context', array('@arg' => $arg)),
+              '#description' => t('Which type of context to use for this argument.'),
+              '#default_value' => NULL,
+              '#options' => $converters,
+              '#states' => array(
+                'visible' => array(
+                  ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
+                  ':input[name="settings[wsconfig_settings][wsconfig_method_' . $machinename . ']"]' => array('value' => $opname),
+                ),
+              ),
+            );
+          }
+        }
+      }
+    }
+     
     $form['settings']['wsconfig_settings']['arguments'] = array(
       '#type' => 'textfield',
       '#title' => t('Arguments'),
@@ -108,6 +131,7 @@ class WsBean extends BeanPlugin {
    * Displays the bean.
    */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
+
     if (!empty($bean->settings['themehook'])) {
       $form = array('#theme' => $bean->settings['themehook']);
     }

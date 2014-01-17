@@ -134,6 +134,23 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       );
     }
   }
+
+  if ($wsconfig->connector->supportsCaching()) {
+    $form['cache_default_time'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Default Cache Time'),
+      '#description' => t('Number of seconds query results should be cached for.'),
+      '#default_value' => isset($wsconfig->data['cache_default_time']) ? $wsconfig->data['cache_default_time'] : 0,
+    );
+
+    $form['cache_default_override'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Override Cache Time'),
+      '#description' => t('Override cache time with default value even if another value is returned by the service.'),
+      '#default_value' => isset($wsconfig->data['cache_default_override']) ? $wsconfig->data['cache_default_override'] : 0,
+    );
+
+  }
   
   // Add the field related form elements.
   $form_state['wsconfig'] = $wsconfig;
@@ -208,6 +225,9 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
 function wsconfig_edit_form_submit(&$form, &$form_state) {
 
   $wsconfig = entity_ui_controller('wsconfig')->entityFormSubmitBuildEntity($form, $form_state);
+
+  $wsconfig->data['cache_default_time'] = (int) $form_state['values']['cache_default_time'];
+  $wsconfig->data['cache_default_override'] = (int) $form_state['values']['cache_default_override'];
 
   // Save the wsconfig and go back to the list of wsconfigs
   foreach ($wsconfig->getOperations() as $operation) {

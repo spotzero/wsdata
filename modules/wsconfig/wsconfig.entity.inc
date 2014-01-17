@@ -18,6 +18,13 @@ class WsConfig extends Entity {
 
     if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
       $this->connector = new $type->data['connector']($type->data['endpoint']);
+      // Configure connector with caching settings.
+      if ($this->connector->supportsCaching()) {
+        $data = unserialize($this->data);
+        if (isset($data['cache_default_time']) and isset($data['cache_default_override'])) {
+          $this->connector->defaultCache($data['cache_default_time'], $data['cache_default_override']);
+        }
+      }
     }
   }
 
@@ -62,6 +69,16 @@ class WsConfig extends Entity {
        $method = str_replace($token, $replace, $method);
     }
     return $method;
+  }
+
+  public function getReplacements($type) {
+    if (!isset($this->data[$type . '_data_method'])) {
+      return FALSE;
+    }
+    $method = $this->data[$type . '_data_method'];
+    $matches = array();
+    preg_match_all("/(%\w+)/", $method, $matches);
+    return $matches[0];
   }
 
   public function getOperations() {
