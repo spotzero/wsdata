@@ -20,7 +20,11 @@ class WsConfig extends Entity {
       $this->connector = new $type->data['connector']($type->data['endpoint']);
       // Configure connector with caching settings.
       if ($this->connector->supportsCaching()) {
-        $data = unserialize($this->data);
+        if (is_string($this->data)) {
+          $data = unserialize($this->data);
+        } else {
+          $data = $this->data;
+        }
         if (isset($data['cache_default_time']) and isset($data['cache_default_override'])) {
           $this->connector->defaultCache($data['cache_default_time'], $data['cache_default_override']);
         }
