@@ -224,30 +224,23 @@ class WsConfigUIController extends EntityDefaultUIController {
    * parent class hook_menu() is optimized for entity type administration.
    */
   public function hook_menu() {
+
     $items = parent::hook_menu();
     $id_count = count(explode('/', $this->path));
+
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
 
-    $items[$this->path] = array(
-      'title' => 'Web Service Configurations',
-      'description' => 'Add edit and update web service configurations.',
-      'page callback' => 'system_admin_menu_block_page',
-      'access arguments' => array('access administration pages'),
-      'file path' => drupal_get_path('module', 'system'),
-      'file' => 'system.admin.inc',
-    );
-
     // Change the overview menu type for the list of web service configurations.
-    $items[$this->path]['type'] = MENU_LOCAL_TASK;
+    $items[$this->path]['type'] = MENU_NORMAL_ITEM;
 
     // Change the add page menu to multiple types of entities
     $items[$this->path . '/add'] = array(
-      'title' => 'Add a wsconfig',
-      'description' => 'Add a new wsconfig',
+      'title' => t('Add a wsconfig'),
+      'description' => t('Add a new Web Service Configuration'),
       'page callback'  => 'wsconfig_add_page',
       'access callback'  => 'wsconfig_access',
       'access arguments' => array('edit'),
-      'type' => MENU_NORMAL_ITEM,
+      'type' => MENU_LOCAL_ACTION,
       'weight' => 20,
       'file' => 'wsconfig.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module'])
@@ -267,46 +260,15 @@ class WsConfigUIController extends EntityDefaultUIController {
     }
 
     // Loading and editing wsconfig entities
-    $items[$this->path . '/wsconfig/' . $wildcard] = array(
-      'page callback' => 'wsconfig_form_wrapper',
-      'page arguments' => array($id_count + 1),
-      'access callback' => 'wsconfig_access',
-      'access arguments' => array('edit', $id_count + 1),
-      'weight' => 0,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-      'file' => 'wsconfig.admin.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module'])
-    );
-
-    $items[$this->path . '/wsconfig/' . $wildcard . '/edit'] = array(
-      'title' => t('Edit'),
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'weight' => -10,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    );
-
-    $items[$this->path . '/wsconfig/' . $wildcard . '/delete'] = array(
-      'title' => t('Delete'),
-      'page callback' => 'wsconfig_delete_form_wrapper',
-      'page arguments' => array($id_count + 1),
-      'access callback' => 'wsconfig_access',
-      'access arguments' => array('edit', $id_count + 1),
-      'type' => MENU_LOCAL_TASK,
-      'context' => MENU_CONTEXT_INLINE,
-      'weight' => 10,
-      'file' => 'wsconfig.admin.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module'])
-    );
 
     // Menu item for viewing web service configurations
-    $items['wsconfig/' . $wildcard] = array(
-      //'title' => 'Title',
+    $items[$this->path . '/' . $wildcard] = array(
       'title callback' => 'wsconfig_page_title',
-      'title arguments' => array(1),
+      'title arguments' => array($id_count),
       'page callback' => 'wsconfig_view_form_wrapper',
-      'page arguments' => array(1),
+      'page arguments' => array($id_count),
       'access callback' => 'wsconfig_access',
-      'access arguments' => array('view', 1),
+      'access arguments' => array('view', $id_count),
       'type' => MENU_CALLBACK,
       'file' => 'wsconfig.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
@@ -320,15 +282,7 @@ class WsConfigUIController extends EntityDefaultUIController {
    * so it can easily be extended/overriden.
    */
   public function addPage() {
-    $item = menu_get_item();
-    $content = system_admin_menu_block($item);
-
-    if (count($content) == 1) {
-      $item = array_shift($content);
-      drupal_goto($item['href']);
-    }
-
-    return theme('wsconfig_add_list', array('content' => $content));
+    return theme('wsconfig_add_list', array('content' => wsconfig_get_types()));
   }
 }
 
@@ -386,7 +340,7 @@ class WsConfigTypeUIController extends EntityDefaultUIController {
    */
   public function hook_menu() {
     $items = parent::hook_menu();
-		$items[$this->path]['description'] = 'Manage wsconfig entity types, including adding and removing fields and the display of fields.';
+    $items[$this->path]['description'] = 'Manage wsconfig entity types, including changing endpoints and connectors.';
     return $items;
   }
 }

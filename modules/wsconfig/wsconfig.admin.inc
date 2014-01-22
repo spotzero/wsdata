@@ -45,6 +45,12 @@ function wsconfig_delete_form_wrapper($wsconfig) {
   return drupal_get_form('wsconfig_delete_form', $wsconfig);
 }
 
+/**
+ *  Entity UI Callback
+ */
+function wsconfig_form($form, &$form_state, $wsconfig, $op = 'edit') {
+  return wsconfig_edit_form($form, $form_state, $wsconfig, $op);
+}
 
 /**
  * Form callback: create or edit a wsconfig.
@@ -180,7 +186,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete Web Service Configuration'),
-      '#suffix' => l(t('Cancel'), 'admin/content/wsconfig'),
+      '#suffix' => l(t('Cancel'), 'admin/structure/wsconfig'),
       '#submit' => $submit + array('wsconfig_form_submit_delete'),
       '#weight' => 45,
     );
@@ -188,7 +194,8 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
 
   // We append the validate handler to #validate in case a form callback_wrapper
   // is used to add validate handlers earlier.
-  $form['# '][] = 'wsconfig_edit_form_validate';
+  $form['#validate'][] = 'wsconfig_edit_form_validate';
+  $form['#submit'][] = 'wsconfig_edit_form_submit';
   return $form;
 }
 
@@ -260,10 +267,10 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
   $wsconfig->save();
 
   if ($new_wsconfig or $form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
-    $form_state['redirect'] = 'admin/content/wsconfig/wsconfig/' . $wsconfig->wsconfig_id . '/edit';
+    $form_state['redirect'] = 'admin/structure/wsconfig/manage/' . $wsconfig->wsconfig_id . '/edit';
   } else {
     drupal_set_message(t('WsConfig saved'));
-    $form_state['redirect'] = 'admin/content/wsconfig';
+    $form_state['redirect'] = 'admin/structure/wsconfig';
   }
 }
 
@@ -273,7 +280,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
  * @todo Remove hard-coded path
  */
 function wsconfig_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/content/wsconfig/wsconfig/' . $form_state['wsconfig']->wsconfig_id . '/delete';
+  $form_state['redirect'] = 'admin/structure/wsconfig/manage/' . $form_state['wsconfig']->wsconfig_id . '/delete';
 }
 
 
@@ -285,6 +292,7 @@ function wsconfig_form_submit_delete(&$form, &$form_state) {
  *
  */
 function wsconfig_view_form($form, &$form_state, $wsconfig) {
+
   $form_state['wsconfig'] = $wsconfig;
   $ws_endpoint = wsconfig_get_types($wsconfig->type);
   
@@ -412,7 +420,7 @@ function wsconfig_delete_form($form, &$form_state, $wsconfig) {
 
   $form = confirm_form($form,
     t('Are you sure you want to delete the Web Service Configuration %title?', array('%title' => $wsconfig->title)),
-    'admin/content/wsconfig/wsconfig',
+    'admin/structure/wsconfig',
     '<p>' . t('This action cannot be undone.') . '</p>',
     t('Delete'),
     t('Cancel'),
@@ -433,7 +441,7 @@ function wsconfig_delete_form_submit($form, &$form_state) {
   drupal_set_message(t('The Web Service Configuration %title has been deleted.', array('%title' => $wsconfig->title)));
   watchdog('wsconfig', 'Deleted web service configuration %name.', array('%name' => $wsconfig->name));
 
-  $form_state['redirect'] = 'admin/content/wsconfig';
+  $form_state['redirect'] = 'admin/structure/wsconfig';
 }
 
 /**
@@ -452,13 +460,21 @@ function wsconfig_add_page() {
  * @ingroup themeable
  */
 function theme_wsconfig_add_list($variables) {
+  $wsinfo = entity_get_info("wsconfig");
+
   $content = $variables['content'];
+
   $output = '';
   if ($content) {
-    $output = '<dl class="wsconfig-type-list">';
+    $output .= '<H1>' . t('Web Service Configuration') . '</H1>';
+    $output .= '<dl class="wsconfig-type-list">';
     foreach ($content as $item) {
-      $output .= '<dt>' . l($item['title'], $item['href']) . '</dt>';
-      $output .= '<dd>' . filter_xss_admin($item['description']) . '</dd>';
+      $output .= '<dt>' . l($item->label, $wsinfo['admin ui']['path'] . '/add/' . $item->type) . '</dt>';
+      $description = array();
+      foreach ($item->data as $key => $val) {
+        $description[] = drupal_ucfirst($key) . ": $val";
+      }
+      $output .= '<dd>' . filter_xss_admin(implode('<br>', $description)) . '</dd>';
     }
     $output .= '</dl>';
   }
@@ -481,8 +497,8 @@ function wsconfig_set_breadcrumb() {
   $breadcrumb = array(
     l(t('Home'), '<front>'),
     l(t('Administration'), 'admin'),
-    l(t('Content'), 'admin/content'),
-    l(t('Web Service Configurations'), 'admin/content/wsconfig'),
+    l(t('Structure'), 'admin/structure'),
+    l(t('Web Service Configurations'), 'admin/structure/wsconfig'),
   );
 
   drupal_set_breadcrumb($breadcrumb);

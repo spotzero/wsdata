@@ -111,7 +111,7 @@ function wsconfig_entity_info() {
       'access callback' => 'wsconfig_access',
       // Enable Entity API admin UI
       'admin ui' => array(
-        'path' => 'admin/content/wsconfig',
+        'path' => 'admin/structure/wsconfig',
         'file' => 'wsconfig.admin.inc',
         'controller class' => 'WsConfigUIController',
         'menu wildcard' => '%wsconfig',
@@ -153,8 +153,8 @@ function wsconfig_entity_info_alter(&$entity_info) {
     $entity_info['wsconfig']['bundles'][$type] = array(
       'label' => $info->label,
       'admin' => array(
-        'path' => 'admin/structure/wsconfig_types/manage/%wsconfig_type',
-        'real path' => 'admin/structure/wsconfig_types/manage/' . $type,
+        'path' => 'admin/structure/wsconfig_types/%wsconfig_type',
+        'real path' => 'admin/structure/wsconfig_types/' . $type,
         'bundle argument' => 4,
         'access arguments' => array('administer wsconfig types'),
       ),
@@ -217,11 +217,11 @@ function wsconfig_theme($existing, $type, $theme, $path) {
  */
 function wsconfig_menu_local_tasks_alter(&$data, $router_item, $root_path) {
   // Add action link 'admin/structure/wsconfig/add' on 'admin/structure/wsconfig'.
-  if ($root_path == 'admin/content/wsconfig') {
-    $item = menu_get_item('admin/content/wsconfig/add');
+  if ($root_path == 'admin/structure/wsconfig') {
+    $item = menu_get_item('admin/structure/wsconfig/add');
     if ($item['access']) {
       $data['actions']['output'][] = array(
-        '#theme' => 'menu_local_action',
+        '#theme' => 'menu_normal_item',
         '#link' => $item,
       );
     }
@@ -498,7 +498,7 @@ function wsconfig_save(WsConfig $wsconfig) {
  */
 function wsconfig_uri(WsConfig $wsconfig){
   return array(
-    'path' => 'wsconfig/' . $wsconfig->wsconfig_id,
+    'path' => 'admin/structure/wsconfig/' . $wsconfig->wsconfig_id,
   );
 }
 
