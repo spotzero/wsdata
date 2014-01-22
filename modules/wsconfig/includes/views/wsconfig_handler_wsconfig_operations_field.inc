@@ -23,7 +23,7 @@ class wsconfig_handler_wsconfig_operations_field extends views_handler_field {
 
   function render($values) {
 
-    $links = menu_contextual_links('wsconfig', 'admin/content/wsconfig/wsconfig', array($this->get_value($values, 'wsconfig_id')));
+    $links = menu_contextual_links('wsconfig', 'admin/structure/wsconfig/', array($this->get_value($values, 'wsconfig_id')));
     
     if (!empty($links)) {
       return theme('links', array('links' => $links, 'attributes' => array('class' => array('links', 'inline', 'operations'))));

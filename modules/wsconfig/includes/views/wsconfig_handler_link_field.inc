@@ -44,6 +44,6 @@ class wsconfig_handler_link_field extends views_handler_field {
     $text = !empty($this->options['text']) ? $this->options['text'] : t('view');
     $wsconfig_id = $values->{$this->aliases['wsconfig_id']};
 
-    return l($text, 'wsconfig/' . $wsconfig_id);
+    return l($text, 'admin/structure/wsconfig/' . $wsconfig_id);
   }
 }

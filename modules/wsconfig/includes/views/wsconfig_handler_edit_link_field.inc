@@ -28,6 +28,6 @@ class wsconfig_handler_edit_link_field extends wsconfig_handler_link_field {
     $text = !empty($this->options['text']) ? $this->options['text'] : t('edit');
     $model_id = $values->{$this->aliases['wsconfig_id']};
     
-    return l($text, 'admin/content/wsconfig/wsconfig/' . $model_id . '/edit');
+    return l($text, 'admin/structure/wsconfig/manage/' . $model_id . '/edit');
   }
 }
