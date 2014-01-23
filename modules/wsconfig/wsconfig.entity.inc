@@ -241,7 +241,7 @@ class WsConfigUIController extends EntityDefaultUIController {
       'access callback'  => 'wsconfig_access',
       'access arguments' => array('edit'),
       'type' => MENU_LOCAL_ACTION,
-      'weight' => 20,
+      'weight' => -20,
       'file' => 'wsconfig.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module'])
     );

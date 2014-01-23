@@ -105,7 +105,7 @@ function wsconfig_entity_info() {
           'custom settings' => FALSE,
         ),
       ),
-      'label callback' => 'entity_class_label',
+      'label callback' => 'wsconfig_class_label',
       'uri callback' => 'wsconfig_uri',
       'module' => 'wsconfig',
       'access callback' => 'wsconfig_access',
@@ -143,6 +143,18 @@ function wsconfig_entity_info() {
   );
   
   return $entities;
+}
+
+
+/**
+ * Label callback that refers to the entity classes label method.
+ */
+function wsconfig_class_label($entity) {
+  if (isset($entity)) {
+    return $entity->label();
+  } else {
+    return "";
+  }
 }
 
 /**
@@ -210,22 +222,6 @@ function wsconfig_theme($existing, $type, $theme, $path) {
       'template' => 'wsconfig-sample-data',
     ),
   );
-}
-
-/**
- * Implements hook_menu_local_tasks_alter().
- */
-function wsconfig_menu_local_tasks_alter(&$data, $router_item, $root_path) {
-  // Add action link 'admin/structure/wsconfig/add' on 'admin/structure/wsconfig'.
-  if ($root_path == 'admin/structure/wsconfig') {
-    $item = menu_get_item('admin/structure/wsconfig/add');
-    if ($item['access']) {
-      $data['actions']['output'][] = array(
-        '#theme' => 'menu_normal_item',
-        '#link' => $item,
-      );
-    }
-  }
 }
 
 /**
@@ -519,16 +515,6 @@ function wsconfig_page_view($wsconfig, $view_mode = 'full') {
   $content = $controller->view(array($wsconfig->wsconfig_id => $wsconfig));
   drupal_set_title($wsconfig->title);
   return $content;
-}
-
-/**
- * Implements hook_views_api().
- */
-function wsconfig_views_api() {
-  return array(
-    'api' => 3,
-    'path' => drupal_get_path('module', 'wsconfig') . '/includes/views',
-  );
 }
 
 /**
