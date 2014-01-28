@@ -131,6 +131,10 @@ class WsBean extends BeanPlugin {
    * Displays the bean.
    */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
+    $contexts = NULL;
+    if (isset($bean->contexts)) {
+      $contexts = $bean->contexts;
+    }
 
     if (!empty($bean->settings['themehook'])) {
       $form = array('#theme' => $bean->settings['themehook']);
@@ -164,7 +168,7 @@ class WsBean extends BeanPlugin {
    );
 
     // Create a new processor
-    $processor = new $processor($data);
+    $processor = new $processor($data, $contexts);
     $content['bean'][$bean->delta]['form'] = $processor->getData();
     return $content;
   }
