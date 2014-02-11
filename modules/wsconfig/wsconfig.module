@@ -194,10 +194,10 @@ function wsconfig_permission() {
     $type_name = check_plain($type->type);
     $permissions += array(
       "edit any $type_name wsconfig" => array(
-        'title' => t('%type_name: Edit any model', array('%type_name' => $type->label)),
+        'title' => t('%type_name: Edit any wsconfig of this type.', array('%type_name' => $type->label)),
       ),
       "view any $type_name wsconfig" => array(
-        'title' => t('%type_name: View any model', array('%type_name' => $type->label)),
+        'title' => t('%type_name: View any wsconfig of this type.', array('%type_name' => $type->label)),
       ),
     );
   }
