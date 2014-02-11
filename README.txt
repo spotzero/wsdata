@@ -120,7 +120,7 @@ See 'ws_services' module for an example implementation.
 Connectors
 ----------
 
-You can use the [RESTClient](https://github.com/coldfrontlabs/restclient) module connector as a sample to build your connectors with. *This is not the same as the [REST Client](http://drupal.org/project/restclient) module found on Drupal.org*
+You can use the [RESTClient](https://drupal.org/project/restclient) module connector as a sample to build your connectors with.
 
 Processors
 ----------
