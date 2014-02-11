@@ -6,6 +6,11 @@
  */
 
 /**
+ * Exception thrown by WsConfig() on unsupported calls
+ */
+class WsConfigException extends Exception {}
+
+/**
  * The class used for wsconfig entities
  */
 class WsConfig extends Entity {
@@ -58,12 +63,22 @@ class WsConfig extends Entity {
     return FALSE;
   }
 
-
+  /**
+   * Method for calling a webservice method.
+   */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
     $method = $this->getMethod($type, $replacement);
+    $matches = array();
+    preg_match_all("/(%\w+)/", $method, $matches);
+    if (sizeof($matches[0])) {
+      throw new WsConfigException(t('Replacement tokens not all replaced before wscall: @tokens', array('@tokens' => implode(',', $matches[0]))));
+    }
     return $this->connector->wscall($type, $method, $argument, $options);
   }
 
+  /**
+   * Get a list of defined methods.
+   */
   public function getMethod($type, $replacement = array()) {
     if (!isset($this->data[$type . '_data_method'])) {
       return FALSE;
