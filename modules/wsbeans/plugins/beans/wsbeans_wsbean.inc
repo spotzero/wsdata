@@ -14,6 +14,7 @@ class WsBean extends BeanPlugin {
       'settings' => array(
         'wsconfig_settings' => array(
           'wsconfig' => '',
+          'replacements' => array(),
           'arguments' => '',
           'options' => '',
         ),
@@ -48,7 +49,7 @@ class WsBean extends BeanPlugin {
       '#title' => t('Web Service Config'),
       '#description' => t('The web service config to use to retrieve the data'),
       '#options' => wsconfig_get_list_by_name(),
-      '#default_value' => isset($bean->settings['wsconfig']) ? $bean->settings['wsconfig'] : '',
+      '#default_value' => isset($bean->settings['wsconfig_settings']['wsconfig']) ? $bean->settings['wsconfig_settings']['wsconfig'] : '',
     );
 
     foreach (wsconfig_get_list_by_name() as $machinename => $name) {
@@ -64,7 +65,7 @@ class WsBean extends BeanPlugin {
         '#title' => t('Web Service Config Method'),
         '#description' => t('The web service method to use'),
         '#options' => $items,
-        '#default_value' => isset($bean->settings['wsconfig_method']) ? $bean->settings['wsconfig_method'] : '',
+        '#default_value' => isset($bean->settings['wsconfig_settings']['wsconfig_method_' . $machinename]) ? $bean->settings['wsconfig_settings']['wsconfig_method_' . $machinename] : '',
         '#states' => array(
           'visible' => array(
             ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
@@ -82,8 +83,23 @@ class WsBean extends BeanPlugin {
               '#type' => 'select',
               '#title' => t('@arg from context', array('@arg' => $arg)),
               '#description' => t('Which type of context to use for this argument.'),
-              '#default_value' => NULL,
+              '#default_value' => isset($bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg]) ?
+                $bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg] : NULL,
               '#options' => $converters,
+              '#states' => array(
+                'visible' => array(
+                  ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
+                  ':input[name="settings[wsconfig_settings][wsconfig_method_' . $machinename . ']"]' => array('value' => $opname),
+                ),
+              ),
+            );
+
+            $form['settings']['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] = array(
+              '#type' => 'textfield',
+              '#title' => t('Default value for @arg', array('@arg' => $arg)),
+              '#description' => t('Default value to use when context is not available.'),
+              '#default_value' => isset($bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default']) ?
+                $bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] : '',
               '#states' => array(
                 'visible' => array(
                   ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
@@ -160,12 +176,16 @@ class WsBean extends BeanPlugin {
     $options = json_decode($bean->settings['wsconfig_settings']['options'], TRUE);
     $options = isset($options) ? $options : array();
 
-    $data = $wsconfig->call(
-      $bean->settings['wsconfig_settings'][$method],
-      array(),
-      $arguments,
-      $options
-   );
+    try {
+      $data = $wsconfig->call(
+        $bean->settings['wsconfig_settings'][$method],
+        array(),
+        $arguments,
+        $options
+     );
+    } catch (Exception $e) {
+      $data = NULL;
+    }
 
     // Create a new processor
     $processor = new $processor($data, $contexts);
