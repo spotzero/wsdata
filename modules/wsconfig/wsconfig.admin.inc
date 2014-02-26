@@ -66,6 +66,13 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
     drupal_set_message(t('Method !METHOD removed', array('!METHOD' => $_GET['remove'])));
   }
 
+  $form['endpoint'] = array(
+    '#type' => 'item',
+    '#title' => t('Endpoint'),
+    '#markup' => $wsconfig->type . ' (' . $wsconfig->getEndpoint() . ')',
+    '#weight' => -5,
+  );
+
   // Add the default field elements.
   $form['title'] = array(
     '#type' => 'textfield',
