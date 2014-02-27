@@ -76,9 +76,12 @@ class WsBean extends BeanPlugin {
       if (module_exists('bean_panels_context')) {
         ctools_include('context');
         $converters = ctools_context_get_all_converters();
+      }
 
-        foreach ($wsconfig->getOperations() as $opname) {
-          foreach ($wsconfig->getReplacements($opname) as $arg) {
+      foreach ($wsconfig->getOperations() as $opname) {
+        foreach ($wsconfig->getReplacements($opname) as $arg) {
+
+          if (module_exists('bean_panels_context')) {
             $form['settings']['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg] = array(
               '#type' => 'select',
               '#title' => t('@arg from context', array('@arg' => $arg)),
@@ -93,21 +96,21 @@ class WsBean extends BeanPlugin {
                 ),
               ),
             );
-
-            $form['settings']['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] = array(
-              '#type' => 'textfield',
-              '#title' => t('Default value for @arg', array('@arg' => $arg)),
-              '#description' => t('Default value to use when context is not available.'),
-              '#default_value' => isset($bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default']) ?
-                $bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] : '',
-              '#states' => array(
-                'visible' => array(
-                  ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
-                  ':input[name="settings[wsconfig_settings][wsconfig_method_' . $machinename . ']"]' => array('value' => $opname),
-                ),
-              ),
-            );
           }
+
+          $form['settings']['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Default value for @arg', array('@arg' => $arg)),
+            '#description' => t('Default value to use when context is not available.'),
+            '#default_value' => isset($bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default']) ?
+              $bean->settings['wsconfig_settings']['replacements']['wsconfig_method_' . $machinename][$arg . '_default'] : '',
+            '#states' => array(
+              'visible' => array(
+                ':input[name="settings[wsconfig_settings][wsconfig]"]' => array('value' => $machinename),
+                ':input[name="settings[wsconfig_settings][wsconfig_method_' . $machinename . ']"]' => array('value' => $opname),
+              ),
+            ),
+          );
         }
       }
     }
@@ -170,6 +173,26 @@ class WsBean extends BeanPlugin {
     }
 
     $method = 'wsconfig_method_' . $bean->settings['wsconfig_settings']['wsconfig'];
+
+    // Fidn the replacements.
+    $replacements = array();   
+    foreach ($wsconfig->getReplacements($bean->settings['wsconfig_settings'][$method]) as $arg) {
+      $replacements[$arg] = $bean->settings['wsconfig_settings']['replacements'][$method][$arg . '_default'];
+
+      // If contexts are available, find the matching one and replace it.
+      if (isset($contexts)) {
+        $context_option = $bean->settings['wsconfig_settings']['replacements'][$method][$arg];
+        list($type, $converter) = explode('.', $context_option);
+
+        foreach($contexts[1] as $context) {
+          if ($context->type == $type) {
+            $replacements[$arg] = ctools_context_convert_context($context, $converter);
+            break;
+          }
+        }
+      }
+    }
+
     $arguments = json_decode($bean->settings['wsconfig_settings']['arguments'], TRUE);
     $arguments = isset($arguments) ? $arguments : array();
 
@@ -179,7 +202,7 @@ class WsBean extends BeanPlugin {
     try {
       $data = $wsconfig->call(
         $bean->settings['wsconfig_settings'][$method],
-        array(),
+        $replacements,
         $arguments,
         $options
      );
