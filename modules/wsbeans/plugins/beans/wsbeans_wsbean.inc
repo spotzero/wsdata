@@ -151,6 +151,7 @@ class WsBean extends BeanPlugin {
    */
   public function view($bean, $content, $view_mode = 'default', $langcode = NULL) {
     $contexts = NULL;
+
     if (isset($bean->contexts)) {
       $contexts = $bean->contexts;
     }
@@ -207,7 +208,8 @@ class WsBean extends BeanPlugin {
         $options
      );
     } catch (Exception $e) {
-      $data = NULL;
+       $content['bean'][$bean->delta]['form']['#markup'] = t('An error occured while making the web service call.');
+       return $content;
     }
 
     // Create a new processor
