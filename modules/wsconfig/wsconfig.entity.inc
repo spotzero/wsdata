@@ -67,11 +67,19 @@ class WsConfig extends Entity {
    * Method for calling a webservice method.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
+    $replacements = $this->getReplacements($type);
     $method = $this->getMethod($type, $replacement);
+
     $matches = array();
     preg_match_all("/(%\w+)/", $method, $matches);
+
+    // Compare the tokens extracted to see if some haven't been replaced.
     if (sizeof($matches[0])) {
-      throw new WsConfigException(t('Replacement tokens not all replaced before wscall: @tokens', array('@tokens' => implode(',', $matches[0]))));
+      foreach ($matches[0] as $match) {
+        if (in_array($match, $replacements)) {
+          throw new WsConfigException(t('Replacement tokens not all replaced before wscall: @tokens', array('@tokens' => implode(',', $matches[0]))));
+        }
+      }
     }
     return $this->connector->wscall($type, $method, $argument, $options);
   }
