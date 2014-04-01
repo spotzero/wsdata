@@ -330,10 +330,9 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
       preg_match_all("/(%\w+)/", $method, $matches);
 
       foreach ($matches[0] as $var) {
-        $form[$op][$var] = array(
+        $form[$op][$op . ':' . $var] = array(
           '#type' => 'textfield',
           '#title' => $var,
-          '#required' => TRUE,
           '#default_value' => isset($form_state['values'][$var]) ? $form_state['values'][$var] : '',
         );
       }
@@ -354,6 +353,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
 
       $form[$op]['submit'] = array(
         '#type' => 'submit',
+        '#name' => $op,
         '#value' => $wsconfig->getMethodName($op),
       );
     }
@@ -369,19 +369,14 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
 function wsconfig_view_form_submit($form, &$form_state) {
   $wsconfig = $form_state['wsconfig'];
 
-  if (isset($form_state['clicked_button']['#value'])) {
-    foreach($form as $title => $contents) {
-      if (isset($contents['submit']['#value']) and $contents['submit']['#value'] == $form_state['clicked_button']['#value']) {
-        $op = $title;
-        break;
-      }
-    }
-
+  if (isset($form_state['triggering_element']['#name'])) {
+    $op = $form_state['triggering_element']['#name'];
+    
     if (in_array($op, $wsconfig->getOperations())) {
       $variables = array();
       foreach ($form_state['values'] as $key => $value) {
-        if (strpos($key, '%') === 0) {
-           $variables[$key] = $value;
+        if (drupal_substr($key, 0, drupal_strlen($op . ':')) == $op . ':') {
+           $variables[drupal_substr($key, drupal_strlen($op . ':'))] = $value;
         }
       }
       $arguments = array();
