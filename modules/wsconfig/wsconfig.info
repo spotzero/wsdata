@@ -3,13 +3,7 @@ description = Defines entities to store connection information for web services.
 core = 7.x
 package = Web Service Data
 
-dependencies[] = views
 dependencies[] = wsdata
 
 files[] = wsconfig.entity.inc
 files[] = tests/wsconfig.test
-files[] = includes/views/wsconfig.views.inc
-files[] = includes/views/wsconfig_handler_link_field.inc
-files[] = includes/views/wsconfig_handler_edit_link_field.inc
-files[] = includes/views/wsconfig_handler_delete_link_field.inc
-files[] = includes/views/wsconfig_handler_wsconfig_operations_field.inc
