@@ -7,3 +7,5 @@ dependencies[] = bean
 dependencies[] = wsconfig
 
 files[] = plugins/beans/wsbeans_wsbean.inc
+
+files[] = wsbeans_default_json_form.processor.inc

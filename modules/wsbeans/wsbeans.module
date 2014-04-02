@@ -31,3 +31,14 @@ function wsbeans_bean_types() {
 
   return $plugins;
 }
+
+/**
+ * Implements hook_wsconfig_processor_info().
+ */
+function wsbeans_wsconfig_processor_info() {
+  return array(
+    'wsbeans_default_json_form' => array(
+       'form' => 'Renders JSON into a form',
+    ),
+  );
+}
