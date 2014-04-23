@@ -50,7 +50,7 @@ function wsdata_wsconfig_processor_info() {
 abstract class WsData {
   // Storage for parsed data
   public $data;
-  
+
   // Storage for error information
   protected $error;
 
@@ -65,21 +65,21 @@ abstract class WsData {
   public function getError() {
     return $error;
   }
-  
-/**
- * Retrieve the value for the given data key.
- *
- * This function retrieves data from the structured array in $this->data
- *  using $key as a key.  $key should be a string, with the character ':'
- *  delimiting the parts of the key.
- *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
- *  N.B.  This function can be overridden to work with whatever the ->parse function
- *  is implemented to return. 
- */
+
+  /**
+   * Retrieve the value for the given data key.
+   *
+   * This function retrieves data from the structured array in $this->data
+   *  using $key as a key.  $key should be a string, with the character ':'
+   *  delimiting the parts of the key.
+   *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
+   *  N.B.  This function can be overridden to work with whatever the ->parse function
+   *  is implemented to return.
+   */
   public function getData($key = '') {
     if (is_array($this->data)) {
       if (empty($key)) {
-        return $this->data;   
+        return $this->data;
       }
       $return = $this->data;
       $location = explode(":", $key);
@@ -96,7 +96,9 @@ abstract class WsData {
     return FALSE;
   }
 
-  // load data
+  /**
+   * Add data to an empty object or replace all existing data
+   */
   public function addData($data) {
     $this->data = $this->parse($data);
   }
