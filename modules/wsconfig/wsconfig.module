@@ -11,13 +11,13 @@
 function wsconfig_flush_caches() {
   // @todo check for any new modules which register hook_wsconfig_connector_info().
   $connectors = module_invoke_all('wsconfig_connector_info');
-  
+
   // @todo see if we should store each connector separately in its own table
   variable_set('wsconfig_connectors', $connectors);
 
-  // @todo see if we should store each processor separately in its own table  
+  // @todo see if we should store each processor separately in its own table
   $processors = module_invoke_all('wsconfig_processor_info');
-  
+
   variable_set('wsconfig_processors', $processors);
 }
 
@@ -27,13 +27,13 @@ function wsconfig_flush_caches() {
 function wsconfig_modules_enabled($modules) {
   // @todo check for any new modules which register hook_wsconfig_connector_info().
   $connectors = module_invoke_all('wsconfig_connector_info');
-  
+
   // @todo see if we should store each connector separately in its own table
   variable_set('wsconfig_connectors', $connectors);
 
-  // @todo see if we should store each processor separately in its own table  
+  // @todo see if we should store each processor separately in its own table
   $processors = module_invoke_all('wsconfig_processor_info');
-  
+
   variable_set('wsconfig_processors', $processors);
 }
 
@@ -43,20 +43,20 @@ function wsconfig_modules_enabled($modules) {
 function wsconfig_modules_disabled($modules) {
   // Load list of processors
   $processors = module_invoke_all('wsconfig_processor_info');
-  
+
   // Save them
   variable_set('wsconfig_processors', $processors);
-  
+
   // @todo report on any fields/entities which were dependant on that processor
 
   // @todo check for any removed module which register hook_wsconfig_connector_info().
   // @todo check for any new modules which register hook_wsconfig_connector_info().
   $connectors = module_invoke_all('wsconfig_connector_info');
-  
+
   // @todo see if we should store each connector separately in its own table
   // @todo should we use ctools API to define our API?
   variable_set('wsconfig_connectors', $connectors);
-  
+
   // @todo Add report listing fields which no longer have a valid connector
 }
 
@@ -141,7 +141,7 @@ function wsconfig_entity_info() {
     ),
     'access callback' => 'wsconfig_type_access',
   );
-  
+
   return $entities;
 }
 
@@ -188,7 +188,7 @@ function wsconfig_permission() {
       'description' => t('Edit and delete all web service configurations.'),
     ),
   );
-  
+
   // Generate permissions
   foreach(wsconfig_get_types() as $type) {
     $type_name = check_plain($type->type);
@@ -248,7 +248,7 @@ function wsconfig_access($op, $wsconfig = NULL, $account = NULL) {
       return TRUE;
     }
   }
-  
+
   return FALSE;
 }
 
@@ -311,7 +311,7 @@ function wsconfig_type_delete(WsConfigType $type) {
 function wsconfig_get_list() {
 
   $result = _wsconfig_get_list();
-  
+
   $list = array();
 
   while($record = $result->fetchObject()) {
@@ -326,7 +326,7 @@ function wsconfig_get_list() {
  */
 function wsconfig_get_list_by_name() {
   $result = _wsconfig_get_list();
-  
+
   $list = array();
 
   while($record = $result->fetchObject()) {
@@ -334,7 +334,7 @@ function wsconfig_get_list_by_name() {
   }
 
   return $list;
-  
+
 }
 
 /**
@@ -350,7 +350,7 @@ function wsconfig_get_list_tokens($wsconfig = "") {
   if (!empty($wsconfig)) {
     $query->condition('name', $wsconfig);
   }
-  
+
   $result = $query->execute();
 
   $list = array();
@@ -371,7 +371,7 @@ function wsconfig_get_list_tokens($wsconfig = "") {
 }
 
 /**
- * Fetch a wsconfig object. Make sure that the wildcard you choose 
+ * Fetch a wsconfig object. Make sure that the wildcard you choose
  * in the model entity definition fits the function name here.
  *
  * @param $wsconfig_id
@@ -389,7 +389,7 @@ function wsconfig_load($wsconfig_id, $reset = FALSE) {
 }
 
 /**
- * Fetch a wsconfig object. Make sure that the wildcard you choose 
+ * Fetch a wsconfig object. Make sure that the wildcard you choose
  * in the model entity definition fits the function name here.
  *
  * @param $name
@@ -411,7 +411,7 @@ function wsconfig_load_by_name($name, $reset = FALSE) {
   if (!isset($result['wsconfig']) or !is_array($result['wsconfig'])) {
     return FALSE;
   }
-  
+
   // Load the entity
   foreach ($result['wsconfig'] as $key => $wsconfig) {
     return wsconfig_load($key, $reset);
@@ -510,8 +510,8 @@ function wsconfig_page_title(WsConfig $wsconfig){
  * Sets up content to show an individual model
  * @todo - get rid of drupal_set_title();
  */
-function wsconfig_page_view($wsconfig, $view_mode = 'full') {    
-  $controller = entity_get_controller('wsconfig');  
+function wsconfig_page_view($wsconfig, $view_mode = 'full') {
+  $controller = entity_get_controller('wsconfig');
   $content = $controller->view(array($wsconfig->wsconfig_id => $wsconfig));
   drupal_set_title($wsconfig->title);
   return $content;
@@ -528,9 +528,9 @@ function wsconfig_page_view($wsconfig, $view_mode = 'full') {
  */
 function wsconfig_get_field_processors($types = array()) {
   $field_processors = array();
-  
+
   $defined_proc = variable_get('wsconfig_processors', array());
-  
+
   foreach($defined_proc as $classname => $value) {
     if (!empty($value['fields'])) {
       foreach($value['fields'] as $type => $displaytext) {
@@ -540,7 +540,7 @@ function wsconfig_get_field_processors($types = array()) {
       }
     }
   }
-  
+
   return $field_processors;
 }
 
@@ -553,15 +553,15 @@ function wsconfig_get_field_processors($types = array()) {
  */
 function wsconfig_get_form_processors() {
   $form_processors = array();
-  
+
   $defined_proc = variable_get('wsconfig_processors', array());
-  
+
   foreach($defined_proc as $classname => $value) {
     if (isset($value['form'])) {
       $form_processors[$classname] = $value['form'];
     }
   }
-  
+
   return $form_processors;
 }
 
@@ -574,15 +574,15 @@ function wsconfig_get_form_processors() {
  */
 function wsconfig_get_data_processors() {
   $form_processors = array();
-  
+
   $defined_proc = variable_get('wsconfig_processors', array());
-  
+
   foreach($defined_proc as $classname => $value) {
     if (isset($value['data'])) {
       $form_processors[$classname] = $value['data'];
     }
   }
-  
+
   return $form_processors;
 }
 
@@ -595,7 +595,7 @@ function _wsconfig_get_list() {
   $query = db_select('wsconfig', 'w');
   $query->fields('w', array('wsconfig_id', 'title', 'name'))
         ->orderBy('name', 'DESC');
-  
+
   $result = $query->execute();
 
   return $result;

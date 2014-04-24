@@ -68,7 +68,7 @@ class WsConfig extends Entity {
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
     if (isset($this->data['options']) and is_array($this->data['options'])) {
-      $options += $this->data['options'];
+      $options += $this->data['options'][$this->getMethodKey($type)];
     }
 
     $replacements = $this->getReplacements($type);

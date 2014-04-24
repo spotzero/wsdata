@@ -120,7 +120,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       '#type' => 'textfield',
       '#title' => t('Options'),
       '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
-      '#default_value' => isset($form_state['values'][$op . '_options']) ? $form_state['values'][$op . '_options'] : isset($wsconfig->data['options'][$op]) ? $wsconfig->data['options'][$op]: '',
+      '#default_value' => isset($form_state['values'][$op . '_options']) ? $form_state['values'][$op . '_options'] : isset($wsconfig->data['options'][$op]) ? drupal_json_encode($wsconfig->data['options'][$op]): '',
       '#element_validate' => array('_wsconfig_element_validate_json'),
     );
   }
@@ -214,7 +214,6 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
   return $form;
 }
 
-
 /**
  * Form API validate callback for the wsconfig form
  */
@@ -238,7 +237,6 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
   }
 }
 
-
 /**
  * Form API submit callback for the wsconfig form.
  *
@@ -259,7 +257,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
     // Save the defined options if any
     if (!empty($form_state['values'][$op . '_options'])) {
-      $wsconfig->data['options'][$op] = $form_state['values'][$op . '_options'];
+      $wsconfig->data['options'][$op] = drupal_json_decode($form_state['values'][$op . '_options']);
     }
   }
 
@@ -304,7 +302,6 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 function wsconfig_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/wsconfig/manage/' . $form_state['wsconfig']->wsconfig_id . '/delete';
 }
-
 
 /**
  * Form callback: to view a wsconfig.
@@ -364,7 +361,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#type' => 'textfield',
         '#title' => t('Options'),
         '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
-        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data['options'][$op]) ? $wsconfig->data['options'][$op]: '',
+        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data['options'][$op]) ? drupal_json_encode($wsconfig->data['options'][$op]): '',
         '#element_validate' => array('_wsconfig_element_validate_json'),
       );
 
