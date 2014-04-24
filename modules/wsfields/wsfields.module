@@ -242,9 +242,6 @@ function wsfields_data_load($entity_type, $field, $entity) {
       $replacements[$pattern] = $value;
     }
 
-    // Get the method name for token replacement
-    $remotemethod = $wsconfig->getMethod('read', $replacements);
-
     if (!class_exists($processor)) {
       watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
       drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
@@ -275,7 +272,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
       }
 
       // Read the data
-      $data = $wsconfig->connector->read($remotemethod, $remotekeys, $options);
+      $data = $wsconfig->call('read', $replacements, $remotekeys, $options);
 
       $processor->addData($data);
 
