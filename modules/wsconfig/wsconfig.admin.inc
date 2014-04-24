@@ -120,7 +120,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       '#type' => 'textfield',
       '#title' => t('Options'),
       '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
-      '#default_value' => isset($form_state['values'][$op . '_options']) ? $form_state['values'][$op . '_options'] : isset($wsconfig->data[$op]['options']) ? $wsconfig->data[$op]['options']: '',
+      '#default_value' => isset($form_state['values'][$op . '_options']) ? $form_state['values'][$op . '_options'] : isset($wsconfig->data['options'][$op]) ? $wsconfig->data['options'][$op]: '',
       '#element_validate' => array('_wsconfig_element_validate_json'),
     );
   }
@@ -259,7 +259,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
     // Save the defined options if any
     if (!empty($form_state['values'][$op . '_options'])) {
-      $wsconfig->data[$op][$op . '_options'] = $form_state['values'][$op . '_options'];
+      $wsconfig->data['options'][$op] = $form_state['values'][$op . '_options'];
     }
   }
 
@@ -364,7 +364,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#type' => 'textfield',
         '#title' => t('Options'),
         '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
-        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data[$op]['options']) ? $wsconfig->data[$op]['options']: '',
+        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data['options'][$op]) ? $wsconfig->data['options'][$op]: '',
         '#element_validate' => array('_wsconfig_element_validate_json'),
       );
 
