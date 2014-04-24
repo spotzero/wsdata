@@ -80,9 +80,9 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
     '#default_value' => isset($wsconfig->title) ? $wsconfig->title : '',
     '#maxlength' => 255,
     '#required' => TRUE,
-    '#weight' => -5,    
+    '#weight' => -5,
   );
-  
+
   $form['name'] = array(
     '#type' => 'machine_name',
     '#title' => t('Web Service Configuration Machine Name'),
@@ -114,6 +114,14 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       '#size' => 80,
       '#maxlength' => 255,
       '#default_value' => !empty($wsconfig->data[$op]) ? $wsconfig->data[$op] : '',
+    );
+
+    $form['data'][$op . '_options'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Options'),
+      '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
+      '#default_value' => isset($form_state['values'][$op . '_options']) ? $form_state['values'][$op . '_options'] : isset($wsconfig->data[$op]['options']) ? $wsconfig->data[$op]['options']: '',
+      '#element_validate' => array('_wsconfig_element_validate_json'),
     );
   }
 
@@ -164,7 +172,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
     );
 
   }
-  
+
   // Add the field related form elements.
   $form_state['wsconfig'] = $wsconfig;
   field_attach_form('wsconfig', $wsconfig, $form, $form_state);
@@ -188,7 +196,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
     '#value' => t('Save Web Service Configuration'),
     '#submit' => $submit + array('wsconfig_edit_form_submit'),
   );
-  
+
   if (!empty($wsconfig->name)) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
@@ -212,7 +220,7 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
  */
 function wsconfig_edit_form_validate(&$form, &$form_state) {
   $wsconfig = $form_state['wsconfig'];
-  
+
   // Notify field widgets to validate their data.
   field_attach_form_validate('wsconfig', $wsconfig, $form, $form_state);
 
@@ -233,7 +241,7 @@ function wsconfig_edit_form_validate(&$form, &$form_state) {
 
 /**
  * Form API submit callback for the wsconfig form.
- * 
+ *
  * @todo remove hard-coded link
  */
 function wsconfig_edit_form_submit(&$form, &$form_state) {
@@ -243,10 +251,16 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
   $wsconfig->data['cache_default_time'] = (int) $form_state['values']['cache_default_time'];
   $wsconfig->data['cache_default_override'] = (int) $form_state['values']['cache_default_override'];
 
+
   // Save the wsconfig and go back to the list of wsconfigs
   foreach ($wsconfig->getOperations() as $operation) {
     $op = $wsconfig->getMethodKey($operation);
     $wsconfig->data[$op] = $wsconfig->$op;
+
+    // Save the defined options if any
+    if (!empty($form_state['values'][$op . '_options'])) {
+      $wsconfig->data[$op][$op . '_options'] = $form_state['values'][$op . '_options'];
+    }
   }
 
   if ($form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
@@ -275,7 +289,8 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
   if ($new_wsconfig or $form_state['triggering_element']['#id'] == 'edit-addmethod-submit') {
     $form_state['redirect'] = 'admin/structure/wsconfig/manage/' . $wsconfig->wsconfig_id . '/edit';
-  } else {
+  }
+  else {
     drupal_set_message(t('WsConfig saved'));
     $form_state['redirect'] = 'admin/structure/wsconfig';
   }
@@ -283,7 +298,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
 /**
  * Form API submit callback for the delete button.
- * 
+ *
  * @todo Remove hard-coded path
  */
 function wsconfig_form_submit_delete(&$form, &$form_state) {
@@ -295,14 +310,14 @@ function wsconfig_form_submit_delete(&$form, &$form_state) {
  * Form callback: to view a wsconfig.
  *
  * @param $wsconfig
- *   The wsconfig to use to view 
+ *   The wsconfig to use to view
  *
  */
 function wsconfig_view_form($form, &$form_state, $wsconfig) {
 
   $form_state['wsconfig'] = $wsconfig;
   $ws_endpoint = wsconfig_get_types($wsconfig->type);
-  
+
   //ws endpoint display
   $form['endpoint'] = array(
     '#type' => 'item',
@@ -342,13 +357,15 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#title' => t('Arguments'),
         '#description' => t('Arguments as a JSON array'),
         '#default_value' => isset($form_state['values']['arguments']) ? $form_state['values']['arguments'] : '',
+        '#element_validate' => array('_wsconfig_element_validate_json'),
       );
 
       $form[$op]['options'] = array(
         '#type' => 'textfield',
         '#title' => t('Options'),
         '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
-        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : '',
+        '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data[$op]['options']) ? $wsconfig->data[$op]['options']: '',
+        '#element_validate' => array('_wsconfig_element_validate_json'),
       );
 
       $form[$op]['submit'] = array(
@@ -357,7 +374,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#value' => $wsconfig->getMethodName($op),
       );
     }
-  } 
+  }
 
   return $form;
 }
@@ -371,7 +388,7 @@ function wsconfig_view_form_submit($form, &$form_state) {
 
   if (isset($form_state['triggering_element']['#name'])) {
     $op = $form_state['triggering_element']['#name'];
-    
+
     if (in_array($op, $wsconfig->getOperations())) {
       $variables = array();
       foreach ($form_state['values'] as $key => $value) {
@@ -428,7 +445,7 @@ function wsconfig_delete_form($form, &$form_state, $wsconfig) {
     t('Cancel'),
     'confirm'
   );
-  
+
   return $form;
 }
 
@@ -504,4 +521,13 @@ function wsconfig_set_breadcrumb() {
   );
 
   drupal_set_breadcrumb($breadcrumb);
+}
+
+/**
+ * Validate json input
+ */
+function _wsconfig_element_validate_json($element, &$form_state, $form) {
+  if (is_null(drupal_json_decode($element['#value'])) and !empty($element['#value'])) {
+    form_error($element, t('Invalid json format.'));
+  }
 }

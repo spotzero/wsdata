@@ -43,7 +43,6 @@ function wsdata_wsconfig_processor_info() {
   );
 }
 
-
 /**
  * Class definition for Web Service data parser
  */
