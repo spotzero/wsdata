@@ -59,7 +59,7 @@ class WsConfig extends Entity {
     if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
       return $this->connector->getEndpoint();
     }
-    
+
     return FALSE;
   }
 
@@ -67,6 +67,10 @@ class WsConfig extends Entity {
    * Method for calling a webservice method.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
+    if (isset($this->data['options']) and is_array($this->data['options'])) {
+      $options += $this->data['options'];
+    }
+
     $replacements = $this->getReplacements($type);
     $method = $this->getMethod($type, $replacement);
 
