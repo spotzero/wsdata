@@ -191,6 +191,11 @@ function wsfields_storage_field_storage_load($entity_type, $entities, $age, $fie
  * Implements hook_field_storage_write().
  */
 function wsfields_storage_field_storage_write($entity_type, $entity, $op, $fields) {
+//  dpm($entity_type);
+//  dpm($entity);
+//  dpm($op);
+//  dpm($fields);
+
   foreach ($fields as $field_id) {
     $field = field_info_field_by_id($field_id);
     $field_name = $field['field_name'];
@@ -198,29 +203,21 @@ function wsfields_storage_field_storage_write($entity_type, $entity, $op, $field
     $all_languages = field_available_languages($entity_type, $field);
     $field_languages = array_intersect($all_languages, array_keys((array) $entity->$field_name));
 
-    // Delete and insert, rather than update, in case a value was added.
-/*    if ($op == FIELD_STORAGE_UPDATE) {
-      // Delete languages present in the incoming $entity->$field_name.
-      // Delete all languages if $entity->$field_name is empty.
-      $languages = !empty($entity->$field_name) ? $field_languages : $all_languages;
-      if ($languages) {
-        db_delete($table_name)->condition('entity_type', $entity_type)->condition('entity_id', $id)->condition('language', $languages, 'IN')->execute();
-        db_delete($revision_name)->condition('entity_type', $entity_type)->condition('entity_id', $id)->condition('revision_id', $vid)->condition('language', $languages, 'IN')->execute();
-      }
-    }//*/
-
     foreach ($field_languages as $langcode) {
       $items = (array) $entity->{$field_name}[$langcode];
       $delta_count = 0;
-
+      dpm($items);
+      dpm($field['cardinality']);
+      dpm(count($items));
       // Trim the list of items down to what the field has been set to
       if ($field['cardinality'] != FIELD_CARDINALITY_UNLIMITED and count($items) > $field['cardinality']) {
         $items = array_chunk($items, count($items), TRUE);
         $items = reset($items);
       }
+      $stuff = array($entity_type, $entity, $op, $field, $items);
+      dpm($stuff);
+      wsfields_data_write($entity_type, $entity, $op, $field, $items);
     }
-
-    wsfields_data_write($entity_type, $entity, $op, $fields, $items);
   }
 }
 
