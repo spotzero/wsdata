@@ -142,27 +142,27 @@ abstract class WsConnector {
 
   abstract public function wscall($type, $method, $argument, $options);
 
-  public function create( $method, $object, $options = array()) {
+  public function create($method, $object, $options = array()) {
     $this->expires = 0;
     return $this->wscall('create', $method, $object, $options);
   }
 
-  public function read( $method, $id, $options = array()) {
+  public function read($method, $id, $options = array()) {
     $this->expires = 0;
     return $this->wscall('read', $method, $id, $options);
   }
 
-  public function update ( $id, $method, $object, $options = array()) {
+  public function update($id, $method, $object, $options = array()) {
     $this->expires = 0;
     return $this->wscall('update', $method, array( $id, $object), $options);
   }
 
-  public function delete ( $id, $method, $options = array()) {
+  public function delete($id, $method, $options = array()) {
     $this->expires = 0;
     return $this->wscall('delete', $method, $id, $options);
   }
 
-  public function index ($method, $options = array()) {
+  public function index($method, $options = array()) {
     $this->expires = 0;
     return $this->wscall('index', $method, array(), $options);
   }
@@ -170,7 +170,8 @@ abstract class WsConnector {
   public function expires() {
     if ($this->expires > 0) {
       return $this->expires;
-    } else {
+    }
+    else {
       return FALSE;
     }
   }

@@ -174,7 +174,7 @@ function _wsfields_general_data_alter(&$data, &$field) {
 }
 
 /**
- * Perform Service Request
+ * Perform read service call
  *
  * @param string $entity_type
  *  Machine name of a given entity type
@@ -218,7 +218,6 @@ function wsfields_data_load($entity_type, $field, $entity) {
   } else {
 
     // Replace the tokens in the "read" pattern with entity property values
-    $remotekeys = array();
     $ws_keys = array();
     if ( isset($entity->ws_keys) and !empty($entity->ws_keys)) {
       $ws_keys = unserialize($entity->ws_keys);
@@ -272,7 +271,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
       }
 
       // Read the data
-      $data = $wsconfig->call('read', $replacements, $remotekeys, $options);
+      $data = $wsconfig->call('read', $replacements, array(), $options);
 
       $processor->addData($data);
 
@@ -316,6 +315,108 @@ function wsfields_data_load($entity_type, $field, $entity) {
   }
 }
 
+/**
+ * Perform write service call
+ *
+ * @param string $entity_type
+ *  Machine name of a given entity type
+ * @param array $field
+ *  Field definition to load data into
+ * @param object $entity
+ *  Entity object
+ * @return array|boolean
+ *  Returns the formatted field data, FALSE otherwise.
+ */
+function wsfields_data_write($entity_type, $entity, $op, $fields, $items) {
+  if (WSFIELDS_DEBUG) debug("WSFields loading " . $entity->type . "->" . $field['field_name'] . " of type " . $field['type']);
+
+  if (!isset($field['storage']['settings']['wsconfig_name'])) {
+    if (WSFIELDS_DEBUG) debug("wsconfig_name not set, wsfield cannot continue.");
+    return FALSE;
+  }
+
+  // Load required settings from the field instance
+  $wsconfig_name = $field['storage']['settings']['wsconfig_name'];
+  $remotename = $field['storage']['settings']['remotekey'];
+  $passaccepts = isset($field['storage']['settings']['passaccepts']) ? $field['storage']['settings']['passaccepts'] : TRUE;
+  $processor = $field['storage']['settings']['processor'];
+  $propertymap = $field['storage']['settings']['propertymap']['read'];
+
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  $cid = 'wsfield:' . $entity_type . ':' . $id . ':' . $field['field_name'];
+  $expirecid = 'wsfield_expire:' . $entity_type . ':' . $id;
+
+  $cachefield = cache_get($cid, 'cache_field');
+  if ($cachefield) {
+    return $cachefield->data;
+  }
+
+  // Load the web service configuration
+  $wsconfig = wsconfig_load_by_name($wsconfig_name);
+
+  if (!is_object($wsconfig)) {
+    if (WSFIELDS_DEBUG) debug("Couldn't find wsconfig: " . $wsconfig_name);
+    return FALSE;
+  } else {
+
+    // Replace the tokens in the "read" pattern with entity property values
+    $ws_keys = array();
+    if ( isset($entity->ws_keys) and !empty($entity->ws_keys)) {
+      $ws_keys = unserialize($entity->ws_keys);
+    }
+
+    $replacements = array();
+
+    foreach ($propertymap as $pattern => $entity_property) {
+      // If we don't have a value for a key, exit since we will not be able to resolve the data
+      $value = FALSE;
+      if (isset($ws_keys[$entity_property])) {
+        $value = $ws_keys[$entity_property];
+      } elseif (isset($entity->$entity_property)) {
+        $value = $entity->$entity_property;
+      } else {
+        if (WSFIELDS_DEBUG) debug("Couldn't find pattern: " . $pattern);
+        return FALSE;
+      }
+
+      // Replace the placeholders in the URL pattern with values from property key map
+      $replacements[$pattern] = $value;
+    }
+
+    if (!class_exists($processor)) {
+      watchdog('wsfields', 'Web service fields cannot create class @processor. Class not found.', array('@processor' => $processor), WATCHDOG_ERROR);
+      drupal_set_message(t("Unable to build data processor. See logs for more details."), 'error', FALSE);
+      return FALSE;
+    }
+
+    // Create a new processor
+    $processor = new $processor(array(), $entity);
+
+    // Check the subclass of the processor
+    if (!is_subclass_of($processor, 'WsData')) {
+      drupal_set_message(t("Unable to build data processor. See logs for more details"), 'error', FALSE);
+      watchdog('wsfields', " Unable to create web service processor. Class @class isn't a sub class of WsData", array('@class' => $processor), WATCHDOG_ERROR);
+      return FALSE;
+    }
+
+    // Attempt the connection
+    if ($wsconfig->connector) {
+      $options = array();
+
+      if ($passaccepts) {
+        // Load the list of accepted data formats
+        $type = $processor->accepts();
+
+        // Select the first option
+        // @todo come up with a way for the objects to decide which accept type it should use
+        $options['accept-type'] = array_pop($type);
+      }
+
+      // Write the data
+      $data = $wsconfig->call($op, $replacements, $items, $options);
+    }
+  }
+}
 
 /**
  * Implements hook_wsfields_entity_expires().
