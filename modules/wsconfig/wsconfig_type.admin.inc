@@ -49,11 +49,20 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
       $connectors_options[$connector['class']] = t($connector['name']);
     }
 
+    if (empty($connectors_options)) {
+      drupal_set_message(
+        t('There are currently no Service Connectors available, a Service Connector is required to create a WS Configuration Type.
+Service Connectors provide the implementation for connecting remote data.<br><br>
+See the WSData project page on Drupal.org for a list of modules that provide Service Connectors.'), 'warning'
+      );
+    }
+
     $form['data']['connector'] = array(
       '#type' => 'select',
       '#title' => t('Service Connector'),
       '#description' => t('Connector to use to make the web service requests.'),
       '#options' => $connectors_options,
+      '#required' => TRUE,
       '#default_value' => !empty($wsconfig_type->data['connector']) ? $wsconfig_type->data['connector'] : '',
     );
 
