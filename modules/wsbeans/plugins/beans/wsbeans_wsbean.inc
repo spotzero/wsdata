@@ -213,7 +213,7 @@ class WsBean extends BeanPlugin {
     }
 
     // Create a new processor
-    $processor = new $processor($data, $contexts);
+    $processor = new $processor($data, $bean);
     $content['bean'][$bean->delta]['form'] = $processor->getData();
     return $content;
   }

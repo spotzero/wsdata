@@ -355,6 +355,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#description' => t('Arguments as a JSON array'),
         '#default_value' => isset($form_state['values']['arguments']) ? $form_state['values']['arguments'] : '',
         '#element_validate' => array('_wsconfig_element_validate_json'),
+        '#maxlength' => 512,
       );
 
       $form[$op]['options'] = array(
@@ -363,6 +364,7 @@ function wsconfig_view_form($form, &$form_state, $wsconfig) {
         '#description' => t('Options as a JSON array  (Example: {"headers":{"Content-Type":"application/json"}} )'),
         '#default_value' => isset($form_state['values']['options']) ? $form_state['values']['options'] : isset($wsconfig->data['options'][$op]) ? drupal_json_encode($wsconfig->data['options'][$op]): '',
         '#element_validate' => array('_wsconfig_element_validate_json'),
+        '#maxlength' => 512,
       );
 
       $form[$op]['submit'] = array(
