@@ -85,7 +85,15 @@ class WsConfig extends Entity {
         }
       }
     }
-    return $this->connector->wscall($type, $method, $argument, $options);
+    $start_time = microtime(true);
+
+    $result = $this->connector->wscall($type, $method, $argument, $options);
+
+    if (module_exists('ws_performance')) {
+      $run_time = round((microtime(true) - $start_time) * 1000);
+      ws_performance_record_performance($this, $type, $method, $run_time, strlen($result), array('replacement' => $replacement, 'arguments' => $argument, 'options' => $options));
+    }
+    return $result;
   }
 
   /**

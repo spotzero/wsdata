@@ -1,0 +1,7 @@
+name = Web Service Performance
+description = Store performance information for WS calls
+core = 7.x
+package = Web Service Data
+
+dependencies[] = wsconfig
+
