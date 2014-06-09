@@ -17,6 +17,11 @@ function ws_performance_config_form($form, &$form_state) {
     '#title' => t('Log all results data retrived by the WSConfig call'),
     '#default_value' => variable_get('ws_performance_store_result', FALSE),
   );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );  
   return $form;
 }
 
@@ -36,7 +41,7 @@ function ws_performance_config_form_submit($form, &$form_state) {
 
 function ws_performance_overview() {
   $form = array();
-
+  $results = db_query('select wsconfig_name, count(0) as total, avg(size) as size, avg(wait) as wait, min(run) as run from {ws_performance} group by wsconfig_name;');
   return $form;
 }
 

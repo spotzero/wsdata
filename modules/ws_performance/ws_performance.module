@@ -62,6 +62,8 @@ function ws_performance_menu() {
     'access arguments' => array('view specific ws performance reports'),
     'file' => 'ws_performance.admin.inc',
   );
+
+  return $items;
 }
 
 function ws_performance_record_performance($wsconfig, $type, $method, $wait, $data, &$result) {
@@ -81,7 +83,7 @@ function ws_performance_record_performance($wsconfig, $type, $method, $wait, $da
   }
 
   if (variable_get('ws_performance_store_data', FALSE)) {
-    $record['data'] = $data;
+    $record['data'] = serialize($data);
   }
 
   if (variable_get('ws_performance_store_result', FALSE)) {
