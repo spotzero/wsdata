@@ -91,7 +91,7 @@ class WsConfig extends Entity {
 
     if (module_exists('ws_performance')) {
       $run_time = round((microtime(true) - $start_time) * 1000);
-      ws_performance_record_performance($this, $type, $method, $run_time, strlen($result), array('replacement' => $replacement, 'arguments' => $argument, 'options' => $options));
+      ws_performance_record_performance($this, $type, $method, $run_time, array('replacement' => $replacement, 'arguments' => $argument, 'options' => $options), $result);
     }
     return $result;
   }

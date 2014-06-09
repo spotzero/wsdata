@@ -32,8 +32,7 @@ function ws_performance_schema() {
         'description' => 'The method that was actually called.',
         'type' => 'text',
         'size' => 'normal',
-        'not null' => TRUE,
-        'default' => '',
+        'not null' => FALSE,
       ),
       'run' => array(
         'description' => 'The Unix timestamp when the wsconfig was run.',
@@ -59,6 +58,12 @@ function ws_performance_schema() {
         'size' => 'big',
         'serialize' => TRUE,
         'description' => 'A serialized array of additional data.',
+      ),
+      'result' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => 'Result.',
       ),
     ),
   );

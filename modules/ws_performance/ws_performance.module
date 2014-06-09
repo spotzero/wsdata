@@ -64,19 +64,28 @@ function ws_performance_menu() {
   );
 }
 
-function ws_performance_record_performance($wsconfig, $type, $method, $wait, $size, $data) {
+function ws_performance_record_performance($wsconfig, $type, $method, $wait, $data, &$result) {
   $record = array(
     'wsconfig_name' => $wsconfig->name,
     'wsconfig_type' => $type,
-    'wsconfig_method' => $method,
+    'wsconfig_method' => NULL,
     'run' => time(),
     'wait' => $wait,
-    'size' => $size,
+    'size' => strlen($result),
     'data' => NULL,
+    'result' => NULL,
   );
 
-  if (variable_get('WS_PERFORMANCE_STORE_DATA', FALSE)) {
-    $record['data'] = serialize($data);
+  if (variable_get('ws_performance_store_method', FALSE)) {
+    $record['wsconfig_method'] = $method;
+  }
+
+  if (variable_get('ws_performance_store_data', FALSE)) {
+    $record['data'] = $data;
+  }
+
+  if (variable_get('ws_performance_store_result', FALSE)) {
+    $record['result'] = $result;
   }
 
   drupal_write_record('ws_performance', $record);
