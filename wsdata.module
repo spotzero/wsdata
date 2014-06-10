@@ -59,10 +59,10 @@ abstract class WsData {
   // runs amok!
   protected $languages = array();
 
-  public function __construct($data = NULL, &$entity = NULL) {
+  public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
     if (isset($data) and $data) {
-      $this->addData($data);
+      $this->addData($data, $lang);
     }
   }
 
