@@ -65,6 +65,21 @@ class WsConfig extends Entity {
 
   /**
    * Method for calling a webservice method.
+   *
+   * @param string $type
+   *  Name of the type of call. Generally "CRUD" but could include other methods
+   * @param array $replacements [optional]
+   *  Replacements values for placeholders in the request URI
+   * @param array $argument [optional]
+   *  Payload data for POST requests. Ex: body => 'body data'
+   * @param array $options [optional]
+   *  Options to pass to the connector. Ex: header data, special triggers.
+   *  See the documentation for your given connector
+   * @see http://drupal.org/project/restclient
+   * @param string $string [reference]
+   *  Reference to the URL which was called
+   * @return array
+   *  Returns the result of the method call.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
     if (isset($this->data['options']) and is_array($this->data['options'])) {
