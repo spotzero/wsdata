@@ -54,6 +54,7 @@ function wsdata_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_header_form',
       'file' => 'wsdata.admin.inc',
+      'module' => 'wsdata', // @todo automatically fill in the module based on the invoke
     ),
     'argument' => array(
       'settings' => array(
@@ -61,6 +62,7 @@ function wsdata_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_argument_form',
       'file' => 'wsdata.admin.inc',
+      'module' => 'wsdata',
     ),
     'path' => array(
       'settings' => array(
@@ -68,6 +70,7 @@ function wsdata_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_path_form',
       'file' => 'wsdata.admin.inc',
+      'module' => 'wsdata',
     ),
     'uri' => array(
       'settings' => array(
@@ -75,6 +78,7 @@ function wsdata_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_path_form',
       'file' => 'wsdata.admin.inc',
+      'module' => 'wsdata',
     ),
     'default' => array(),
   );
@@ -227,6 +231,23 @@ abstract class WsConnector {
   public function defaultCache($mintime = 0, $override = FALSE) {
     $this->cacheDefaultTime = $mintime;
     $this->cacheDefaultOverride = $override;
+  }
+
+  /**
+   * Get the configuration form for this WsConnector
+   */
+  public function getForm() {
+    // By default, we automatically load the languagePlugin forms
+    // @todo rethink this...
+    $plugin = $this->getEnabledLanguagePlugin();
+    $form = array();
+    if (!empty($plugin)) {
+      if (!empty($plugin['form']) and !empty($plugin['file']) and !empty($plugin['module'])) {
+        module_load_include('', $plugin['module'], $plugin['file']);
+        $form += $plugin['form'];
+      }
+    }
+    return $form;
   }
 
   abstract function getMethods();
