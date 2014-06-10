@@ -1,0 +1,107 @@
+<?php
+/**
+ * @file
+ * Administrator forms for wsdata
+ */
+
+/**
+ * Language Plugins
+ */
+
+/**
+ * Header language plugin form
+ */
+function wsdata_language_plugin_header_form($form, &$form_state) {
+  $settings = $form_state['language_plugin']['settings'];
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('Name of the header to set. Default is "Accept-Language"'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#default_value' => $settings['name'],
+  );
+
+  $languages = language_list();
+
+  foreach ($langauges as $language) {
+    $form[$language->language] = array(
+      '#type' => 'textfield',
+      '#title' => $language->native,
+      '#description' => t('Value to use when requesting @lang values.', array('@lang' => $language->native)),
+      '#size' => 40,
+      '#maxlength' => 255,
+      '#default_value' => isset($settings[$language->language]) ? $settings[$language->language] : $language->language,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Argument language plugin form
+ */
+function wsdata_language_plugin_argument_form($form, &$form_state) {
+  $settings = $form_state['language_plugin']['settings'];
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('Name of the argument to set. Default is "lang"'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#default_value' => isset($settings['name']) ? $settings['name'] : 'lang',
+  );
+
+  $languages = language_list();
+
+  foreach ($langauges as $language) {
+    $form[$language->language] = array(
+      '#type' => 'textfield',
+      '#title' => $language->native,
+      '#description' => t('Value to use when requesting @lang values.', array('@lang' => $language->native)),
+      '#size' => 40,
+      '#maxlength' => 255,
+      '#default_value' => isset($settings[$language->language]) ? $settings[$language->language] : $language->language,
+    );
+  }
+
+  return $form;
+}
+
+/**
+ * Path language plugin form
+ */
+function wsdata_language_plugin_path_form($form, &$form_state) {
+  $settings = $form_state['language_plugin']['settings'];
+
+  $form['position'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Position'),
+    '#description' => t('Position within the path to insert the language value.'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#default_value' => isset($settings['position']) ? $settings['position'] : 0,
+    '#element_validate' => array('element_validate_integer'),
+  );
+
+  $languages = language_list();
+
+  foreach ($langauges as $language) {
+    $form[$language->language] = array(
+      '#type' => 'textfield',
+      '#title' => $language->native,
+      '#description' => t('Value to use when requesting @lang values.', array('@lang' => $language->native)),
+      '#size' => 40,
+      '#maxlength' => 255,
+      '#default_value' => isset($settings[$language->language]) ? $settings[$language->language] : $language->language,
+    );
+  }
+
+  return $form;
+}
+
+function wsdata_language_plugin_uri_form($form, &$form_state) {
+  // @todo
+}
