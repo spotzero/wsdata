@@ -53,6 +53,12 @@ abstract class WsData {
   // Storage for error information
   protected $error;
 
+  // Languages
+  // We track the imported languages separately in case a data
+  // key in the data matches a language key and hence confusion
+  // runs amok!
+  protected $languages = array();
+
   public function __construct($data = NULL, &$entity = NULL) {
     $this->entity = $entity;
     if (isset($data) and $data) {
@@ -74,13 +80,30 @@ abstract class WsData {
    *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
    *  N.B.  This function can be overridden to work with whatever the ->parse function
    *  is implemented to return.
+   *
+   * @param string $key [optional]
+   *  Data key to load
+   * @param string $lang [optional]
+   *  Language key
+   * @return mixed|boolean
+   *  Returns the requested data, FALSE otherwise.
    */
-  public function getData($key = '') {
+  public function getData($key = '', $lang = NULL) {
     if (is_array($this->data)) {
       if (empty($key)) {
-        return $this->data;
+        if (is_null($lang) or !array_key_exists($lang, $this->languages)) {
+          return $this->data;
+        }
+        else {
+          return $this->data[$lang];
+        }
       }
-      $return = $this->data;
+      if (!is_null($lang) and array_key_exists($lang, $this->languages)) {
+        $return = $this->data[$lang];
+      }
+      else {
+        $return = $this->data;
+      }
       $location = explode(":", $key);
       foreach ($location as $l) {
         if (isset($return[$l])) {
@@ -97,8 +120,28 @@ abstract class WsData {
 
   /**
    * Add data to an empty object or replace all existing data
+   *
+   * @param mixed $data
+   *  A set of data to parse.
+   * @param string $language [optional]
+   *  Language key for the data being added
+   *
+   *  In some cases, it may require multiple web service requests
+   *  to load language specific content. You can add each
+   *  request data result to the same processor object. getData()
+   *  should then return the merged data keyed by language.
+   *
+   *  If your webservice returns all data for all languages in
+   *  a single request, leave $lang to NULL (not LANGUAGE_NONE).
+   *  LANGUAGE_NONE is considered a valid language and triggers
+   *  the language keying.
    */
-  public function addData($data) {
+  public function addData($data, $lang = NULL) {
+    if (!is_null($lang) and !empty($data)) {
+      $this->languages[$lang] = $lang;
+      $this->data[$lang] = $this->parse($data, $lang);
+    }
+
     $this->data = $this->parse($data);
   }
 
