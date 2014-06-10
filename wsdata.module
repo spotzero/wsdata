@@ -47,7 +47,37 @@ function wsdata_wsconfig_processor_info() {
  * Implements hook_wsdata_language_plugin().
  */
 function wsdata_wsdata_language_plugin() {
-
+  return array(
+    'header' => array(
+      'settings' => array(
+        'name' => 'Accept-Language',
+      ),
+      'form' => 'wsdata_language_plugin_header_form',
+      'file' => 'wsdata.admin.inc',
+    ),
+    'argument' => array(
+      'settings' => array(
+        'name' => 'lang',
+      ),
+      'form' => 'wsdata_language_plugin_argument_form',
+      'file' => 'wsdata.admin.inc',
+    ),
+    'path' => array(
+      'settings' => array(
+        'position' => 0,
+      ),
+      'form' => 'wsdata_language_plugin_path_form',
+      'file' => 'wsdata.admin.inc',
+    ),
+    'uri' => array(
+      'settings' => array(
+        // Empty for now
+      ),
+      'form' => 'wsdata_language_plugin_path_form',
+      'file' => 'wsdata.admin.inc',
+    ),
+    'default' => array(),
+  );
 }
 
 /**

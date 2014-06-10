@@ -334,7 +334,6 @@ class WsConfigType extends Entity {
   }
 }
 
-
 /**
  * The Controller for wsconfig type entities
  */
