@@ -160,6 +160,7 @@ abstract class WsConnector {
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;
   protected $endpoint;
+  protected $languagePlugins = array();
 
   public function getEndpoint() {
     return $this->endpoint;
@@ -174,6 +175,13 @@ abstract class WsConnector {
 
   public function supportsCaching() {
     return FALSE;
+  }
+
+  /**
+   * Return the list of supported language handling plugins
+   */
+  public function getLanguagePlugins() {
+    return $this->languagePlugins;
   }
 
   public function defaultCache($mintime = 0, $override = FALSE) {
