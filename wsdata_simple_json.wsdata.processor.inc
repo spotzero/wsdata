@@ -11,7 +11,6 @@ class wsdata_simple_json_processor extends WsData {
     return json_decode($data, TRUE);
   }
 
-
    function accepts() {
     return array('json');
   }
