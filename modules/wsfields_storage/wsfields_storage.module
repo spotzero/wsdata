@@ -206,16 +206,16 @@ function wsfields_storage_field_storage_write($entity_type, $entity, $op, $field
     foreach ($field_languages as $langcode) {
       $items = (array) $entity->{$field_name}[$langcode];
       $delta_count = 0;
-      dpm($items);
-      dpm($field['cardinality']);
-      dpm(count($items));
+      //dpm($items);
+      //dpm($field['cardinality']);
+      //dpm(count($items));
       // Trim the list of items down to what the field has been set to
       if ($field['cardinality'] != FIELD_CARDINALITY_UNLIMITED and count($items) > $field['cardinality']) {
         $items = array_chunk($items, count($items), TRUE);
         $items = reset($items);
       }
       $stuff = array($entity_type, $entity, $op, $field, $items);
-      dpm($stuff);
+      //dpm($stuff);
       wsfields_data_write($entity_type, $entity, $op, $field, $items);
     }
   }
