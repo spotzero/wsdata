@@ -44,6 +44,13 @@ function wsdata_wsconfig_processor_info() {
 }
 
 /**
+ * Implements hook_wsdata_language_plugin().
+ */
+function wsdata_wsdata_language_plugin() {
+
+}
+
+/**
  * Class definition for Web Service data parser
  */
 abstract class WsData {
@@ -57,7 +64,7 @@ abstract class WsData {
   // We track the imported languages separately in case a data
   // key in the data matches a language key and hence confusion
   // runs amok!
-  protected $languages = array();
+  protected $languages = array('default');
 
   public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
@@ -160,7 +167,10 @@ abstract class WsConnector {
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;
   protected $endpoint;
-  protected $languagePlugins = array();
+  // All connectors support the default plugin by default.
+  // The plugin essentially means all the language data is
+  // in the single request.
+  protected $languagePlugins = array('wsdata_language_plugin_default');
 
   public function getEndpoint() {
     return $this->endpoint;
