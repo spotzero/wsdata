@@ -20,6 +20,31 @@ function wsfields_permission() {
 }
 
 /**
+ * Implements wsfields_data_alter().
+ */
+function wsfields_data_alter($data, $field) {
+  // Ensure the data is keyed by language if translatable
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
+  }
+  else {
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+
+    $data = array(
+      LANGUAGE_NONE => $data,
+    );
+  }
+
+  foreach($languages as $lang => $language) {
+    if (!is_array($data[$lang])) {
+      $data[$lang] = array($data[$lang]);
+    }
+  }
+
+  return $data;
+}
+
+/**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
 function wsfields_wsfields_text_data_alter($data, $field) {
@@ -147,26 +172,16 @@ function _wsfields_general_data_alter(&$data, &$field) {
 
   if (!empty($field['translatable'])) {
     $languages = language_list();
-    foreach($languages as $language) {
-      // Some languages may not have a value
-      if (!is_array($data[$language->language])) {
-        $data[$language->language] = array($data[$language->language]);
-      }
-
-      foreach ($data[$language->language] as $lang_data) {
-        $field_data[$language->language][] = array('value' => $lang_data);
-      }
-
-    }
   }
   else {
-    if (!is_array($data)) {
-      $data = array($data);
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+  }
+
+  foreach($languages as $lang => $language) {
+    foreach ($data[$lang] as $key => $lang_data) {
+      $field_data[$lang][$key] = array('value' => $lang_data);
     }
 
-    foreach ($data as $lang_data) {
-      $field_data[LANGUAGE_NONE][] = array('value' => $lang_data);
-    }
   }
 
   $data = $field_data;
@@ -291,6 +306,7 @@ function wsfields_data_load($entity_type, $field, $entity) {
 
       // Build the field format
       if (!is_null($data) && FALSE !== $data) {
+        $data = module_invoke_all('wsfields_data_alter', $data, $field);
         $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
 
         // Display debug information if required
