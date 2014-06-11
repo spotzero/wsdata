@@ -79,8 +79,22 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
       '#default_value' => !empty($wsconfig_type->data['language_plugin']) ? $wsconfig_type->data['language_plugin'] : 'default',
     );
 
+    // Load the plugin settings form
     if (!empty($wsconfig_type->data['language_plugin'])) {
-
+      $plugin = wsdata_get_language_plugins($wsconfig_type->data['language_plugin']);
+      if (FALSE !== $plugin) {
+        module_load_include('', $plugin['module'], $plugin['file']);
+        $form['data']['language_plugin']['settings'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Language Plugin Settings'),
+          '#collapsible' => FALSE,
+          '#collapsed' => FALSE,
+        );
+        $plugin_form = $plugin['form']();
+        foreach ($plugin_form as $name => $form_element) {
+          $form['data']['language_plugin']['settings'][$name] = $form_element;
+        }
+      }
     }
   }
 
