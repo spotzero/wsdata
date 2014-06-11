@@ -358,6 +358,23 @@ class WsConfigType extends Entity {
   public function __construct($values = array()) {
     parent::__construct($values, 'wsconfig_type');
   }
+
+  /**
+   * Gets the enabled language plugin
+   *
+   * @return array|boolean
+   *  Returns the language plugin and settings, FALSE otherwise.
+   */
+  public function getEnabledLanguagePlugin() {
+    $plugin = FALSE;
+    if (!empty($this->data['language plugin'])) {
+      $plugin = array(
+        $this->data['language plugin'] => $this->data['language plugin settings'],
+      );
+    }
+
+    return $plugin;
+  }
 }
 
 /**
