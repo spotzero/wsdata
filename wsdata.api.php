@@ -51,7 +51,9 @@ function hook_wsdata_language_plugin() {
         'fr' => 'fr',
       ),
       'form' => 'wsdata_language_plugin_header_form',
-      'file' => 'wsdata.admin.inc',
+      'file' => 'wsdata.admin',
+      'file_type' => 'inc',
+      'module' => 'wsdata',
     ),
     /**
      * Argument language plugin
@@ -65,7 +67,9 @@ function hook_wsdata_language_plugin() {
         'fr' => 'fr',
       ),
       'form' => 'wsdata_language_plugin_argument_form',
-      'file' => 'wsdata.admin.inc',
+      'file' => 'wsdata.admin',
+      'file_type' => 'inc',
+      'module' => 'wsdata',
     ),
     /**
      * Path language plugin
@@ -84,7 +88,9 @@ function hook_wsdata_language_plugin() {
         'fr' => 'fr',
       ),
       'form' => 'wsdata_language_plugin_path_form',
-      'file' => 'wsdata.admin.inc',
+      'file' => 'wsdata.admin',
+      'file_type' => 'inc',
+      'module' => 'wsdata',
     ),
     /**
      * URI language plugin
@@ -97,7 +103,9 @@ function hook_wsdata_language_plugin() {
         'fr' => 'fr.example.com',
       ),
       'form' => 'wsdata_language_plugin_path_form',
-      'file' => 'wsdata.admin.inc',
+      'file' => 'wsdata.admin',
+      'file_type' => 'inc',
+      'module' => 'wsdata',
     ),
     /**
      * Default language plugin
@@ -105,6 +113,12 @@ function hook_wsdata_language_plugin() {
      * By default, do nothing. Assume the WsProcessor will have all the language data
      * in a single request.
      */
-    'default' => array(),
+    'default' => array(
+      'settings' => array(),
+      'form' => 'wsdata_language_plugin_default_form',
+      'file' => 'wsdata.admin',
+      'file_type' => 'inc'
+      'module' => 'wsdata',
+    ),
   );
 }

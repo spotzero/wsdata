@@ -83,7 +83,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
     if (!empty($wsconfig_type->data['language_plugin'])) {
       $plugin = wsdata_get_language_plugins($wsconfig_type->data['language_plugin']);
       if (FALSE !== $plugin) {
-        module_load_include('', $plugin['module'], $plugin['file']);
+        module_load_include($plugin['file_type'], $plugin['module'], $plugin['file']);
         $form['data']['language_plugin']['settings'] = array(
           '#type' => 'fieldset',
           '#title' => t('Language Plugin Settings'),
