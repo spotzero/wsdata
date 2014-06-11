@@ -215,7 +215,8 @@ function wsfields_data_load($entity_type, $field, $entity) {
   if (!is_object($wsconfig)) {
     if (WSFIELDS_DEBUG) debug("Couldn't find wsconfig: " . $wsconfig_name);
     return FALSE;
-  } else {
+  }
+  else {
 
     // Replace the tokens in the "read" pattern with entity property values
     $ws_keys = array();

@@ -69,7 +69,16 @@ class WsConfig extends Entity {
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
     if (isset($this->data['options']) and is_array($this->data['options'])) {
       $options += $this->data['options'][$this->getMethodKey($type)];
+      // Pass a reference to the config to the connector
     }
+
+    $options['wsconfig'] = $this;
+    $options['language_plugin'] = 'header'; // #todo get the configured language plugin
+    $options['language_plugin_settings'] = array(  // #todo get the configured language plugin settings
+      'header' => 'Accept-Language',
+      'en' => 'en',
+      'fr' => 'fr',
+    );
 
     $replacements = $this->getReplacements($type);
     $method = $this->getMethod($type, $replacement);
