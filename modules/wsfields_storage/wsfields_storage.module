@@ -191,11 +191,6 @@ function wsfields_storage_field_storage_load($entity_type, $entities, $age, $fie
  * Implements hook_field_storage_write().
  */
 function wsfields_storage_field_storage_write($entity_type, $entity, $op, $fields) {
-//  dpm($entity_type);
-//  dpm($entity);
-//  dpm($op);
-//  dpm($fields);
-
   foreach ($fields as $field_id) {
     $field = field_info_field_by_id($field_id);
     $field_name = $field['field_name'];
@@ -206,16 +201,12 @@ function wsfields_storage_field_storage_write($entity_type, $entity, $op, $field
     foreach ($field_languages as $langcode) {
       $items = (array) $entity->{$field_name}[$langcode];
       $delta_count = 0;
-      dpm($items);
-      dpm($field['cardinality']);
-      dpm(count($items));
       // Trim the list of items down to what the field has been set to
       if ($field['cardinality'] != FIELD_CARDINALITY_UNLIMITED and count($items) > $field['cardinality']) {
         $items = array_chunk($items, count($items), TRUE);
         $items = reset($items);
       }
       $stuff = array($entity_type, $entity, $op, $field, $items);
-      dpm($stuff);
       wsfields_data_write($entity_type, $entity, $op, $field, $items);
     }
   }
@@ -226,7 +217,6 @@ function wsfields_storage_field_storage_write($entity_type, $entity, $op, $field
  */
 function wsfields_storage_field_storage_query($query) {
   $groups = array();
-  //dpm($query);
   if ($query->age == FIELD_LOAD_CURRENT) {
     $id_key = 'entity_id';
   }

@@ -143,6 +143,8 @@ function wsfields_wsfields_list_text_data_alter($data, $field) {
  *  Field settings
  */
 function _wsfields_general_data_alter(&$data, &$field) {
+  dpm($data);
+  dpm($field);
   // Build the field array as required
   if (!is_array($data)) {
     $field_data[LANGUAGE_NONE][] = array('value' => $data);

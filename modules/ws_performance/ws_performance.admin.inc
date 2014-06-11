@@ -21,7 +21,7 @@ function ws_performance_config_form($form, &$form_state) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-  );  
+  );
   return $form;
 }
 
@@ -74,7 +74,7 @@ function ws_performance_overview() {
     '#header' => $header,
     '#rows' => $rows,
   );
-  
+
   return $form;
 }
 
