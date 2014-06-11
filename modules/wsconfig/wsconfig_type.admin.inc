@@ -80,7 +80,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
     );
 
     if (!empty($wsconfig_type->data['language_plugin'])) {
-      // @todo get the language plugin settings form
+
     }
   }
 

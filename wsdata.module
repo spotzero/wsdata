@@ -80,7 +80,12 @@ function wsdata_wsdata_language_plugin() {
       'file' => 'wsdata.admin.inc',
       'module' => 'wsdata',
     ),
-    'default' => array(),
+    'default' => array(
+      'settings' => array(),
+      'form' => 'wsdata_language_plugin_default_form',
+      'file' => 'wsdata.admin.inc',
+      'module' => 'wsdata',
+    ),
   );
 }
 

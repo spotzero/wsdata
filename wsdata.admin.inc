@@ -9,6 +9,19 @@
  */
 
 /**
+ * Default language plugin form
+ */
+function wsdata_language_plugin_default_form($form, &$form_state) {
+  $form['value'] = array(
+    '#markup' => t('No configuration required.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+
+  return $form;
+}
+
+/**
  * Header language plugin form
  */
 function wsdata_language_plugin_header_form($form, &$form_state) {
