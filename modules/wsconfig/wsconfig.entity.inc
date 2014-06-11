@@ -89,7 +89,7 @@ class WsConfig extends Entity {
 
     // Add the language handling if a language was requested
     if (!empty($options['language'])) {
-      $plugin = $this->getEnabledLanguagePlugin();
+      $plugin = $this->getLanguagePlugin();
       $options['language plugin'] = $plugin;
     }
 
