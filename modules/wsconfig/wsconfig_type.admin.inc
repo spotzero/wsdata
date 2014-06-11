@@ -66,9 +66,26 @@ See the WSData project page on Drupal.org for a list of modules that provide Ser
       '#default_value' => !empty($wsconfig_type->data['connector']) ? $wsconfig_type->data['connector'] : '',
     );
 
+    if (!empty($wsconfig_type->data['connector'])) {
+      $language_plugins = $wsconfig_type->data['connector']->getLanguagePlugins();
+
+      $form['data']['language_plugin'] = array(
+        '#type' => 'select',
+        '#title' => t('Language Handler Plugin'),
+        '#description' => t('Method to use to retrieve multilingual content.'),
+        '#options' => $language_plugins,
+        '#required' => TRUE,
+        '#default_value' => !empty($wsconfig_type->data['language_plugin']) ? $wsconfig_type->data['language_plugin'] : 'default',
+      );
+
+      if (!empty($wsconfig_type->data['language_plugin'])) {
+        // @todo get the language plugin settings form
+      }
+    }
+
     // @todo add token support
     // @todo list available tokens
-    
+
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
       '#type' => 'submit',
