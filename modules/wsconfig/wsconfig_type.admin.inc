@@ -64,13 +64,17 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
   );
 
   if (!empty($wsconfig_type->data['connector'])) {
-    $language_plugins = $wsconfig_type->data['connector']->getLanguagePlugins();
+    $dummy_connector = new $wsconfig_type->data['connector']($wsconfig_type->data['endpoint']);
+    $language_plugins = $dummy_connector->getLanguagePlugins();
+    foreach ($language_plugins as $language_plugin) {
+      $language_options[$language_plugin] = $language_plugin;
+    }
 
     $form['data']['language_plugin'] = array(
       '#type' => 'select',
       '#title' => t('Language Handler Plugin'),
       '#description' => t('Method to use to retrieve multilingual content.'),
-      '#options' => $language_plugins,
+      '#options' => $language_options,
       '#required' => TRUE,
       '#default_value' => !empty($wsconfig_type->data['language_plugin']) ? $wsconfig_type->data['language_plugin'] : 'default',
     );
