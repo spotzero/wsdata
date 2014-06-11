@@ -73,12 +73,16 @@ class WsConfig extends Entity {
 
     // Pass a reference to the config to the connector
     $options['wsconfig'] = $this;
-    $options['language plugin'] = 'header'; // #todo get the configured language plugin
-    $options['language plugin settings'] = array(  // #todo get the configured language plugin settings
-      'header' => 'Accept-Language',
-      'en' => 'en',
-      'fr' => 'fr',
-    );
+
+    // Add the language handling if a language was requested
+    if (!empty($options['language'])) {
+      $options['language plugin'] = 'header'; // #todo get the configured language plugin
+      $options['language plugin settings'] = array(  // #todo get the configured language plugin settings
+        'header' => 'Accept-Language',
+        'en' => 'en',
+        'fr' => 'fr',
+      );
+    }
 
     $replacements = $this->getReplacements($type);
     $method = $this->getMethod($type, $replacement);
