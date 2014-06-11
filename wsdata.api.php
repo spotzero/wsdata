@@ -47,7 +47,7 @@ function hook_wsdata_language_plugin() {
     'header' => array(
       'settings' => array(
         'name' => 'Accept-Language',
-        'en' => 'en',
+        'en' => 'en',  // Each language plugin will list the enabled languages on your site to set values when requesting data for that given language.
         'fr' => 'fr',
       ),
       'form' => 'wsdata_language_plugin_header_form',
