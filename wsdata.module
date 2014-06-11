@@ -89,8 +89,8 @@ function wsdata_wsdata_language_plugin() {
  *
  * @param string $plugin [optional]
  *  Specify a particular plugin to load
- * @return array
- *  Returns an array of plugins or the specificly requested plugin.
+ * @return array|boolean
+ *  Returns an array of plugins or the specificly requested plugin, FALSE othwerwise
  */
 function wsdata_get_language_plugins($plugin = NULL) {
   $plugins = module_invoke_all('wsdata_language_plugin');
@@ -100,7 +100,7 @@ function wsdata_get_language_plugins($plugin = NULL) {
       return $plugins[$plugin];
     }
     else {
-      return array();
+      return FALSE;
     }
   }
 
