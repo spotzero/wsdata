@@ -204,7 +204,7 @@ abstract class WsConnector {
   // All connectors support the default plugin by default.
   // The plugin essentially means all the language data is
   // in the single request.
-  protected $languagePlugins = array('wsdata_language_plugin_default');
+  protected $languagePlugins = array('default');
 
   public function getEndpoint() {
     return $this->endpoint;
