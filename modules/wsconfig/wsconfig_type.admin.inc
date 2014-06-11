@@ -84,15 +84,15 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
       $plugin = wsdata_get_language_plugins($wsconfig_type->data['language_plugin']);
       if (FALSE !== $plugin) {
         module_load_include($plugin['file_type'], $plugin['module'], $plugin['file']);
-        $form['data']['language_plugin']['settings'] = array(
+        $form['data']['language_plugin_settings'] = array(
           '#type' => 'fieldset',
           '#title' => t('Language Plugin Settings'),
           '#collapsible' => FALSE,
           '#collapsed' => FALSE,
         );
-        $plugin_form = $plugin['form']();
+        $plugin_form = $plugin['form']($wsconfig_type->data['language_plugin_settings']);
         foreach ($plugin_form as $name => $form_element) {
-          $form['data']['language_plugin']['settings'][$name] = $form_element;
+          $form['data']['language_plugin_settings'][$name] = $form_element;
         }
       }
     }
@@ -128,6 +128,7 @@ function wsconfig_type_form_submit(&$form, &$form_state) {
   $wsconfig_type = entity_ui_form_submit_build_entity($form, $form_state);
   $wsconfig_type->save();
   $form_state['redirect'] = 'admin/structure/wsconfig_types';
+  drupal_set_message(t('Web Service Configuration Type saved successfully.'));
 }
 
 /**
