@@ -85,10 +85,25 @@ function wsdata_wsdata_language_plugin() {
 }
 
 /**
- * Get the list of all defined language plugins
+ * Get the list defined language plugins
+ *
+ * @param string $plugin [optional]
+ *  Specify a particular plugin to load
+ * @return array
+ *  Returns an array of plugins or the specificly requested plugin.
  */
-function wsdata_get_language_plugins() {
+function wsdata_get_language_plugins($plugin = NULL) {
   $plugins = module_invoke_all('wsdata_language_plugin');
+
+  if (!empty($plugin)) {
+    if (array_key_exists($plugin, $plugins)) {
+      return $plugins[$plugin];
+    }
+    else {
+      return array();
+    }
+  }
+
   return $plugins;
 }
 
