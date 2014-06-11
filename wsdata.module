@@ -146,6 +146,23 @@ abstract class WsData {
   }
 
   /**
+   * Gets the enabled language plugin
+   *
+   * @return array|boolean
+   *  Returns the language plugin and settings, FALSE otherwise.
+   */
+  public function getEnabledLanguagePlugin() {
+    $plugin = FALSE;
+    if (!empty($this->data['language plugin'])) {
+      $plugin = array(
+        $this->data['language plugin'] => $this->data['language plugin settings'];
+      );
+    }
+
+    return $plugin;
+  }
+
+  /**
    * Retrieve the value for the given data key.
    *
    * This function retrieves data from the structured array in $this->data

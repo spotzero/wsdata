@@ -64,6 +64,19 @@ class WsConfig extends Entity {
   }
 
   /**
+   * Get the currently configured language plugin and its settings
+   */
+  public function getLanguagePlugin() {
+    $type = wsconfig_type_load($this->type);
+    $plugin = $type->getEnabledLanguagePlugin();
+    if (!empty($plugin)) {
+      return $plugin;
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Method for calling a webservice method.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {

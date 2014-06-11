@@ -70,29 +70,29 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
       $language_options[$language_plugin] = $language_plugin;
     }
 
-    $form['data']['language_plugin'] = array(
+    $form['data']['language plugin'] = array(
       '#type' => 'select',
       '#title' => t('Language Handler Plugin'),
       '#description' => t('Method to use to retrieve multilingual content.'),
       '#options' => $language_options,
       '#required' => TRUE,
-      '#default_value' => !empty($wsconfig_type->data['language_plugin']) ? $wsconfig_type->data['language_plugin'] : 'default',
+      '#default_value' => !empty($wsconfig_type->data['language plugin']) ? $wsconfig_type->data['language plugin'] : 'default',
     );
 
     // Load the plugin settings form
-    if (!empty($wsconfig_type->data['language_plugin'])) {
-      $plugin = wsdata_get_language_plugins($wsconfig_type->data['language_plugin']);
+    if (!empty($wsconfig_type->data['language plugin'])) {
+      $plugin = wsdata_get_language_plugins($wsconfig_type->data['language plugin']);
       if (FALSE !== $plugin) {
-        module_load_include($plugin['file_type'], $plugin['module'], $plugin['file']);
-        $form['data']['language_plugin_settings'] = array(
+        module_load_include($plugin['file type'], $plugin['module'], $plugin['file']);
+        $form['data']['language plugin settings'] = array(
           '#type' => 'fieldset',
           '#title' => t('Language Plugin Settings'),
           '#collapsible' => FALSE,
           '#collapsed' => FALSE,
         );
-        $plugin_form = $plugin['form']($wsconfig_type->data['language_plugin_settings']);
+        $plugin_form = $plugin['form']($wsconfig_type->data['language plugin settings']);
         foreach ($plugin_form as $name => $form_element) {
-          $form['data']['language_plugin_settings'][$name] = $form_element;
+          $form['data']['language plugin settings'][$name] = $form_element;
         }
       }
     }
