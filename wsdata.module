@@ -257,7 +257,7 @@ abstract class WsConnector {
   /**
    * Return the list of supported language handling plugins
    */
-  public function getLanguagePlugins() {
+  public function getSupportedLanguagePlugins() {
     return $this->languagePlugins;
   }
 

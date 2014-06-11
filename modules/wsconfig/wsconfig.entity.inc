@@ -89,12 +89,8 @@ class WsConfig extends Entity {
 
     // Add the language handling if a language was requested
     if (!empty($options['language'])) {
-      $options['language plugin'] = 'header'; // #todo get the configured language plugin
-      $options['language plugin settings'] = array(  // #todo get the configured language plugin settings
-        'header' => 'Accept-Language',
-        'en' => 'en',
-        'fr' => 'fr',
-      );
+      $plugin = $this->getEnabledLanguagePlugin();
+      $options['language plugin'] = $plugin;
     }
 
     $replacements = $this->getReplacements($type);
@@ -158,18 +154,6 @@ class WsConfig extends Entity {
     }
     return $ops;
   }
-
-/*
-  public function isNamedOperation($operation) {
-    $supported = $this->connector->getMethods();
-    foreach ($supported['multiple'] as $key => $val) {
-      if (drupal_substr($operation, 0, drupal_strlen($key) + 1) == $key . '_') {
-         return TRUE;
-      }
-    }
-    return FALSE;
-  }
-*/
 
   public function addMethod($type, $name = '') {
     $methods = $this->getPossibleMethods();

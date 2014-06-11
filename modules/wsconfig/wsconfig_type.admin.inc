@@ -65,7 +65,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
 
   if (!empty($wsconfig_type->data['connector'])) {
     $dummy_connector = new $wsconfig_type->data['connector']($wsconfig_type->data['endpoint']);
-    $language_plugins = $dummy_connector->getLanguagePlugins();
+    $language_plugins = $dummy_connector->getSupportedLanguagePlugins();
     foreach ($language_plugins as $language_plugin) {
       $language_options[$language_plugin] = $language_plugin;
     }
