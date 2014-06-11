@@ -14,7 +14,7 @@
 function wsdata_language_plugin_header_form($form, &$form_state) {
   $settings = $form_state['language_plugin']['settings'];
 
-  $form['name'] = array(
+  $form['header'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
     '#description' => t('Name of the header to set. Default is "Accept-Language"'),
@@ -45,7 +45,7 @@ function wsdata_language_plugin_header_form($form, &$form_state) {
 function wsdata_language_plugin_argument_form($form, &$form_state) {
   $settings = $form_state['language_plugin']['settings'];
 
-  $form['name'] = array(
+  $form['argument'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
     '#description' => t('Name of the argument to set. Default is "lang"'),
