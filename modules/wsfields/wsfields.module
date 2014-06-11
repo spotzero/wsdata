@@ -271,10 +271,21 @@ function wsfields_data_load($entity_type, $field, $entity) {
         $options['accept-type'] = array_pop($type);
       }
 
-      // Read the data
-      $data = $wsconfig->call('read', $replacements, array(), $options);
+      // Check the language settings
+      if ($field['translatable']) {
+        $languages = language_list();
 
-      $processor->addData($data);
+        foreach ($languages as $language) {
+          $options['language'] = $language->language;
+          $data[$language->language] = $wsconfig->call('read', $replacements, array(), $options);
+          $processor->addData($data, $language->language);
+        }
+      }
+      else {
+        // Read the data
+        $data = $wsconfig->call('read', $replacements, array(), $options);
+        $processor->addData($data);
+      }
 
       // Load the requested data
       $data = $processor->getData($remotename);
