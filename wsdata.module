@@ -198,7 +198,7 @@ abstract class WsData {
 
       // Second simplest case, one specific value
       if (!empty($paths[$key])) {
-        $location = explode(':', $path[$key]);
+        $location = explode(':', $paths[$key]);
         foreach ($location as $l) {
           if (isset($return_data[$l])) {
             $return_data = $return_data[$l];
