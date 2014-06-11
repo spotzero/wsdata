@@ -148,9 +148,15 @@ function _wsfields_general_data_alter(&$data, &$field) {
   if (!empty($field['translatable'])) {
     $languages = language_list();
     foreach($languages as $language) {
+      // Some languages may not have a value
+      if (!is_array($data[$language->language])) {
+        $data[$language->language] = array($data[$language->language]);
+      }
+
       foreach ($data[$language->language] as $lang_data) {
         $field_data[$language->language][] = array('value' => $lang_data);
       }
+
     }
   }
   else {
