@@ -215,8 +215,10 @@ abstract class WsData {
       $this->languages[$lang] = $lang;
       $this->data[$lang] = $this->parse($data, $lang);
     }
-
-    $this->data = $this->parse($data);
+    else {
+      // Default action, just parse the data
+      $this->data = $this->parse($data);
+    }
   }
 
   // Returns an array of the content type of the data this processor accepts
