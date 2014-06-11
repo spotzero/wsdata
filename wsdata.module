@@ -266,23 +266,6 @@ abstract class WsConnector {
     $this->cacheDefaultOverride = $override;
   }
 
-  /**
-   * Get the configuration form for this WsConnector
-   */
-  public function getForm() {
-    // By default, we automatically load the languagePlugin forms
-    // @todo rethink this...
-    $plugin = $this->getEnabledLanguagePlugin();
-    $form = array();
-    if (!empty($plugin)) {
-      if (!empty($plugin['form']) and !empty($plugin['file']) and !empty($plugin['module'])) {
-        module_load_include('', $plugin['module'], $plugin['file']);
-        $form += $plugin['form'];
-      }
-    }
-    return $form;
-  }
-
   abstract function getMethods();
 
   abstract public function wscall($type, $method, $argument, $options);
