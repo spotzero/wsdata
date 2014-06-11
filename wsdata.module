@@ -85,6 +85,14 @@ function wsdata_wsdata_language_plugin() {
 }
 
 /**
+ * Get the list of all defined language plugins
+ */
+function wsdata_get_language_plugins() {
+  $plugins = module_invoke_all('wsdata_language_plugin');
+  return $plugins;
+}
+
+/**
  * Class definition for Web Service data parser
  */
 abstract class WsData {
