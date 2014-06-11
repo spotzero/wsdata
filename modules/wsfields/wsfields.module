@@ -20,9 +20,9 @@ function wsfields_permission() {
 }
 
 /**
- * Implements wsfields_data_alter().
+ * Implements hook_wsfields_data_alter().
  */
-function wsfields_data_alter($data, $field) {
+function wsfields_wsfields_data_alter($data, $field) {
   // Ensure the data is keyed by language if translatable
   if (!empty($field['translatable'])) {
     $languages = language_list();
