@@ -52,7 +52,7 @@ function hook_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_header_form',
       'file' => 'wsdata.admin',
-      'file_type' => 'inc',
+      'file type' => 'inc',
       'module' => 'wsdata',
     ),
     /**
@@ -68,7 +68,7 @@ function hook_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_argument_form',
       'file' => 'wsdata.admin',
-      'file_type' => 'inc',
+      'file type' => 'inc',
       'module' => 'wsdata',
     ),
     /**
@@ -89,7 +89,7 @@ function hook_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_path_form',
       'file' => 'wsdata.admin',
-      'file_type' => 'inc',
+      'file type' => 'inc',
       'module' => 'wsdata',
     ),
     /**
@@ -104,7 +104,7 @@ function hook_wsdata_language_plugin() {
       ),
       'form' => 'wsdata_language_plugin_path_form',
       'file' => 'wsdata.admin',
-      'file_type' => 'inc',
+      'file type' => 'inc',
       'module' => 'wsdata',
     ),
     /**
@@ -117,7 +117,7 @@ function hook_wsdata_language_plugin() {
       'settings' => array(),
       'form' => 'wsdata_language_plugin_default_form',
       'file' => 'wsdata.admin',
-      'file_type' => 'inc'
+      'file type' => 'inc'
       'module' => 'wsdata',
     ),
   );
