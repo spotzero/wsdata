@@ -143,35 +143,26 @@ function wsfields_wsfields_list_text_data_alter($data, $field) {
  *  Field settings
  */
 function _wsfields_general_data_alter(&$data, &$field) {
-//  dpm($data);
-//  dpm($field);
-  // Build the field array as required
-  if (!is_array($data)) {
-    $field_data[LANGUAGE_NONE][] = array('value' => $data);
-  }
-  else {
-    /*
-      If the field contains translated data, the field values should be structured like this:
-      [language1][0] = data1
-      [language1][1] = data2
-      [language2][0] = data1
-      [language2][1] = data2
-    */
-    $field_data = array();
-    if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
-      foreach($data as $language => $values) {
-        foreach ($values as $value) {
-          $field_data[$language][] = array('value' => $value);
-        }
-      }
-    } else {
-      foreach($data as $value) {
-        $field_data[LANGUAGE_NONE][] = array('value' => $value);
+  $field_data = array();
+
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
+    foreach($languages as $language) {
+      foreach ($data[$language->language] as $lang_data) {
+        $field_data[$language->language][] = array('value' => $lang_data);
       }
     }
   }
+  else {
+    if (!is_array($data)) {
+      $data = array($data);
+    }
 
-  // Save the new field data
+    foreach ($data as $lang_data) {
+      $field_data[LANGUAGE_NONE][] = array('value' => $lang_data);
+    }
+  }
+
   $data = $field_data;
 }
 
