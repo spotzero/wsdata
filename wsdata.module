@@ -127,11 +127,8 @@ abstract class WsData {
   // Storage for error information
   protected $error;
 
-  // Languages
-  // We track the imported languages separately in case a data
-  // key in the data matches a language key and hence confusion
-  // runs amok!
-  protected $languages = array('default');
+  // Languages which we have data for
+  protected $languages = FALSE;
 
   public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
@@ -162,34 +159,97 @@ abstract class WsData {
    * @return mixed|boolean
    *  Returns the requested data, FALSE otherwise.
    */
-  public function getData($key = '', $lang = NULL) {
+  public function getData($key = NULL, $lang = NULL) {
+    $return_data = FALSE;
     if (is_array($this->data)) {
-      if (empty($key)) {
-        if (is_null($lang) or !array_key_exists($lang, $this->languages)) {
-          return $this->data;
+
+      // Paths to load data from
+      $paths = array();
+
+      // Split the logic based on whether we have translated data
+      // - Return all the data for a given language
+      // - Return a key of data for a given language
+      // - Return a key of data for all languages
+
+      // First, see if we want a specific language
+      if ($this->languages) {
+        if (!is_null($lang) and array_key_exists($lang, $this->data)) {
+          $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
         }
         else {
-          return $this->data[$lang];
+          foreach ($this->languages as $lang) {
+            $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
+          }
         }
-      }
-      if (!is_null($lang) and array_key_exists($lang, $this->languages)) {
-        $return = $this->data[$lang];
       }
       else {
-        $return = $this->data;
-      }
-      $location = explode(":", $key);
-      foreach ($location as $l) {
-        if (isset($return[$l])) {
-          $return = $return[$l];
-        }
-        else {
-          return FALSE;
+        if (!empty($key)) {
+          $paths[$key] = $key;
         }
       }
-      return $return;
+
+      // Get the raw data
+      $return_data = $this->data;
+
+      // Simplest case, return all data.
+      if (empty($paths)) {
+        return $return_data;
+      }
+
+      // Second simplest case, one specific value
+      if (!empty($paths[$key])) {
+        $location = explode(':', $path[$key]);
+        foreach ($location as $l) {
+          if (isset($return_data[$l])) {
+            $return_data = $return_data[$l];
+          }
+          else {
+            $return_data = FALSE;
+          }
+        }
+        return $return_data;
+      }
+
+      // Third case, one specific value in a given language
+      if (!empty($paths[$lang]) and count($paths) == 1) {
+        $location = explode(':', $path[$lang]);
+        foreach ($location as $l) {
+          if (isset($return_data[$l])) {
+            $return_data = $return_data[$l];
+          }
+          else {
+            $return_data = FALSE;
+          }
+        }
+        // Language specific data is always keyed by the language
+        $return_data[$lang] = $return_data;
+        return $return_data;
+      }
+
+      // Lastly, the complicated case. Keyed value for all languages
+      if ($this->languages and count($paths) > 1) {
+        $keyed_data = array();
+        foreach ($paths as $p => $path) {
+          // Reset return data
+          $return_data = $this->data;
+          $location = explode(':', $path);
+          foreach ($location as $l) {
+            if (isset($return_data[$l])) {
+              $return_data = $return_data[$l];
+            }
+            else {
+              $return_data = FALSE;
+            }
+          }
+          $keyed_data[$p] = $return_data;
+        }
+
+        // Finally, put the keyed data back into the return data.
+        return $keyed_data;
+      }
     }
-    return FALSE;
+
+    return $return_data;
   }
 
   /**
@@ -213,7 +273,7 @@ abstract class WsData {
   public function addData($data, $lang = NULL) {
     if (!is_null($lang) and !empty($data)) {
       $this->languages[$lang] = $lang;
-      $this->data[$lang] = $this->parse($data, $lang);
+      $this->data[$lang] = $this->parse($data);
     }
     else {
       // Default action, just parse the data
