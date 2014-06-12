@@ -10,14 +10,22 @@
 /**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
-function ws_entityreference_wsfields_entityreference_data_alter($data, $instance) {
-  $field = array();
-  if (!is_array($data)) {
-    $field[LANGUAGE_NONE][] = array('target_id' => $data);
-  } else {
-    foreach($data as $d) {
-      $field[LANGUAGE_NONE][] = array('target_id' => $d);
-    }
+function ws_entityreference_wsfields_entityreference_data_alter($data, $field) {
+  $field_data = array();
+
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
   }
-  return $field;
+  else {
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+  }
+
+  foreach($languages as $lang => $language) {
+    foreach ($data[$lang] as $key => $lang_data) {
+      $field_data[$lang][$key] = array('target_id' => $lang_data);
+    }
+
+  }
+
+  $data = $field_data;
 }
