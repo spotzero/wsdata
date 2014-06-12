@@ -4,6 +4,62 @@
  */
 
 /**
+ * List of data processors available for parsing web service data.
+ *
+ * Processors have two components:
+ *  - data parsing format
+ *  - data output structure
+ *
+ * Data parsing format refers to the type of data this processor can parse.
+ * For example json, xml, ical, etc...
+ *
+ * The output structure refers to the Drupal object which can be fed by
+ * the parsed data. Your options are:
+ *
+ * - fields
+ * - form
+ * - data
+ *
+ * Fields imply that this processor can feed information into wsfields.
+ * Form is for wsbeans, and any other object which renders Form API data.
+ * Data is to simply return the raw parsed data. Meaning if you pass in
+ * a JSON array for example, you'll be returned a PHP array representation
+ * of that JSON data.
+ *
+ * The return array is keyed on the class name of the processor (please use
+ * proper class casing. Our naming scheme is from the legacy class formats
+ * in Drupal)
+ *
+ * Be sure to include your classes in the .info file if they aren't stored
+ * in your .module file
+ *
+ * @return array
+ *  Returns an array of processor info.
+ * @see wsdata.info
+ */
+function hook_wsconfig_processor_info() {
+  return array(
+    'WsDataSimpleXmlProcessor' => array(
+      'fields' => array(
+        'list_boolean' => t('WSData Simple XML Processor'),
+        'text_with_summary' => t('WSData Simple XML Processor'),
+        'text' => t('WSData Simple XML Processor'),
+      ),
+      'data' => t('WSData Simple XML Processor'),
+      'form' => t('WSData Simple XML Form API Processor'),
+    ),
+    'WsDataSimpleJsonProcessor' => array(
+      'fields' => array(
+        'list_boolean' => t('WSData Simple JSON Processor'),
+        'text_with_summary' => t('WSData Simple JSON Processor'),
+        'text' => t('WSData Simple JSON Processor'),
+      ),
+      'data' => t('WSData Simple JSON Processor'),
+    ),
+  );
+}
+
+/**
  * List of language handler plugins
  *
  * Adds to the list of available language handling plugins.
