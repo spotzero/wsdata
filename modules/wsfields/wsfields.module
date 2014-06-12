@@ -306,8 +306,14 @@ function wsfields_data_load($entity_type, $field, $entity) {
 
       // Build the field format
       if (!is_null($data) && FALSE !== $data) {
+        // First step, format the data into language => array
         $data = module_invoke_all('wsfields_data_alter', $data, $field);
+
+        // Next, let specific modules alter the data as required
         $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
+
+        // Run the field data through the empty value filters
+        $data = _field_filter_items($field, $data);
 
         // Display debug information if required
         if (WSFIELDS_DEBUG) {
