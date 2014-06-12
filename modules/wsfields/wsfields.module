@@ -20,6 +20,20 @@ function wsfields_permission() {
 }
 
 /**
+ * Implements hook_field_access().
+ */
+function wsfields_field_access($op, $field, $entity_type, $entity, $account) {
+  if ($field['storage']['module'] == 'wsfields_storage') {
+    switch ($op) {
+      case 'edit':
+        dpm($field);
+    }
+  }
+
+  return TRUE;
+}
+
+/**
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
 function wsfields_wsfields_text_data_alter($data, $field) {
