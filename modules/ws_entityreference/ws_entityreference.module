@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Add support for addressfield to be used with web service fields
+ * Add support for entity reference field to be used with web service fields
  *
  * @author Mathew Winstone <mwinstone@coldfrontlabs.ca>
  */
