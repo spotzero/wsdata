@@ -24,9 +24,21 @@ function wsfields_permission() {
  */
 function wsfields_field_access($op, $field, $entity_type, $entity, $account) {
   if ($field['storage']['module'] == 'wsfields_storage') {
+    $wsconfig = wsconfig_load_by_name($field['storage']['settings']['wsconfig_name']);
+    $supported_ops = $wsconfig->getOperations();
     switch ($op) {
+      case 'view':
+        if (!in_array('read', $supported_ops)) {
+          return FALSE;
+        }
+      break;
       case 'edit':
-        dpm($field);
+        if (!in_array('update', $supported_ops) or !in_array('create', $supported_ops)) {
+          return FALSE;
+        }
+      break;
+      default:
+        // Do nothing for now.
     }
   }
 
