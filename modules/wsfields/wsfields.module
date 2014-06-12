@@ -312,8 +312,14 @@ function wsfields_data_load($entity_type, $field, $entity) {
         // Next, let specific modules alter the data as required
         $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
 
-        // Run the field data through the empty value filters
-        $data = _field_filter_items($field, $data);
+        // Finally, run the field data through the empty value filters
+        foreach ($data as $lang => $values) {
+          $data[$lang] = _field_filter_items($field, $values);
+          if (empty($data[$lang])) {
+            unset($data[$lang]);
+          }
+        }
+
 
         // Display debug information if required
         if (WSFIELDS_DEBUG) {
