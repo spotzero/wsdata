@@ -11,27 +11,25 @@
  * Implements hook_wsfields_FIELD_TYPE_data_alter().
  */
 function ws_addressfield_wsfields_addressfield_data_alter($data, $field) {
-  // Build the field array as required
-  if (!is_array($data)) {
-    $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($data);
+  $field_data = array();
+
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
   }
   else {
-    if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
-      foreach($data as $language => $values) {
-        foreach($values as $value) {
-          $field_data[$language][] = _ws_addressfield_map_address($value);
-        }
-      }
-    }
-    else {
-      foreach($data as $value) {
-        $field_data[LANGUAGE_NONE][] = _ws_addressfield_map_address($value);
-      }
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+  }
+
+  foreach($languages as $lang => $language) {
+    foreach ($data[$lang] as $key => $lang_data) {
+      $field_data[$lang][$key] = _ws_addressfield_map_address($value);
     }
   }
 
+  $data = $field_data;
+
   // Save the new field data
-  return $field_data;
+  return $data;
 }
 
 /**
@@ -88,6 +86,6 @@ function _ws_addressfield_map_address(&$data) {
   $address['first_name'] = isset($data['first_name']) ? $data['first_name'] : NULL;
   $address['last_name'] = isset($data['last_name']) ?  $data['last_name'] : NULL;
   $address['data'] = isset($data['data']) ? $data['data'] : NULL;
-  
+
   return $address;
 }
