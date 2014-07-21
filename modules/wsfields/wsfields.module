@@ -20,6 +20,31 @@ function wsfields_permission() {
 }
 
 /**
+ * Implements hook_wsfields_data_alter().
+ */
+function wsfields_wsfields_data_alter($data, $field) {
+  // Ensure the data is keyed by language if translatable
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
+  }
+  else {
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+
+    $data = array(
+      LANGUAGE_NONE => $data,
+    );
+  }
+
+  foreach($languages as $lang => $language) {
+    if (!is_array($data[$lang])) {
+      $data[$lang] = array($data[$lang]);
+    }
+  }
+
+  return $data;
+}
+
+/**
  * Implements hook_field_access().
  */
 function wsfields_field_access($op, $field, $entity_type, $entity, $account) {
@@ -169,33 +194,22 @@ function wsfields_wsfields_list_text_data_alter($data, $field) {
  *  Field settings
  */
 function _wsfields_general_data_alter(&$data, &$field) {
-  // Build the field array as required
-  if (!is_array($data)) {
-    $field_data[LANGUAGE_NONE][] = array('value' => $data);
+  $field_data = array();
+
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
   }
   else {
-    /*
-      If the field contains translated data, the field values should be structured like this:
-      [language1][0] = data1
-      [language1][1] = data2
-      [language2][0] = data1
-      [language2][1] = data2
-    */
-    $field_data = array();
-    if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
-      foreach($data as $language => $values) {
-        foreach ($values as $value) {
-          $field_data[$language][] = array('value' => $value);
-        }
-      }
-    } else {
-      foreach($data as $value) {
-        $field_data[LANGUAGE_NONE][] = array('value' => $value);
-      }
-    }
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
   }
 
-  // Save the new field data
+  foreach($languages as $lang => $language) {
+    foreach ($data[$lang] as $key => $lang_data) {
+      $field_data[$lang][$key] = array('value' => $lang_data);
+    }
+
+  }
+
   $data = $field_data;
 }
 
@@ -241,7 +255,8 @@ function wsfields_data_load($entity_type, $field, $entity) {
   if (!is_object($wsconfig)) {
     if (WSFIELDS_DEBUG) debug("Couldn't find wsconfig: " . $wsconfig_name);
     return FALSE;
-  } else {
+  }
+  else {
 
     // Replace the tokens in the "read" pattern with entity property values
     $ws_keys = array();
@@ -296,17 +311,41 @@ function wsfields_data_load($entity_type, $field, $entity) {
         $options['accept-type'] = array_pop($type);
       }
 
-      // Read the data
-      $data = $wsconfig->call('read', $replacements, array(), $options);
+      // Check the language settings
+      if ($field['translatable']) {
+        $languages = language_list();
 
-      $processor->addData($data);
+        foreach ($languages as $language) {
+          $options['language'] = $language->language;
+          $data[$language->language] = $wsconfig->call('read', $replacements, array(), $options);
+          $processor->addData($data[$language->language], $language->language);
+        }
+      }
+      else {
+        // Read the data
+        $data = $wsconfig->call('read', $replacements, array(), $options);
+        $processor->addData($data);
+      }
 
       // Load the requested data
       $data = $processor->getData($remotename);
 
       // Build the field format
       if (!is_null($data) && FALSE !== $data) {
+        // First step, format the data into language => array
+        $data = module_invoke_all('wsfields_data_alter', $data, $field);
+
+        // Next, let specific modules alter the data as required
         $data = module_invoke_all('wsfields_' . $field['type'] . '_data_alter', $data, $field);
+
+        // Finally, run the field data through the empty value filters
+        foreach ($data as $lang => $values) {
+          $data[$lang] = _field_filter_items($field, $values);
+          if (empty($data[$lang])) {
+            unset($data[$lang]);
+          }
+        }
+
 
         // Display debug information if required
         if (WSFIELDS_DEBUG) {

@@ -44,6 +44,80 @@ function wsdata_wsconfig_processor_info() {
 }
 
 /**
+ * Implements hook_wsdata_language_plugin().
+ */
+function wsdata_wsdata_language_plugin() {
+  return array(
+    'header' => array(
+      'settings' => array(
+        'header' => 'Accept-Language',
+      ),
+      'form' => 'wsdata_language_plugin_header_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata', // @todo automatically fill in the module based on the invoke
+    ),
+    'argument' => array(
+      'settings' => array(
+        'argument' => 'lang',
+      ),
+      'form' => 'wsdata_language_plugin_argument_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata',
+    ),
+    'path' => array(
+      'settings' => array(
+        'position' => 0,
+      ),
+      'form' => 'wsdata_language_plugin_path_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata',
+    ),
+    'uri' => array(
+      'settings' => array(
+        // Empty for now
+      ),
+      'form' => 'wsdata_language_plugin_path_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata',
+    ),
+    'default' => array(
+      'settings' => array(),
+      'form' => 'wsdata_language_plugin_default_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata',
+    ),
+  );
+}
+
+/**
+ * Get the list defined language plugins
+ *
+ * @param string $plugin [optional]
+ *  Specify a particular plugin to load
+ * @return array|boolean
+ *  Returns an array of plugins or the specificly requested plugin, FALSE othwerwise
+ */
+function wsdata_get_language_plugins($plugin = NULL) {
+  $plugins = module_invoke_all('wsdata_language_plugin');
+
+  if (!empty($plugin)) {
+    if (array_key_exists($plugin, $plugins)) {
+      return $plugins[$plugin];
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  return $plugins;
+}
+
+/**
  * Class definition for Web Service data parser
  */
 abstract class WsData {
@@ -53,10 +127,13 @@ abstract class WsData {
   // Storage for error information
   protected $error;
 
-  public function __construct($data = NULL, &$entity = NULL) {
+  // Languages which we have data for
+  protected $languages = FALSE;
+
+  public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
     if (isset($data) and $data) {
-      $this->addData($data);
+      $this->addData($data, $lang);
     }
   }
 
@@ -74,32 +151,134 @@ abstract class WsData {
    *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
    *  N.B.  This function can be overridden to work with whatever the ->parse function
    *  is implemented to return.
+   *
+   * @param string $key [optional]
+   *  Data key to load
+   * @param string $lang [optional]
+   *  Language key
+   * @return mixed|boolean
+   *  Returns the requested data, FALSE otherwise.
    */
-  public function getData($key = '') {
+  public function getData($key = NULL, $lang = NULL) {
+    $return_data = FALSE;
     if (is_array($this->data)) {
-      if (empty($key)) {
-        return $this->data;
-      }
-      $return = $this->data;
-      $location = explode(":", $key);
-      foreach ($location as $l) {
-        if (isset($return[$l])) {
-          $return = $return[$l];
+
+      // Paths to load data from
+      $paths = array();
+
+      // Split the logic based on whether we have translated data
+      // - Return all the data for a given language
+      // - Return a key of data for a given language
+      // - Return a key of data for all languages
+
+      // First, see if we want a specific language
+      if ($this->languages) {
+        if (!is_null($lang) and array_key_exists($lang, $this->data)) {
+          $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
         }
         else {
-          return FALSE;
+          foreach ($this->languages as $lang) {
+            $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
+          }
         }
       }
-      return $return;
+      else {
+        if (!empty($key)) {
+          $paths[$key] = $key;
+        }
+      }
+
+      // Get the raw data
+      $return_data = $this->data;
+
+      // Simplest case, return all data.
+      if (empty($paths)) {
+        return $return_data;
+      }
+
+      // Second simplest case, one specific value
+      if (!empty($paths[$key])) {
+        $location = explode(':', $paths[$key]);
+        foreach ($location as $l) {
+          if (isset($return_data[$l])) {
+            $return_data = $return_data[$l];
+          }
+          else {
+            $return_data = FALSE;
+          }
+        }
+        return $return_data;
+      }
+
+      // Third case, one specific value in a given language
+      if (!empty($paths[$lang]) and count($paths) == 1) {
+        $location = explode(':', $path[$lang]);
+        foreach ($location as $l) {
+          if (isset($return_data[$l])) {
+            $return_data = $return_data[$l];
+          }
+          else {
+            $return_data = FALSE;
+          }
+        }
+        // Language specific data is always keyed by the language
+        $return_data[$lang] = $return_data;
+        return $return_data;
+      }
+
+      // Lastly, the complicated case. Keyed value for all languages
+      if ($this->languages and count($paths) > 1) {
+        $keyed_data = array();
+        foreach ($paths as $p => $path) {
+          // Reset return data
+          $return_data = $this->data;
+          $location = explode(':', $path);
+          foreach ($location as $l) {
+            if (isset($return_data[$l])) {
+              $return_data = $return_data[$l];
+            }
+            else {
+              $return_data = FALSE;
+            }
+          }
+          $keyed_data[$p] = $return_data;
+        }
+
+        // Finally, put the keyed data back into the return data.
+        return $keyed_data;
+      }
     }
-    return FALSE;
+
+    return $return_data;
   }
 
   /**
    * Add data to an empty object or replace all existing data
+   *
+   * @param mixed $data
+   *  A set of data to parse.
+   * @param string $language [optional]
+   *  Language key for the data being added
+   *
+   *  In some cases, it may require multiple web service requests
+   *  to load language specific content. You can add each
+   *  request data result to the same processor object. getData()
+   *  should then return the merged data keyed by language.
+   *
+   *  If your webservice returns all data for all languages in
+   *  a single request, leave $lang to NULL (not LANGUAGE_NONE).
+   *  LANGUAGE_NONE is considered a valid language and triggers
+   *  the language keying.
    */
-  public function addData($data) {
-    $this->data = $this->parse($data);
+  public function addData($data, $lang = NULL) {
+    if (!is_null($lang) and !empty($data)) {
+      $this->languages[$lang] = $lang;
+      $this->data[$lang] = $this->parse($data);
+    }
+    else {
+      // Default action, just parse the data
+      $this->data = $this->parse($data);
+    }
   }
 
   // Returns an array of the content type of the data this processor accepts
@@ -117,6 +296,10 @@ abstract class WsConnector {
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;
   protected $endpoint;
+  // All connectors support the default plugin by default.
+  // The plugin essentially means all the language data is
+  // in the single request.
+  protected $languagePlugins = array('default');
 
   public function getEndpoint() {
     return $this->endpoint;
@@ -131,6 +314,13 @@ abstract class WsConnector {
 
   public function supportsCaching() {
     return FALSE;
+  }
+
+  /**
+   * Return the list of supported language handling plugins
+   */
+  public function getSupportedLanguagePlugins() {
+    return $this->languagePlugins;
   }
 
   public function defaultCache($mintime = 0, $override = FALSE) {

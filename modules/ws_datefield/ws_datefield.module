@@ -28,23 +28,22 @@ function ws_datefield_wsfields_datetime_data_alter($data, $field) {
   $end_date = TRUE;
   $field_data = array();
 
-  if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
-    foreach($data as $language => $values) {
-      foreach ($values as $value) {
-        // Populate the field data
-        _ws_datefield_populate_datetime_field_data($field_data, $value, $repeat, $end_date, $language);
-      }
-    }
+  if (!empty($field['translatable'])) {
+    $languages = language_list();
   }
   else {
-    foreach($data[LANGUAGE_NONE] as $value) {
-      // Populate field data
-      _ws_datefield_populate_datetime_field_data($field_data, $value, $repeat, $end_date);
+    $languages = array(LANGUAGE_NONE => LANGUAGE_NONE);
+  }
+
+  foreach($languages as $lang => $language) {
+    foreach ($data[$lang] as $key => $lang_data) {
+      // Populate the field data
+      _ws_datefield_populate_datetime_field_data($field_data, $value, $repeat, $end_date, $language);
     }
   }
 
-  // Save the new field data
-  return $field_data;
+  $data = $field_data;
+  return $data;
 }
 
 /**
@@ -65,15 +64,15 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
   // Check for the repeat rule
   if ($repeat and isset($value['rrule'])) {
     // Since we're always adding to the end of the array, we can just use count -1
-    $field_data[$language][count($field_data[$language]) -1]['rrule'] = $value['rrule'];    
-  }  
+    $field_data[$language][count($field_data[$language]) -1]['rrule'] = $value['rrule'];
+  }
 
   // Check for an end date
   if ($end_date and isset($value['value2'])) {
     // Since we're always adding to the end of the array, we can just use count -1
     $field_data[$language][count($field_data[$language]) -1]['value2'] = $value['value2']->format(WS_DATEFIELD_DATE_VALUE_FORMAT);
   }
-  
+
 }
 
 /**

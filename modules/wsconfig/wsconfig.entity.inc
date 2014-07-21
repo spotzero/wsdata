@@ -64,6 +64,19 @@ class WsConfig extends Entity {
   }
 
   /**
+   * Get the currently configured language plugin and its settings
+   */
+  public function getLanguagePlugin() {
+    $type = wsconfig_type_load($this->type);
+    $plugin = $type->getEnabledLanguagePlugin();
+    if (!empty($plugin)) {
+      return $plugin;
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Method for calling a webservice method.
    *
    * @param string $type
@@ -84,6 +97,15 @@ class WsConfig extends Entity {
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
     if (isset($this->data['options']) and is_array($this->data['options'])) {
       $options += $this->data['options'][$this->getMethodKey($type)];
+    }
+
+    // Pass a reference to the config to the connector
+    $options['wsconfig'] = $this;
+
+    // Add the language handling if a language was requested
+    if (!empty($options['language'])) {
+      $plugin = $this->getLanguagePlugin();
+      $options['language plugin'] = $plugin;
     }
 
     $replacements = $this->getReplacements($type);
@@ -147,18 +169,6 @@ class WsConfig extends Entity {
     }
     return $ops;
   }
-
-/*
-  public function isNamedOperation($operation) {
-    $supported = $this->connector->getMethods();
-    foreach ($supported['multiple'] as $key => $val) {
-      if (drupal_substr($operation, 0, drupal_strlen($key) + 1) == $key . '_') {
-         return TRUE;
-      }
-    }
-    return FALSE;
-  }
-*/
 
   public function addMethod($type, $name = '') {
     $methods = $this->getPossibleMethods();
@@ -347,8 +357,24 @@ class WsConfigType extends Entity {
   public function __construct($values = array()) {
     parent::__construct($values, 'wsconfig_type');
   }
-}
 
+  /**
+   * Gets the enabled language plugin
+   *
+   * @return array|boolean
+   *  Returns the language plugin and settings, FALSE otherwise.
+   */
+  public function getEnabledLanguagePlugin() {
+    $plugin = FALSE;
+    if (!empty($this->data['language plugin'])) {
+      $plugin = array(
+        $this->data['language plugin'] => $this->data['language plugin settings'],
+      );
+    }
+
+    return $plugin;
+  }
+}
 
 /**
  * The Controller for wsconfig type entities
