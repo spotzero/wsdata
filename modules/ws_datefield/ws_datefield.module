@@ -72,7 +72,6 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
     // Since we're always adding to the end of the array, we can just use count -1
     $field_data[$language][count($field_data[$language]) -1]['value2'] = $value['value2']->format(WS_DATEFIELD_DATE_VALUE_FORMAT);
   }
-
 }
 
 /**
@@ -83,20 +82,20 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
 function ws_datefield_wsfields_datetime_data_alter( $data, $field) {
 // Build the field array as required
   if (!is_array($data)) {
-    $field_data[LANGUAGE_NONE][] = _ws_datefield_map_datetime($data,$field);
+    $field_data = _ws_datefield_map_datetime($data,$field);
 
   }
   else {
     if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
       foreach($data as $language => $values) {
         foreach($values as $value) {
-          $field_data[$language][] = _ws_datefield_map_datetime($value,$field);
+          $field_data = _ws_datefield_map_datetime($value,$field);
         }
       }
     }
     else {
       foreach($data as $value) {
-        $field_data[LANGUAGE_NONE][] = _ws_datefield_map_datetime($value,$field);
+        $field_data = _ws_datefield_map_datetime($value,$field);
       }
     }
   }
@@ -116,20 +115,23 @@ function ws_datefield_wsfields_datetime_data_alter( $data, $field) {
  */
 function _ws_datefield_map_datetime(&$data, $field) {
 
+  $field_data = array();
+
   if ( isset ( $data['schedule']['vevents'] ) ) {
 
     $dates = $data['schedule']['vevents'];
 
     foreach ($dates as $k => $v) {
-      $value = array( 'value' => $v['start_datetime'],
-                      'value2' => $v['end_datetime'],
-                      'rrule' => $v['repeat'] . sizeof($v['exceptions']) > 0 ? 'exceptions=' . implode( ',' , $v['exceptions'] ) : '');
+      $value = array( 'value' => new DateTime( $v['start_datetime'] ),
+                      'value2' => new DateTime( $v['end_datetime'] ) );
+      if (isset($v['repeat']) && isset($v['exceptions'])) {
+        $value['rrule'] = $v['repeat'] . sizeof($v['exceptions']) > 0 ? 'exceptions=' . implode( ',' , $v['exceptions'] ) : '';
+      }
 
-      _ws_datefield_populate_datetime_field_data($field,$value,true,true);
+      _ws_datefield_populate_datetime_field_data($field_data,$value,true,true);
     }
   }
-
-  return $field;
+  return $field_data;
 }
 
 
