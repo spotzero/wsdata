@@ -21,7 +21,7 @@ define('WS_DATEFIELD_DATE_VALUE_FORMAT', 'Y-m-d H:i:s');
  *
  * Prepares data for the 'datetime' field type
  */
-function ws_datefield_wsfields_datetime_data_alter($data, $field) {
+function ws_datefield_wsfields_datetime2_data_alter($data, $field) {
   // @todo check the field settings to know if the repeat rules or end dates are enabled on this field
   // @todo determine if the offset needs to be in the field value or not
   $repeat = TRUE;
@@ -72,7 +72,6 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
     // Since we're always adding to the end of the array, we can just use count -1
     $field_data[$language][count($field_data[$language]) -1]['value2'] = $value['value2']->format(WS_DATEFIELD_DATE_VALUE_FORMAT);
   }
-
 }
 
 /**
@@ -80,9 +79,61 @@ function _ws_datefield_populate_datetime_field_data(&$field_data, &$value, $repe
  *
  * Prepares data for the 'date' field type
  */
-function ws_datefield_wsfields_date_data_alter() {
-  // @todo
+function ws_datefield_wsfields_datetime_data_alter( $data, $field) {
+// Build the field array as required
+  if (!is_array($data)) {
+    $field_data = _ws_datefield_map_datetime($data,$field);
+
+  }
+  else {
+    if (isset($field['storage']['settings']['translation']) and $field['storage']['settings']['translation']) {
+      foreach($data as $language => $values) {
+        foreach($values as $value) {
+          $field_data = _ws_datefield_map_datetime($value,$field);
+        }
+      }
+    }
+    else {
+      foreach($data as $value) {
+        $field_data = _ws_datefield_map_datetime($value,$field);
+      }
+    }
+  }
+
+  // Save the new field data
+  return $field_data;
 }
+
+/**
+ * Map the data values to their address field containers
+ *
+ * Maps values to the following array keys:
+ * schedule
+ *
+ * @params array $data
+ * @params array $field
+ */
+function _ws_datefield_map_datetime(&$data, $field) {
+
+  $field_data = array();
+
+  if ( isset ( $data['schedule']['vevents'] ) ) {
+
+    $dates = $data['schedule']['vevents'];
+
+    foreach ($dates as $k => $v) {
+      $value = array( 'value' => new DateTime( $v['start_datetime'] ),
+                      'value2' => new DateTime( $v['end_datetime'] ) );
+      if (isset($v['repeat']) && isset($v['exceptions'])) {
+        $value['rrule'] = $v['repeat'] . sizeof($v['exceptions']) > 0 ? 'exceptions=' . implode( ',' , $v['exceptions'] ) : '';
+      }
+
+      _ws_datefield_populate_datetime_field_data($field_data,$value,true,true);
+    }
+  }
+  return $field_data;
+}
+
 
 /**
  * Implements hook_wsconfig_processor_info().
