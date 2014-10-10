@@ -81,6 +81,13 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
 
     // Load the plugin settings form
     if (!empty($wsconfig_type->data['language plugin'])) {
+      $form['data']['language always'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Always use the current user\'s language.'),
+        '#description' => t('This probably should not be used with wsconfig_field_storage as the selected language with be the user language and not the content language.'),
+        '#default_value' => !empty($wsconfig_type->data['language always']) ? $wsconfig_type->data['language always'] : 0,
+      );
+
       $plugin = wsdata_get_language_plugins($wsconfig_type->data['language plugin']);
       if (FALSE !== $plugin) {
         module_load_include($plugin['file type'], $plugin['module'], $plugin['file']);

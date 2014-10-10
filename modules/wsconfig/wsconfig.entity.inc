@@ -98,6 +98,14 @@ class WsConfig extends Entity {
     // Pass a reference to the config to the connector
     $options['wsconfig'] = $this;
 
+    if (isset($this->wsconfig_type->data['language always'])
+      and $this->wsconfig_type->data['language always']
+      and empty($options['language'])) {
+
+      global $language;
+      $options['language'] = $language->language;
+    }
+
     // Add the language handling if a language was requested
     if (!empty($options['language'])) {
       $plugin = $this->getLanguagePlugin();
