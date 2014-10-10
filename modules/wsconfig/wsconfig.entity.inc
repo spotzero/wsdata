@@ -19,10 +19,10 @@ class WsConfig extends Entity {
 
   public function __construct($values = array()) {
     parent::__construct($values, 'wsconfig');
-    $type = wsconfig_type_load($this->type);
+    $this->wsconfig_type = wsconfig_type_load($this->type);
 
-    if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
-      $this->connector = new $type->data['connector']($type->data['endpoint']);
+    if (isset($this->wsconfig_type->data['connector']) and class_exists($this->wsconfig_type->data['connector'])) {
+      $this->connector = new $this->wsconfig_type->data['connector']($this->wsconfig_type->data['endpoint']);
       // Configure connector with caching settings.
       if ($this->connector->supportsCaching()) {
         if (is_string($this->data)) {
@@ -43,9 +43,8 @@ class WsConfig extends Entity {
    *  Overide's the wsconfig_type's default endpoint
    */
   public function setEndpoint($endpoint) {
-    $type = wsconfig_type_load($this->type);
-    if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
-      $this->connector = new $type->data['connector']($endpoint);
+    if (isset($this->wsconfig_type->data['connector']) and class_exists($this->wsconfig_type->data['connector'])) {
+      $this->connector = new $this->wsconfig_type->data['connector']($endpoint);
       return TRUE;
     }
     return FALSE;
@@ -55,8 +54,7 @@ class WsConfig extends Entity {
    * Method wsconfig->getEndpoint().
    */
   public function getEndpoint() {
-    $type = wsconfig_type_load($this->type);
-    if (isset($type->data['connector']) and class_exists($type->data['connector'])) {
+    if (isset($this->connector)) {
       return $this->connector->getEndpoint();
     }
 
@@ -67,12 +65,10 @@ class WsConfig extends Entity {
    * Get the currently configured language plugin and its settings
    */
   public function getLanguagePlugin() {
-    $type = wsconfig_type_load($this->type);
-    $plugin = $type->getEnabledLanguagePlugin();
+    $plugin = $this->wsconfig_type->getEnabledLanguagePlugin();
     if (!empty($plugin)) {
       return $plugin;
     }
-
     return FALSE;
   }
 
