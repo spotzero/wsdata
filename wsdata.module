@@ -84,6 +84,15 @@ function wsdata_wsdata_language_plugin() {
       'file type' => 'inc',
       'module' => 'wsdata',
     ),
+    'replace' => array(
+      'settings' => array(
+        'default' => '',
+      ),
+      'form' => 'wsdata_language_plugin_replace_form',
+      'file' => 'wsdata.admin',
+      'file type' => 'inc',
+      'module' => 'wsdata',
+    ),
     'default' => array(
       'settings' => array(),
       'form' => 'wsdata_language_plugin_default_form',

@@ -112,6 +112,35 @@ function wsdata_language_plugin_path_form($settings = array()) {
 }
 
 /**
+ * Replacement language plugin form
+ */
+function wsdata_language_plugin_replace_form($settings = array()) {
+  $form['default'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default value'),
+    '#description' => t('Default value if language replacement is not available.'),
+    '#size' => 40,
+    '#maxlength' => 255,
+    '#default_value' => isset($settings['default']) ? $settings['default'] : '',
+  );
+
+  $languages = language_list();
+
+  foreach ($languages as $language) {
+    $form[$language->language] = array(
+      '#type' => 'textfield',
+      '#title' => $language->native,
+      '#description' => t('Value to use when requesting @lang values.', array('@lang' => $language->native)),
+      '#size' => 40,
+      '#maxlength' => 255,
+      '#default_value' => isset($settings[$language->language]) ? $settings[$language->language] : $language->language,
+    );
+  }
+
+  return $form;
+}
+
+/**
  * URI language plugin form
  */
 function wsdata_language_plugin_uri_form($settings = array()) {
