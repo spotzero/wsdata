@@ -402,20 +402,23 @@ function wsconfig_load($wsconfig_id, $reset = FALSE) {
  * @see wsconfig_load()
  */
 function wsconfig_load_by_name($name, $reset = FALSE) {
-  $query = new EntityFieldQuery();
-  $result = $query->entityCondition('entity_type', 'wsconfig')
-    ->propertyCondition('name', $name)
-    ->execute();
+  $id = &drupal_static(__FUNCTION__ . ':' . $name);
+  if ($reset or !$id) {
+    $query = new EntityFieldQuery();
+    $result = $query->entityCondition('entity_type', 'wsconfig')
+      ->propertyCondition('name', $name)
+      ->execute();
 
-  // Check the results
-  if (!isset($result['wsconfig']) or !is_array($result['wsconfig'])) {
-    return FALSE;
+    // Check the results
+    if (!isset($result['wsconfig']) or !is_array($result['wsconfig'])) {
+      return FALSE;
+    }
+    $ids = array_keys($result['wsconfig']);
+    $id = reset($ids);
   }
 
   // Load the entity
-  foreach ($result['wsconfig'] as $key => $wsconfig) {
-    return wsconfig_load($key, $reset);
-  }
+  return wsconfig_load($id, $reset);
 }
 
 /**
