@@ -315,7 +315,7 @@ abstract class WsConnector {
   }
 
   public function __construct($endpoint) {
-    $this->endpoint = $endpoint;
+    $this->endpoint = trim($endpoint);
     $this->expires = 0;
     $this->cacheDefaultTime = 0;
     $this->cacheDefaultOverride = FALSE;
