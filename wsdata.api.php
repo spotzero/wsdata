@@ -173,7 +173,7 @@ function hook_wsdata_language_plugin() {
       'settings' => array(),
       'form' => 'wsdata_language_plugin_default_form',
       'file' => 'wsdata.admin',
-      'file type' => 'inc'
+      'file type' => 'inc',
       'module' => 'wsdata',
     ),
   );
