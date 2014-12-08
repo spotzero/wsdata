@@ -225,6 +225,30 @@ function wsconfig_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Implements hook_form_alter().
+ * Sorts the WS Config type overview table.
+ */
+function wsconfig_form_wsconfig_type_overview_form_alter(&$form, &$form_state) {
+  usort($form['table']['#rows'], '_wsconfig_form_overview_sort');
+}
+
+/**
+ * Implements hook_form_alter().
+ * Sorts the WS Config overview table.
+ */
+function wsconfig_form_wsconfig_overview_form_alter(&$form, &$form_state) {
+  usort($form['table']['#rows'], '_wsconfig_form_overview_sort');
+}
+
+/**
+ * Sorting for the overview pages.
+ */
+function _wsconfig_form_overview_sort($a, $b) {
+  return strcasecmp($a[0]['data']['#label'], $b[0]['data']['#label']);
+}
+
+
+/**
  * Determines whether the given user has access to a wsconfig.
  *
  * @param string $op
