@@ -305,6 +305,9 @@ abstract class WsConnector {
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;
   protected $endpoint;
+
+  protected $error;
+
   // All connectors support the default plugin by default.
   // The plugin essentially means all the language data is
   // in the single request.
@@ -323,6 +326,10 @@ abstract class WsConnector {
 
   public function supportsCaching() {
     return FALSE;
+  }
+
+  public function getError() {
+    return $this->error;
   }
 
   /**
@@ -373,5 +380,16 @@ abstract class WsConnector {
     else {
       return FALSE;
     }
+  }
+
+  private function setError($code, $message) {
+    $this->error = array(
+      'code' => $code,
+      'message' => $message,
+    );
+  }
+
+  private function clearError() {
+    $this->error = NULL;
   }
 }
