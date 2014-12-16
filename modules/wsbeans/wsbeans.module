@@ -40,5 +40,8 @@ function wsbeans_wsconfig_processor_info() {
     'wsbeans_default_json_form' => array(
        'form' => 'Renders JSON into a form',
     ),
+    'wsbeans_default_html_form' => array(
+       'form' => 'Renders HTML into a form',
+    ),
   );
 }
