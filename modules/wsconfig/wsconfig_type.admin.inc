@@ -87,8 +87,10 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
         '#description' => t('This probably should not be used with wsconfig_field_storage as the selected language with be the user language and not the content language.'),
         '#default_value' => !empty($wsconfig_type->data['language always']) ? $wsconfig_type->data['language always'] : 0,
       );
-
-      $plugin = wsdata_get_language_plugins($wsconfig_type->data['language plugin']);
+      $plugin = FALSE;
+      if (isset($wsconfig_type->data['language plugin'])) {
+        $plugin = wsdata_get_language_plugins($wsconfig_type->data['language plugin']);
+      }
       if (FALSE !== $plugin) {
         module_load_include($plugin['file type'], $plugin['module'], $plugin['file']);
         $form['data']['language plugin settings'] = array(
@@ -97,7 +99,12 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
           '#collapsible' => FALSE,
           '#collapsed' => FALSE,
         );
-        $plugin_form = $plugin['form']($wsconfig_type->data['language plugin settings']);
+        $form_settings = array();
+        if (isset($wsconfig_type->data['language plugin settings'])) {
+          $form_settings = $wsconfig_type->data['language plugin settings'];
+        }
+
+        $plugin_form = $plugin['form']($form_settings);
         foreach ($plugin_form as $name => $form_element) {
           $form['data']['language plugin settings'][$name] = $form_element;
         }
