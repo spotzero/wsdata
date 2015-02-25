@@ -25,7 +25,7 @@ function wsdata_drush_command() {
     'aliases' => array('wsdse'),
     'arguments' => array(
       'type' => dt('The type you wish to update, for list, drush wsdata-list-types.'),
-      'uri' => dt('A uri for the endpoint.'),
+      'endpoint' => dt('The endpoint.'),
     ),
     'examples' => array(
       'drush wsdata-set-endpoint <wsconfig type machine name> "http://endpoint/services/rest' => dt('Set the endpoint to http://endpoint/services/rest for this wsdata config type.'),
@@ -34,7 +34,7 @@ function wsdata_drush_command() {
   );
   $items['wsdata-list-types'] = array(
     'arguments' => array(),
-    'description' => dt('Show all wsdata endpoints by uri and endpoint type.'),
+    'description' => dt('Show all WSConfig Types.'),
     'examples' => array(
       'drush wsdata-list-types' => dt('Show / list summary of all wsdata endpoints.'),
     ),
@@ -64,19 +64,15 @@ function wsdata_drush_help($section) {
 function drush_wsdata_set_endpoint() {
   $args = func_get_args();
   $type = $args[0];
-  $url = $args[1];  
+  $endpoint = $args[1];  
   
-  if (empty($type) or empty($url))  {
-    return drush_set_error('arguments_invalid', dt('Please specify an uri and type of endpoint. See drush help wsdata-set-endpoint'));
+  if (empty($type) or empty($endpoint))  {
+    return drush_set_error('arguments_invalid', dt('Please specify WSConfig Type and an endpoint. See drush help wsdata-set-endpoint'));
   }
 
   $wsconfigtype = wsconfig_type_load($type);
-  if (!valid_url($url)) {
-    return drush_set_error('arguments_invalid', dt('Endpoint url did not pass validation. See drush help wsdata-set-endpoint'));
-  }
-
   if ($wsconfigtype) {
-    $wsconfigtype->setEndpoint($url);
+    $wsconfigtype->setEndpoint($endpoint);
     wsconfig_type_save($wsconfigtype);   
   } else {
     return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
