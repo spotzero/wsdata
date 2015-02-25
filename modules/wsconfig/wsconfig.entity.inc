@@ -378,6 +378,21 @@ class WsConfigType extends Entity {
 
     return $plugin;
   }
+
+  /*
+   * API function to get endpoint from the WSConfig Type
+   */
+  public function setEndpoint($endpoint) {
+    $this->data['endpoint'] = $endpoint;
+    return true; 
+  }
+
+  /*
+   * API function to set the endpoint in the WSConfig Type.
+   */
+  public function getEndpoint() {
+    return $this->data['endpoint'];
+  }
 }
 
 /**
