@@ -41,6 +41,15 @@ function wsdata_drush_command() {
     'drupal dependencies' => array('wsconfig','wsdata'),
     'aliases' => array('wsdl'),
   );
+  $items['wsdata-list'] = array(
+    'arguments' => array(),
+    'description' => dt('Show all WSConfigs.'),
+    'examples' => array(
+      'drush wsdata-list' => dt('Show / list summary of all WSConfigs.'),
+    ),
+    'drupal dependencies' => array('wsconfig','wsdata'),
+    'aliases' => array('wsdlc'),
+  );
   return $items;
 }
 
@@ -77,6 +86,21 @@ function drush_wsdata_set_endpoint() {
   } else {
     return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
   }
+}
+
+/**
+ * Get a list of all wsdata configs.
+ */
+function drush_wsdata_list() {
+  $wsconfigs = entity_load('wsconfig', FALSE);
+  $rows[] = array(dt('Name'), dt('Machine Name'), dt('Type'), dt('Method Type'), dt('Method'));
+  foreach ($wsconfigs as $wsconfig) {
+    $row = array($wsconfig->title, $wsconfig->name, $wsconfig->type);
+    foreach ($wsconfig->getOperations() as $method) {
+      $rows[] = array_merge($row, array($method, $wsconfig->data[$wsconfig->getMethodKey($method)]));
+    }
+  }
+  drush_print_table($rows, TRUE);
 }
 
 /**
