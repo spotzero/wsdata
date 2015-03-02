@@ -10,7 +10,11 @@ class wsdata_simple_xml_processor extends WsData {
     $data = trim($data);
     libxml_use_internal_errors(TRUE);
     try {
-      $data = get_object_vars(new SimpleXMLElement($data));
+      $data = new SimpleXMLElement($data);
+      if ($data->count() == 0) {
+        return array($data->getName() => $data->__toString());
+      }
+      $data = get_object_vars($data);
       foreach( $data as $key => $value) {
         $data[$key] = $this->_parsexml($value);
       }
