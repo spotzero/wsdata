@@ -238,7 +238,9 @@ function wsfields_data_load($entity_type, $field, $entity) {
   $remotename = $field['storage']['settings']['remotekey'];
   $passaccepts = isset($field['storage']['settings']['passaccepts']) ? $field['storage']['settings']['passaccepts'] : TRUE;
   $processor = $field['storage']['settings']['processor'];
-  $propertymap = $field['storage']['settings']['propertymap']['read'];
+  if (!empty($field['storage']['settings']['propertymap']['read'])) {
+    $propertymap = $field['storage']['settings']['propertymap']['read'];
+  }
 
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
   $cid = 'wsfield:' . $entity_type . ':' . $id . ':' . $field['field_name'];
@@ -266,20 +268,22 @@ function wsfields_data_load($entity_type, $field, $entity) {
 
     $replacements = array();
 
-    foreach ($propertymap as $pattern => $entity_property) {
-      // If we don't have a value for a key, exit since we will not be able to resolve the data
-      $value = FALSE;
-      if (isset($ws_keys[$entity_property])) {
-        $value = $ws_keys[$entity_property];
-      } elseif (isset($entity->$entity_property)) {
-        $value = $entity->$entity_property;
-      } else {
-        if (WSFIELDS_DEBUG) debug("Couldn't find pattern: " . $pattern);
-        return FALSE;
-      }
+    if (!empty($propertymap)) {
+      foreach ($propertymap as $pattern => $entity_property) {
+        // If we don't have a value for a key, exit since we will not be able to resolve the data
+        $value = FALSE;
+        if (isset($ws_keys[$entity_property])) {
+          $value = $ws_keys[$entity_property];
+        } elseif (isset($entity->$entity_property)) {
+          $value = $entity->$entity_property;
+        } else {
+          if (WSFIELDS_DEBUG) debug("Couldn't find pattern: " . $pattern);
+          return FALSE;
+        }
 
-      // Replace the placeholders in the URL pattern with values from property key map
-      $replacements[$pattern] = $value;
+        // Replace the placeholders in the URL pattern with values from property key map
+        $replacements[$pattern] = $value;
+      }
     }
 
     if (!class_exists($processor)) {
