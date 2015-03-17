@@ -11,7 +11,7 @@ class wsdata_solr_facet_processor extends WsData {
     }
     $data = trim($data);
     $data = json_decode($data, TRUE);
-    return $data['facet_counts']['facet_fields'];
+    return $data['facet_counts'];
   }
 
   public function accepts() {
