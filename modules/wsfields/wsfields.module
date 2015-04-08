@@ -50,6 +50,9 @@ function wsfields_wsfields_data_alter($data, $field) {
 function wsfields_field_access($op, $field, $entity_type, $entity, $account) {
   if ($field['storage']['module'] == 'wsfields_storage') {
     $wsconfig = wsconfig_load_by_name($field['storage']['settings']['wsconfig_name']);
+    if (!$wsconfig) {
+      return FALSE;
+    }
     $supported_ops = $wsconfig->getOperations();
     switch ($op) {
       case 'view':
