@@ -91,7 +91,7 @@ class WsConfig extends Entity {
    *  Returns the result of the method call.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
-    if (isset($this->data['options']) and is_array($this->data['options'])) {
+    if (isset($this->data['options'][$this->getMethodKey($type)]) and is_array($this->data['options'][$this->getMethodKey($type)])) {
       $options += $this->data['options'][$this->getMethodKey($type)];
     }
 
