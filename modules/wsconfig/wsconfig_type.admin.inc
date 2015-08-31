@@ -122,6 +122,29 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
     '#weight' => 40,
   );
 
+  if ($wsconfig_type->is_disabled()) {
+    $form['active'] = array(
+      '#type' => 'item',
+      '#title' => t('This WSConfig Type is disabled'),
+      '#markup' => t('This WSConfig Type is currently disabled.  No calls to WSConfigs that use this type will be made.'),
+      '#weight' => -5,
+    );
+
+    $form['actions']['active'] = array(
+      '#type' => 'submit',
+      '#name' => 'enable',
+      '#value' => t('Enable'),
+      '#weight' => 41,
+    );
+  } else {
+    $form['actions']['active'] = array(
+      '#type' => 'submit',
+      '#name' => 'disable',
+      '#value' => t('Disable'),
+      '#weight' => 41,
+    );
+  }
+
   //Locking not supported yet
   /*if (!$wsconfig_type->isLocked() && $op != 'add') {
     $form['actions']['delete'] = array(
@@ -140,9 +163,21 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
  */
 function wsconfig_type_form_submit(&$form, &$form_state) {
   $wsconfig_type = entity_ui_form_submit_build_entity($form, $form_state);
-  $wsconfig_type->save();
+
+  switch ($form_state['triggering_element']['#name']) {
+  case 'disable':
+    $wsconfig_type->disable();
+    drupal_set_message(t('Web Service Configuration Type was disabled.'));
+    break;
+  case 'enable':
+    $wsconfig_type->enable();
+    drupal_set_message(t('Web Service Configuration Type was enabled.'));
+    break;
+  default:
+    $wsconfig_type->save();
+    drupal_set_message(t('Web Service Configuration Type saved successfully.'));
+  }
   $form_state['redirect'] = 'admin/structure/wsconfig_types';
-  drupal_set_message(t('Web Service Configuration Type saved successfully.'));
 }
 
 /**

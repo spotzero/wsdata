@@ -50,6 +50,28 @@ function wsdata_drush_command() {
     'drupal dependencies' => array('wsconfig','wsdata'),
     'aliases' => array('wsdlc'),
   );
+  $items['wsdata-type-disable'] = array(
+    'description' => dt('Disabled a WSConfig Type'),
+    'aliases' => array('wsdtd'),
+    'arguments' => array(
+      'type' => dt('The WSConfig type you want to disable, see drush wsdata-list-types.'),
+    ),
+    'examples' => array(
+      'drush wsdata-type-disable <wsconfig type machine name>' => dt('Disable the given wsconfig type.'),
+    ),
+    'drupal dependencies' => array('wsconfig','wsdata'),
+  );
+  $items['wsdata-type-enable'] = array(
+    'description' => dt('Enable a WSConfig Type'),
+    'aliases' => array('wsdte'),
+    'arguments' => array(
+      'type' => dt('The WSConfig type you want to enable, see drush wsdata-list-types.'),
+    ),
+    'examples' => array(
+      'drush wsdata-type-enable <wsconfig type machine name>' => dt('Disable the given wsconfig type.'),
+    ),
+    'drupal dependencies' => array('wsconfig','wsdata'),
+  );
   return $items;
 }
 
@@ -108,9 +130,10 @@ function drush_wsdata_list() {
  */
 function drush_wsdata_list_types() {
   $types = wsconfig_get_types();
-  $rows[] = array(dt('Name'), dt('Machine name'), dt('Endpoint'), dt('Connector'));
+  $rows[] = array(dt('Name'), dt('Machine name'), dt('Endpoint'), dt('Connector'), dt('Status'));
   foreach ($types as $type) {
-    $rows[] = array($type->label, $type->type, $type->data['endpoint'], $type->data['connector']);
+    $status = $type->is_disabled()? dt('Disabled') : dt('Enabled');
+    $rows[] = array($type->label, $type->type, $type->data['endpoint'], $type->data['connector'], $status);
   }
   drush_print_table($rows, TRUE);
 }
@@ -129,3 +152,34 @@ function drush_wsdata_get_endpoint() {
   }
   drush_print($wsconfig_type->data['endpoint']);
 }
+
+/**
+ * Disable a wsconfig type.
+ */
+function drush_wsdata_type_disable() {
+  $args = func_get_args();
+  $type = $args[0];
+  $wsconfigtype = wsconfig_type_load($type);
+  if (!$wsconfigtype) {
+    return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
+  }  
+  if (!$wsconfigtype->is_disabled()) {
+    $wsconfigtype->disable();
+  }
+}
+
+/**
+ * Enable a wsconfig type.
+ */
+function drush_wsdata_type_enable() {
+  $args = func_get_args();
+  $type = $args[0];
+  $wsconfigtype = wsconfig_type_load($type);
+  if (!$wsconfigtype) {
+    return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
+  }
+  if ($wsconfigtype->is_disabled()) {
+    $wsconfigtype->enable();
+  }
+}
+

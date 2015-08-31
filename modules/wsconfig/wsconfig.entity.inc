@@ -91,6 +91,10 @@ class WsConfig extends Entity {
    *  Returns the result of the method call.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
+    if ($this->wsconfig_type->is_disabled()) {
+      return FALSE;
+    }
+
     if (isset($this->data['options'][$this->getMethodKey($type)]) and is_array($this->data['options'][$this->getMethodKey($type)])) {
       $options += $this->data['options'][$this->getMethodKey($type)];
     }
@@ -392,6 +396,31 @@ class WsConfigType extends Entity {
    */
   public function getEndpoint() {
     return $this->data['endpoint'];
+  }
+
+  /**
+   * API function to disabled this wsconfig type.
+   */
+  public function disable() {
+    $this->data['disabled'] = TRUE;
+    watchdog('wsconfig', t('WSConfig Type %label (%type) was disabled.', array('%label' => $this->label, '%type' => $this->type)));
+    $this->save();
+  }
+
+  /**
+   * API function to enabled this wsconfig type.
+   */
+  public function enable() {
+    unset($this->data['disabled']);
+    watchdog('wsconfig', t('WSConfig Type %label (%type) was enabled.', array('%label' => $this->label, '%type' => $this->type)));
+    $this->save();
+  }
+
+  /**
+   * API function to check if this wsconfig type is disabled.
+   */
+  public function is_disabled() {
+    return isset($this->data['disabled']) ? $this->data['disabled'] : FALSE;
   }
 }
 
