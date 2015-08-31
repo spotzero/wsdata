@@ -376,7 +376,7 @@ class WsConfigType extends Entity {
     $plugin = FALSE;
     if (!empty($this->data['language plugin'])) {
       $plugin = array(
-        $this->data['language plugin'] => $this->data['language plugin settings'],
+        $this->data['language plugin'] => isset($this->data['language plugin settings']) ? $this->data['language plugin settings'] : array(),
       );
     }
 
