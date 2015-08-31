@@ -22,7 +22,7 @@ function ws_addressfield_wsfields_addressfield_data_alter($data, $field) {
 
   foreach($languages as $lang => $language) {
     foreach ($data[$lang] as $key => $lang_data) {
-      $field_data[$lang][$key] = _ws_addressfield_map_address($value);
+      $field_data[$lang][$key] = _ws_addressfield_map_address($lang_data);
     }
   }
 
