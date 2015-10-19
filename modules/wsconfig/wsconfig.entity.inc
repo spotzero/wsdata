@@ -281,6 +281,14 @@ class WsConfigController extends EntityAPIControllerExportable {
 
     return $content;
   }
+
+  public function export($entity, $prefix = '') {
+    unset($entity->wsconfig_type);
+    unset($entity->connector);
+    unset($entity->created);
+    unset($entity->changed);
+    return parent::export($entity, $prefix);
+  }
 }
 
 /**
