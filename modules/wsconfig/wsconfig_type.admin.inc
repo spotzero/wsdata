@@ -39,7 +39,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
   $form['data']['endpoint'] = array(
     '#type' => 'textfield',
     '#title' => t('Web service endpoint'),
-    '#description' => t('Full URL to the service endpoint Ex: http://example.com/rest'),
+    '#description' => t('Full URL to the service endpoint Ex: http://example.com/rest.<br>Endpoints can contain replacement tokens which will be replaced by values from Drupal variables.  Any number of variable replacements can be added in the endpoint and the replacement will be done when the service is called.  Variable replacement is done with the syntax "${variable_name:default value}".'),
     '#default_value' => !empty($wsconfig_type->data['endpoint']) ? $wsconfig_type->data['endpoint'] : '',
   );
 

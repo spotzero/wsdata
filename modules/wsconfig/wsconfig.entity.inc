@@ -22,7 +22,7 @@ class WsConfig extends Entity {
     $this->wsconfig_type = wsconfig_type_load($this->type);
 
     if (isset($this->wsconfig_type->data['connector']) and class_exists($this->wsconfig_type->data['connector'])) {
-      $this->connector = new $this->wsconfig_type->data['connector']($this->wsconfig_type->data['endpoint']);
+      $this->connector = new $this->wsconfig_type->data['connector']($this->wsconfig_type->getEndpoint());
       // Configure connector with caching settings.
       if ($this->connector->supportsCaching()) {
         if (is_string($this->data)) {
@@ -44,7 +44,8 @@ class WsConfig extends Entity {
    */
   public function setEndpoint($endpoint) {
     if (isset($this->wsconfig_type->data['connector']) and class_exists($this->wsconfig_type->data['connector'])) {
-      $this->connector = new $this->wsconfig_type->data['connector']($endpoint);
+      $this->wsconfig_type->setEndpoint($endpoint);
+      $this->connector = new $this->wsconfig_type->data['connector']($this->getEndpoint());
       return TRUE;
     }
     return FALSE;
@@ -54,10 +55,9 @@ class WsConfig extends Entity {
    * Method wsconfig->getEndpoint().
    */
   public function getEndpoint() {
-    if (isset($this->connector)) {
+    if (isset($this->connector) and is_object($this->connector)) {
       return $this->connector->getEndpoint();
     }
-
     return FALSE;
   }
 
@@ -395,7 +395,20 @@ class WsConfigType extends Entity {
    * API function to set the endpoint in the WSConfig Type.
    */
   public function getEndpoint() {
-    return $this->data['endpoint'];
+    $endpoint = $this->data['endpoint'];
+    $matches = array();
+    preg_match_all('/\$\{(.+?)(:.+){0,1}\}/', $endpoint, $matches);
+    if (!empty($matches[0])) {
+      for ($n = 0; $n < count($matches[0]); $n++) {
+        $default = '';
+        if (isset($matches[2][$n])) {
+          $default = drupal_substr($matches[2][$n], 1);
+        }
+        $replacements[] = (string)variable_get($matches[1][$n], $default);
+      }
+      $endpoint = str_replace($matches[0], $replacements, $endpoint);
+    }
+    return $endpoint;
   }
 
   /**
