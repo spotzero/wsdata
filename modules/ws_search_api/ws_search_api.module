@@ -24,6 +24,10 @@ function ws_search_api_cron() {
 
   // Marks them for reindexing
   foreach ($reindex as $type => $ids) {
+    db_delete('ws_search_api_item', 'w')
+    ->condition('entity_type', $type)
+    ->condition('entity_id', $ids, 'IN')
+    ->execute();
     search_api_track_item_change($type, $ids);
   }
 }
