@@ -15,11 +15,20 @@ function wsconfig_wsdata_content_type_edit_form($form, &$form_state) {
     '#description' => t('Path to data'),
     '#default_value' => isset($conf['selector']) ? $conf['selector'] : '',
   );
+
+  $form['classes'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CSS Classes'),
+    '#description' => t('CSS Classes to add to the container'),
+    '#default_value' => isset($conf['classes']) ? $conf['classes'] : '',
+  );
+
   return $form;
 }
 
 function wsconfig_wsdata_content_type_edit_form_submit($form, &$form_state) {
   $form_state['conf']['selector'] = $form_state['values']['selector'];
+  $form_state['conf']['classes'] = $form_state['values']['classes'];
 }
 
 function wsconfig_wsdata_content_type_admin_title($subtype, $conf) {
@@ -46,6 +55,9 @@ function wsconfig_wsdata_content_type_render($subtype, $conf, $panel_args, $cont
   $block->content = array(
     '#type' => 'container',
     'items' => $page,
+    '#attributes' => array(
+      'class' => explode(' ', $conf['classes']),
+    ),
   );
   return $block;
 }
