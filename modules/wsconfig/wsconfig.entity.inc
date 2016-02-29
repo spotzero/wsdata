@@ -120,7 +120,7 @@ class WsConfig extends Entity {
     $method = $this->getMethod($type, $replacement);
 
     $matches = array();
-    preg_match_all("/(%\w+)/", $method, $matches);
+    preg_match_all("/(%[a-zA-Z0-9]+)/", $method, $matches);
 
     // Compare the tokens extracted to see if some haven't been replaced.
     if (sizeof($matches[0])) {

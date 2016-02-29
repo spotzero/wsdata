@@ -61,6 +61,13 @@ function wsconfig_modules_disabled($modules) {
 }
 
 /**
+ * Implements hook_ctools_plugin_directory().
+ */
+function wsconfig_ctools_plugin_directory($module, $plugin) {
+  return 'plugins/' . $plugin;
+}
+
+/**
  * Load the CRUD operations for a given connector
  *
  * @param string $id
