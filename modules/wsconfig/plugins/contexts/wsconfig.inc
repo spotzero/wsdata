@@ -105,7 +105,14 @@ function wsconfig_context_wsconfig_convert($context, $type) {
   if (!$context->data['wsdata_run']) {
     $context->data['wsconfig'] = wsconfig_load_by_name($context->data['conf']['wsconfig']);
 
-    parse_str($context->data['conf']['replacements'], $replacements);
+    $replacements = json_decode($context->data['conf']['replacements'], TRUE);
+    foreach ($replacements as $key => $val) {
+      if (substr($key,0,1) != '%') {
+        $replacements['%' . $key] = $val;
+        unset($replacements[$key]);
+      }
+    }
+
     $method = $context->data['conf']['wsconfig_method_' . $context->data['conf']['wsconfig']];
     $arguments = empty($context->data['conf']['arguments']) ? array() : json_decode($context->data['conf']['arguments'], TRUE);
     $options = empty($context->data['conf']['options']) ? array() : json_decode($context->data['conf']['options'], TRUE);

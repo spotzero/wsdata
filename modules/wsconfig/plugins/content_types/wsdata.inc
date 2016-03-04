@@ -38,8 +38,11 @@ function wsconfig_wsdata_content_type_admin_title($subtype, $conf) {
 //function wsconfig_wsdata_content_type_admin_info($subtype, $conf) {}
 
 function wsconfig_wsdata_content_type_render($subtype, $conf, $panel_args, $context) {
-
   $data = ctools_context_convert_context($context, $conf['selector']);
+
+  if (!$data) {
+    return NULL;
+  }
   $page = array();
   if (is_array($data)) {
     foreach ($data as $d) {
