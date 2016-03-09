@@ -1,5 +1,7 @@
 <?php
 
+define('WSCONFIG_DEFAULT_DEGRADED_BACKOFF', 0);
+
 /**
  * @file
  * Main module for wsconfig
@@ -242,8 +244,14 @@ function wsconfig_form_wsconfig_type_overview_form_alter(&$form, &$form_state) {
   $types = wsconfig_get_types();
   foreach ($form['table']['#rows'] as $key => $row) {
     $type = $types[$row[0]['data']['#name']];
-    if ($type->is_disabled()) {
-      $active = t('Disabled - Calls to WSConfigs using this type will not be run.');
+    if ($type->isDisabled()) {
+      $degraded = $type->getDegraded();
+      if ($degraded) {
+        $active = t('Degraded - Calls to WSConfigs using this type will not be run.  Service will be automatically reenabled in %seconds.', array('%seconds' => $degraded));
+      }
+      else {
+        $active = t('Disabled - Calls to WSConfigs using this type will not be run.');
+      }
     } else {
       $active = t('Enabled');
     }

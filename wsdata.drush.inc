@@ -132,7 +132,7 @@ function drush_wsdata_list_types() {
   $types = wsconfig_get_types();
   $rows[] = array(dt('Name'), dt('Machine name'), dt('Endpoint'), dt('Connector'), dt('Status'));
   foreach ($types as $type) {
-    $status = $type->is_disabled()? dt('Disabled') : dt('Enabled');
+    $status = $type->isDisabled()? dt('Disabled') : dt('Enabled');
     $rows[] = array($type->label, $type->type, $type->data['endpoint'], $type->data['connector'], $status);
   }
   drush_print_table($rows, TRUE);
@@ -163,7 +163,7 @@ function drush_wsdata_type_disable() {
   if (!$wsconfigtype) {
     return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
   }  
-  if (!$wsconfigtype->is_disabled()) {
+  if (!$wsconfigtype->isDisabled()) {
     $wsconfigtype->disable();
   }
 }
@@ -178,7 +178,7 @@ function drush_wsdata_type_enable() {
   if (!$wsconfigtype) {
     return drush_set_error('arguments_invalid', dt('WSConfig type !type was not found.  Run "drush wsdata-list-types" for a list of available types.', array('!type' => $type)));
   }
-  if ($wsconfigtype->is_disabled()) {
+  if ($wsconfigtype->isDisabled()) {
     $wsconfigtype->enable();
   }
 }

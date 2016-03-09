@@ -382,14 +382,18 @@ abstract class WsConnector {
     }
   }
 
-  private function setError($code, $message) {
+  public function isDegraded() {
+    return FALSE;
+  }
+
+  protected function setError($code, $message) {
     $this->error = array(
       'code' => $code,
       'message' => $message,
     );
   }
 
-  private function clearError() {
+  protected function clearError() {
     $this->error = NULL;
   }
 }

@@ -43,6 +43,13 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
     '#default_value' => !empty($wsconfig_type->data['endpoint']) ? $wsconfig_type->data['endpoint'] : '',
   );
 
+  $form['data']['degraded_backoff'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Backoff timeout if the service is degraded.'),
+    '#description' => t('Time in seconds that this service will be disabled for if it begins to timeout. '),
+    '#default_value' => !empty($wsconfig_type->data['degraded_backoff']) ? $wsconfig_type->data['degraded_backoff'] : WSCONFIG_DEFAULT_DEGRADED_BACKOFF,
+  );
+
   $connectors = variable_get('wsconfig_connectors');
   $connectors_options = array();
   foreach ($connectors as $connector) {
@@ -122,7 +129,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
     '#weight' => 40,
   );
 
-  if ($wsconfig_type->is_disabled()) {
+  if ($wsconfig_type->isDisabled()) {
     $form['active'] = array(
       '#type' => 'item',
       '#title' => t('This WSConfig Type is disabled'),
@@ -162,6 +169,8 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
  * Form API submit callback for the type form.
  */
 function wsconfig_type_form_submit(&$form, &$form_state) {
+  $form_state['values']['degraded_backoff'] = (int)$form_state['values']['degraded_backoff'];
+
   $wsconfig_type = entity_ui_form_submit_build_entity($form, $form_state);
 
   switch ($form_state['triggering_element']['#name']) {

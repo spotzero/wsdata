@@ -91,7 +91,7 @@ class WsConfig extends Entity {
    *  Returns the result of the method call.
    */
   public function call($type, $replacement = array(), $argument = array(), $options = array(), &$method = '') {
-    if ($this->wsconfig_type->is_disabled()) {
+    if ($this->wsconfig_type->isDisabled()) {
       return FALSE;
     }
 
@@ -133,6 +133,10 @@ class WsConfig extends Entity {
     $start_time = microtime(true);
 
     $result = $this->connector->wscall($type, $method, $argument, $options);
+
+    if ($result === FALSE and $this->connector->isDegraded()) {
+      $this->wsconfig_type->disable(TRUE);
+    }
 
     if (module_exists('ws_performance')) {
       $run_time = round((microtime(true) - $start_time) * 1000);
@@ -372,6 +376,10 @@ class WsConfigType extends Entity {
 
   public function __construct($values = array()) {
     parent::__construct($values, 'wsconfig_type');
+
+    if (!isset($this->data['degraded_backoff'])) {
+      $this->data['degraded_backoff'] = WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+    }
   }
 
   /**
@@ -422,26 +430,69 @@ class WsConfigType extends Entity {
   /**
    * API function to disabled this wsconfig type.
    */
-  public function disable() {
+  public function disable($degraded = FALSE) {
+    $reason = '';
+
+    if ($degraded) {
+      if (!isset($this->data['degraded_backoff'])) {
+        $this->data['degraded_backoff'] = WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+      }
+      if ($this->data['degraded_backoff'] == 0) {
+        return;
+      }
+
+      $reason = '  ' . t('Automatically disabled due to degrated service.');
+      $this->data['degraded'] = time();
+    }
+
     $this->data['disabled'] = TRUE;
-    watchdog('wsconfig', t('WSConfig Type %label (%type) was disabled.', array('%label' => $this->label, '%type' => $this->type)));
+    watchdog('wsconfig', t('WSConfig Type %label (%type) was disabled.', array('%label' => $this->label, '%type' => $this->type)) . $reason);
     $this->save();
   }
 
   /**
    * API function to enabled this wsconfig type.
    */
-  public function enable() {
+  public function enable($degraded = FALSE) {
+    unset($this->data['degraded']);
     unset($this->data['disabled']);
-    watchdog('wsconfig', t('WSConfig Type %label (%type) was enabled.', array('%label' => $this->label, '%type' => $this->type)));
+
+    $reason = '';
+    if ($degraded) {
+      $reason = '  ' . t('Automatically re-enabling previously degrated service.');
+    }
+
+    watchdog('wsconfig', t('WSConfig Type %label (%type) was enabled.', array('%label' => $this->label, '%type' => $this->type)) . $reason);
     $this->save();
   }
 
   /**
    * API function to check if this wsconfig type is disabled.
    */
-  public function is_disabled() {
+  public function isDisabled() {
+
+    if (!isset($this->data['degraded_backoff'])) {
+      $this->data['degraded_backoff'] = WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+    }
+
+    if (isset($this->data['degraded']) and $this->data['degraded'] < time() - $this->data['degraded_backoff']) {
+      $this->enable(TRUE);
+      return FALSE;
+    }
+
     return isset($this->data['disabled']) ? $this->data['disabled'] : FALSE;
+  }
+
+  public function getDegraded() {
+    if (!isset($this->data['degraded_backoff'])) {
+      $this->data['degraded_backoff'] = WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+    }
+
+    if (isset($this->data['degraded'])) {
+      return $this->data['degraded'] - time() + $this->data['degraded_backoff'];
+    }
+
+    return 0;
   }
 }
 
