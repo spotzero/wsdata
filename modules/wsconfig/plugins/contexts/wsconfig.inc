@@ -87,7 +87,7 @@ function wsconfig_context_wsconfig_settings_form($form, &$form_state) {
   return $form;
 }
 
-function wsconfig_context_wsconfig_settings_form_submit($form, &$form_state) {
+function wsconfig_context_wsconfig_settings_form_submit(&$form, &$form_state) {
   $form_state['conf']['wsconfig'] = $form_state['values']['wsconfig'];
   $form_state['conf']['replacements'] = $form_state['values']['replacements'];
   $form_state['conf']['options'] = $form_state['values']['options'];
