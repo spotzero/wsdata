@@ -45,7 +45,7 @@ class WsConfig extends Entity {
   public function setEndpoint($endpoint) {
     if (isset($this->wsconfig_type->data['connector']) and class_exists($this->wsconfig_type->data['connector'])) {
       $this->wsconfig_type->setEndpoint($endpoint);
-      $this->connector = new $this->wsconfig_type->data['connector']($this->getEndpoint());
+      $this->connector = new $this->wsconfig_type->data['connector']($endpoint);
       return TRUE;
     }
     return FALSE;
