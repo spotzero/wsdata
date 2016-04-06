@@ -1,0 +1,8 @@
+name = Web Service Fields - Email Field
+description = Support the 'email' suite of data formats with web service fields
+core = 7.x
+package = Web Service Data
+
+dependencies[] = email
+dependencies[] = wsdata
+dependencies[] = wsfields
