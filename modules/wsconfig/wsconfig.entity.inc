@@ -132,9 +132,12 @@ class WsConfig extends Entity {
     }
     $start_time = microtime(true);
 
-    $result = $this->connector->wscall($type, $method, $argument, $options);
+    $result = FALSE;
+    if (isset($this->connector)) {
+      $result = $this->connector->wscall($type, $method, $argument, $options);
+    }
 
-    if ($result === FALSE and $this->connector->isDegraded()) {
+    if ($result === FALSE and isset($this->connector) and $this->connector->isDegraded()) {
       $this->wsconfig_type->disable(TRUE);
     }
 
@@ -377,7 +380,7 @@ class WsConfigType extends Entity {
   public function __construct($values = array()) {
     parent::__construct($values, 'wsconfig_type');
 
-    if (!isset($this->data['degraded_backoff'])) {
+    if (is_array($this->data) and !isset($this->data['degraded_backoff'])) {
       $this->data['degraded_backoff'] = WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
     }
   }
