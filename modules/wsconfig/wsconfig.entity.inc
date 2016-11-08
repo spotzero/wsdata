@@ -30,9 +30,11 @@ class WsConfig extends Entity {
         } else {
           $data = $this->data;
         }
-        if (isset($data['cache_default_time']) and isset($data['cache_default_override'])) {
-          $this->connector->defaultCache($data['cache_default_time'], $data['cache_default_override']);
-        }
+        
+        $cache_default_time = isset($data['cache_default_time']) ? $data['cache_default_time'] : 0;
+        $cache_default_override = isset($data['cache_default_override']) ? $data['cache_default_override'] : FALSE;
+        $stale_cache = isset($data['stale_cache']) ? $data['stale_cache'] : FALSE; 
+        $this->connector->defaultCache($cache_default_time, $cache_default_override, $stale_cache);
       }
     }
   }

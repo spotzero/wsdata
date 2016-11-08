@@ -304,6 +304,7 @@ abstract class WsConnector {
   protected $expires;
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;
+  protected $staleCache;
   protected $endpoint;
 
   protected $error;
@@ -322,6 +323,7 @@ abstract class WsConnector {
     $this->expires = 0;
     $this->cacheDefaultTime = 0;
     $this->cacheDefaultOverride = FALSE;
+    $this->staleCache = FALSE;
   }
 
   public function supportsCaching() {
@@ -339,9 +341,10 @@ abstract class WsConnector {
     return $this->languagePlugins;
   }
 
-  public function defaultCache($mintime = 0, $override = FALSE) {
+  public function defaultCache($mintime = 0, $override = FALSE, $stale = FALSE) {
     $this->cacheDefaultTime = $mintime;
     $this->cacheDefaultOverride = $override;
+    $this->staleCache = $stale;
   }
 
   abstract function getMethods();

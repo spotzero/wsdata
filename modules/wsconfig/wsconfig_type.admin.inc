@@ -169,7 +169,7 @@ function wsconfig_type_form($form, &$form_state, $wsconfig_type, $op = 'edit') {
  * Form API submit callback for the type form.
  */
 function wsconfig_type_form_submit(&$form, &$form_state) {
-  $form_state['values']['degraded_backoff'] = (int)$form_state['values']['degraded_backoff'];
+  $form_state['values']['degraded_backoff'] = isset($form_state['values']['degraded_backoff']) ? (int)$form_state['values']['degraded_backoff'] : WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
 
   $wsconfig_type = entity_ui_form_submit_build_entity($form, $form_state);
 

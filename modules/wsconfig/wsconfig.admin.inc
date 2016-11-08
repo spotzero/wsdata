@@ -171,6 +171,14 @@ function wsconfig_edit_form($form, &$form_state, $wsconfig, $op = 'edit') {
       '#default_value' => isset($wsconfig->data['cache_default_override']) ? $wsconfig->data['cache_default_override'] : 0,
     );
 
+    $form['stale_cache'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Allow stale cache'),
+      '#description' => t('Returns expired cache entries when the service is unavailable (if supported by the connector.)'),
+      '#default_value' => isset($wsconfig->data['stale_cache']) ? $wsconfig->data['stale_cache'] : 0,
+    );
+
+
   }
 
   // Add the field related form elements.
@@ -248,6 +256,7 @@ function wsconfig_edit_form_submit(&$form, &$form_state) {
 
   $wsconfig->data['cache_default_time'] = (int) $form_state['values']['cache_default_time'];
   $wsconfig->data['cache_default_override'] = (int) $form_state['values']['cache_default_override'];
+  $wsconfig->data['stale_cache'] = (int) $form_state['values']['stale_cache'];
 
 
   // Save the wsconfig and go back to the list of wsconfigs
