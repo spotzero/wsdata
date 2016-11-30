@@ -39,7 +39,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * )
  */
 class WSCall extends ConfigEntityBase implements WSCallInterface {
-
   /**
    * The Web Service Call ID.
    *
@@ -53,5 +52,10 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * @var string
    */
   protected $label;
+
+  protected $settings;
+  protected $types;
+  protected $wsserver;
+  protected $wsparser;
 
 }

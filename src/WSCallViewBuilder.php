@@ -12,6 +12,4 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  * Provides a WSCall view builder.
  */
 class WSCallViewBuilder extends EntityViewBuilder {
-
 }
-

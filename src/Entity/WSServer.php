@@ -53,4 +53,11 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
    */
   protected $label;
 
+  protected $endpoint;
+  protected $wsconnector;
+  protected $options;
+  protected $settings;
+  protected $state;
+  protected $languagehandling;
+
 }

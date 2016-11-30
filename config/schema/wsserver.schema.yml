@@ -16,6 +16,15 @@ wsdata.wsserver.*:
     wsconnector:
       label: 'WS Connector'
       type: string
+    languagehandling:
+      label: 'Language Handling'
+      type: struct
     options:
       label: 'Options'
+      type: struct
+    settings:
+      label: 'Settings'
+      type: struct
+    state:
+      label: 'State'
       type: struct

@@ -1,0 +1,5 @@
+name: Web Service Data Extra Parsers
+type: module
+description: Web service data more useful WSParser plugins
+core: 8.x
+package: WSData

@@ -8,6 +8,12 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  * Provides an interface for defining Web Service Call entities.
  */
 interface WSCallInterface extends ConfigEntityInterface {
-
-  // Add get/set methods for your configuration properties here.
+  public function setEndpoint($endpoint);
+  public function getEndpoint();
+  public function getLanguagePlugin();
+  public function call($type, $key = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '');
+  public function getMethod($type, $replacement = array());
+  public function getReplacements($type);
+  public function getOperations();
+  public function getPossibleMethods();
 }
