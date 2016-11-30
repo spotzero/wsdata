@@ -10,4 +10,12 @@
  */
 
 class WSConnectorSimpleHTTP extends WSConnectorBase {
+    public function getMethods() {
+      return array(
+        'multiple' => array(
+          'get' => t('GET Request'),
+          'post' => t('POST Request'),
+        ),
+      );
+    }
 }
