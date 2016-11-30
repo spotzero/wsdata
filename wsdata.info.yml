@@ -1,0 +1,5 @@
+name: Web Service Data
+type: module
+description: Web service data sources as configuration.
+core: 8.x
+package: WSData

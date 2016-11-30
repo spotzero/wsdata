@@ -1,0 +1,18 @@
+
+# Web Service Call menu items definition
+entity.wscall.collection:
+  title: 'Web Service Call'
+  route_name: entity.wscall.collection
+  description: 'List Web Service Calls'
+  parent: system.admin_structure
+  weight: 99
+
+
+# Web Service Server menu items definition
+entity.wsserver.collection:
+  title: 'Web Service Server'
+  route_name: entity.wsserver.collection
+  description: 'List Web Service Servers'
+  parent: system.admin_structure
+  weight: 99
+

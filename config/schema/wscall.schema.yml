@@ -1,0 +1,18 @@
+wsdata.wscall.*:
+  type: config_entity
+  label: 'Web Service Call config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+    wsserver:
+      label: 'WS Server'
+      type: string
+    wsparser:
+      label: 'WS Parser'
+      type: string

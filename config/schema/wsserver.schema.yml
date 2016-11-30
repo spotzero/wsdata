@@ -1,0 +1,21 @@
+wsdata.wsserver.*:
+  type: config_entity
+  label: 'Web Service Server config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
+    endpoint:
+      label: 'Endpoint'
+      type: string
+    wsconnector:
+      label: 'WS Connector'
+      type: string
+    options:
+      label: 'Options'
+      type: struct

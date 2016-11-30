@@ -1,0 +1,7 @@
+services:
+  plugin.manager.wsconnector:
+    class: Drupal\wsdata\Plugin\WSConnectorManager
+    parent: default_plugin_manager
+  plugin.manager.wsparser:
+    class: Drupal\wsdata\Plugin\WSParserManager
+    parent: default_plugin_manager
