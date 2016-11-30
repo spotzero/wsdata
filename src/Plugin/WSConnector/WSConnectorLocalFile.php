@@ -9,7 +9,5 @@
  * )
  */
 
- * )
- */
 class WSConnectorLocalFile extends WSConnectorBase {
 }
