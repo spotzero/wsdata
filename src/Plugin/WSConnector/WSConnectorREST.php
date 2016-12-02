@@ -1,5 +1,9 @@
 <?php
 
+namespace Drupal\wsdata\Plugin\WSConnector;
+
+use Drupal\wsdata\Plugin;
+
 /**
  * REST Connector.
  *

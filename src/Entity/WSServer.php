@@ -38,6 +38,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * )
  */
 class WSServer extends ConfigEntityBase implements WSServerInterface {
+  static $WSCONFIG_DEFAULT_DEGRADED_BACKOFF = 900;
 
   /**
    * The Web Service Server ID.
@@ -53,11 +54,125 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
    */
   protected $label;
 
-  protected $endpoint;
-  protected $wsconnector;
-  protected $options;
-  protected $settings;
+  public $endpoint;
+  public $wsconnector;
+  public $options;
+  public $settings;
+  
   protected $state;
   protected $languagehandling;
 
+  public function __construct(array $values, $entity_type) {
+    parent::__construct($values, $entity_type);
+  	$wsconnectorman = \Drupal::service('plugin.manager.wsconnector');
+  	$wscdefs = $wsconnectorman->getDefinitions();
+  	if (isset($wscdefs[$this->wsconnector])) {
+  	  $this->wsconnectorInst = $wsconnectorman->createInstance($this->wsconnector);
+  	}
+  	$drupalstate = \Drupal::state();
+  	$this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, array());
+  }
+  
+  public function __destruct() {
+  	$drupalstate = \Drupal::state();
+  	$drupalstate->set('wsdata.wsserver.' . $this->id, $this->state);
+  }
+  
+  /**
+   * Return types of methods supported by the connector.
+   */
+  public function getMethods() {
+  	return $this->wsconnectorInst->getMethods();
+  }
+
+  /**
+   * Return supported languageplugins.
+   */
+  public function getEnabledLanguagePlugin() {
+  	return ['default'];
+  }
+  
+  /**
+   * Set the endpoint.
+   */
+  public function setEndpoint($endpoint) {
+    $this->endpoint = $endpoint;
+    return true;
+  }
+
+  /**
+   * Get the endpoint.
+   */
+  public function getEndpoint() {
+    $endpoint = $this->endpoint;
+    return $endpoint;
+  }
+  
+  /**
+   * Disabled the wsserver.
+   */
+  public function disable($degraded = FALSE) {
+    $reason = '';
+
+    if ($degraded) {
+      if (!isset($this->state['degraded_backoff'])) {
+        $this->state['degraded_backoff'] = wsserver::$WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+      }
+      if ($this->state['degraded_backoff'] == 0) {
+        return;
+      }
+
+      $reason = '  ' . t('Automatically disabled due to degrated service.');
+      $this->state['degraded'] = time();
+    }
+
+    $this->state['disabled'] = TRUE;
+    \Drupal::logger('wsdata')->warning(t('WSServer %label (%type) was disabled.', array('%label' => $this->label(), '%type' => $this->wsconnector)) . $reason);
+  }
+
+  /**
+   * Enable the wsserver
+   */
+  public function enable($degraded = FALSE) {
+    unset($this->state['degraded']);
+    unset($this->state['disabled']);
+
+    $reason = '';
+    if ($degraded) {
+      $reason = '  ' . t('Automatically re-enabling previously degrated service.');
+    }
+
+    \Drupal::logger('wsdata')->notice( t('WSConfig Type %label (%type) was enabled.', array('%label' => $this->label(), '%type' => $this->wsconnector)) . $reason);
+  }
+
+  /**
+   * Check if wsserver is disabled.
+   */  
+  public function isDisabled() {
+  	if (!isset($this->state['degraded_backoff'])) {
+      $this->state['degraded_backoff'] = wsserver::$WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+    }
+
+    if (isset($this->state['degraded']) and $this->state['degraded'] < time() - $this->state['degraded_backoff']) {
+      $this->enable(TRUE);
+      return FALSE;
+    }
+
+    return isset($this->state['disabled']) ? $this->state['disabled'] : FALSE;
+  }
+  
+  /**
+   * Cause the WSServer to become degraded.
+   */
+  public function getDegraded() {
+    if (!isset($this->state['degraded_backoff'])) {
+      $this->state['degraded_backoff'] = wsserver::$WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
+    }
+
+    if (isset($this->state['degraded'])) {
+      return $this->state['degraded'] - time() + $this->state['degraded_backoff'];
+    }
+
+    return 0;
+  }
 }

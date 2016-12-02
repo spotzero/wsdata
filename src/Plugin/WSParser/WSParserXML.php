@@ -1,5 +1,10 @@
 <?php
 
+namespace Drupal\wsdata\Plugin\WSParser;
+
+use Drupal\wsdata\Plugin;
+
+
 /**
  * XML Parser.
  *

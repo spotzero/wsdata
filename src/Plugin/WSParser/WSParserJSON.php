@@ -1,5 +1,9 @@
 <?php
 
+namespace Drupal\wsdata\Plugin\WSParser;
+
+use Drupal\wsdata\Plugin;
+
 /**
  *  JSON Parser.
  *

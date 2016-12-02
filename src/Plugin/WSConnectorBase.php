@@ -7,7 +7,7 @@ use Drupal\Component\Plugin\PluginBase;
 /**
  * Base class for Wsconnector plugin plugins.
  */
-abstract class WSConnectorBase extends PluginBase implements WSConnectorPluginInterface {
+abstract class WSConnectorBase extends PluginBase implements WSConnectorInterface {
   protected $expires;
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;

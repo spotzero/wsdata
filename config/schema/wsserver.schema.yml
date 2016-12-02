@@ -25,6 +25,3 @@ wsdata.wsserver.*:
     settings:
       label: 'Settings'
       type: struct
-    state:
-      label: 'State'
-      type: struct

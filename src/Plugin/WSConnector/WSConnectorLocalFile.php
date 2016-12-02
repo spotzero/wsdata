@@ -1,5 +1,10 @@
 <?php
 
+namespace Drupal\wsdata\Plugin\WSConnector;
+
+use \Drupal\wsdata\Plugin;
+
+
 /**
  * Local file connector.
  *
@@ -9,7 +14,7 @@
  * )
  */
 
-class WSConnectorLocalFile extends WSConnectorBase {
+class WSConnectorLocalFile extends \Drupal\wsdata\Plugin\WSConnectorBase {
   public function __construct($endpoint) {
     $this->languagePlugins = array(
       'replace',
@@ -25,8 +30,8 @@ class WSConnectorLocalFile extends WSConnectorBase {
     );
   }
 
-  public function wscall($type, $method, $endpoint, $argument, $options) {
-    $filename = $endpoint . '/' . $method;
+  public function wscall($type, $method, $argument, $options) {
+    $filename = $this->endpoint . '/' . $method;
     if (!file_exists($filename)) {
       $this->setError(1, t("$filename does not exist."));
       return FALSE;
