@@ -22,9 +22,23 @@ class wsfields_views_handler_field extends views_handler_field_entity {
       if (isset($field) && isset($entity->{$field})) {
         $ret = array();
 
-        foreach ($entity->{$field} as $lang => $deltas) {
-          foreach ($deltas as $values) {
-            $ret[] = $values['safe_value'];
+        $field_info = field_info_field($field);
+        if (isset($field_info['translatable']) && $field_info['translatable']) {
+          global $language ;
+          $lang_name = $language->language;
+          foreach ($entity->{$field} as $lang => $deltas) {
+            if ($lang == $lang_name) {
+              foreach ($deltas as $values) {
+                $ret[] = $values['safe_value'];
+              }
+            }
+          }
+        }
+        else {
+          foreach ($entity->{$field} as $lang => $deltas) {
+            foreach ($deltas as $values) {
+              $ret[] = $values['safe_value'];
+            }
           }
         }
         $ret = implode(', ', $ret);
