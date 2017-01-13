@@ -15,4 +15,6 @@ interface WSServerInterface extends ConfigEntityInterface {
   public function enable($degraded = FALSE);
   public function isDisabled();
   public function getDegraded();
+  public function getMethods();
+  public function getDefaultMethod();
 }

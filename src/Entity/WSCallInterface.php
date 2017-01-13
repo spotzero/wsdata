@@ -12,8 +12,8 @@ interface WSCallInterface extends ConfigEntityInterface {
   public function getEndpoint();
   public function getLanguagePlugin();
   public function call($type, $key = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '');
-  public function getMethod($type, $replacement = array());
-  public function getReplacements($type);
-  public function getMEthods();
-  public function getPossibleMethods();
+  public function getReplacements($type, $replacement = array());
+  public function getMethods();
+  public function getOptions();
+  public function setOptions();
 }

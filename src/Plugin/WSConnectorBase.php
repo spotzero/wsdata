@@ -20,9 +20,10 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   // in the single request.
   protected $languagePlugins = array('default');
 
+  abstract function getOptions();
   abstract function getMethods();
 
-  abstract public function wscall($type, $method, $argument, $options);
+  abstract public function call($options, $method = NULL, $data = NULL);
 
   public function __construct($endpoint) {
     $this->endpoint = trim($endpoint);

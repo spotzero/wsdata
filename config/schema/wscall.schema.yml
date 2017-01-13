@@ -16,6 +16,6 @@ wsdata.wscall.*:
     wsparser:
       label: 'WS Parser'
       type: string
-    types:
-      label: 'Call types'
+    options:
+      label: 'Options'
       type: struct

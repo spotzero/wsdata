@@ -19,9 +19,6 @@ wsdata.wsserver.*:
     languagehandling:
       label: 'Language Handling'
       type: struct
-    options:
-      label: 'Options'
-      type: struct
     settings:
       label: 'Settings'
       type: struct

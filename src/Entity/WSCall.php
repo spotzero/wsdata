@@ -53,14 +53,14 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    */
   protected $label;
 
-  public $settings;
-  public $types;
+  public $options;
+
   public $wsserver;
   public $wsparser;
 
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
-    $this->wsserverInst = entity_load('wsserver', $this->wsserver);	
+    $this->wsserverInst = entity_load('wsserver', $this->wsserver);
     $this->wsparserManager = \Drupal::service('plugin.manager.wsparser');
   }
 
@@ -71,54 +71,30 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public function getEndpoint() {
     return $this->wsserverInst->getEndpoint();
   }
-  
+
   public function getLanguagePlugin() {}
-  public function call($type, $key = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '') {}
-  public function getMethod($type, $replacement = array()) {}
 
-  public function setMethod($type, $name, $method, $settings = array(), $options = array()) {
-    $cardinality = $this->wsserverInst->getMethodCardinality($type);
+  public function call($method = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '') {}
 
-    if (!$cardinality) {
-      throw new Exception("Invalid method type for the configured wsserver.");
-    }
-
-    $methodStruct = array(
-      'method' => $method,
-      'settings' => $settings,
-      'options' => $options,
-    );
-
-    if ($cardinality == 'multiple') {
-      $this->types[$cardinality][$type][$name] = $methodStruct;
-    } else {
-      $this->types[$cardinality][$type] = $methodStruct;
-    }
+  /**
+   * Sets a method on the WSCall.
+   * Doesn't save the WSCall though.
+   */
+  public function setOptions($options = array()) {
     $this->needSave = TRUE;
-    return TRUE;
   }
 
-  public function getReplacements($type) {}
+  public function getReplacements($method = NULL) {}
 
-  public function getPossibleMethods() {
-    $available = [];
-    $methods = $this->wsserverInst->getMethods();
-    $used = $this->getMethods();
-
-    foreach ($methods['single'] as $single => $name) {
-      if (!isset($used[$single])) {
-        $available[$single] = $name;
-      }
+  public function getOptions() {
+    $options = $this->wsserverInst->getOptions();
+    foreach ($this->options as $key => $value) {
+      $options[$key]['value'] = $value;
     }
-
-    if (isset($methods['multiple'])) {
-      $available += $methods['multiple'];
-    }
-
-    return $available;
+    return $options;
   }
 
   public function getMethods() {
-    return $this->types;
+    return $this->wsserverInst->getMethods();
   }
 }

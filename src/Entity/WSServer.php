@@ -56,9 +56,8 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
 
   public $endpoint;
   public $wsconnector;
-  public $options;
   public $settings;
-  
+
   protected $state;
   protected $languagehandling;
 
@@ -72,12 +71,12 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   	$drupalstate = \Drupal::state();
   	$this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, array());
   }
-  
+
   public function __destruct() {
   	$drupalstate = \Drupal::state();
   	$drupalstate->set('wsdata.wsserver.' . $this->id, $this->state);
   }
-  
+
   /**
    * Return types of methods supported by the connector.
    */
@@ -85,14 +84,9 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
     return $this->wsconnectorInst->getMethods();
   }
 
-  public function getMethodCardinality($method) {
-    $types = $this->getMethods();
-    if (isset($types['single'][$method])) {
-      return 'single';
-    } elseif (isset($types['multiple'][$method])) {
-      return 'multiple';
-    }
-    return FALSE;
+  public function getDefaultMethod() {
+    $methods = array_keys($this->getMethods());
+    return reset($methods);
   }
 
   /**
@@ -101,23 +95,21 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   public function getEnabledLanguagePlugin() {
   	return ['default'];
   }
-  
+
   /**
    * Set the endpoint.
    */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;
-    return true;
   }
 
   /**
    * Get the endpoint.
    */
   public function getEndpoint() {
-    $endpoint = $this->endpoint;
-    return $endpoint;
+    return $this->endpoint;
   }
-  
+
   /**
    * Disabled the wsserver.
    */
@@ -157,7 +149,7 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
 
   /**
    * Check if wsserver is disabled.
-   */  
+   */
   public function isDisabled() {
   	if (!isset($this->state['degraded_backoff'])) {
       $this->state['degraded_backoff'] = wsserver::$WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
@@ -170,7 +162,7 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
 
     return isset($this->state['disabled']) ? $this->state['disabled'] : FALSE;
   }
-  
+
   /**
    * Cause the WSServer to become degraded.
    */
