@@ -2,7 +2,7 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
-use Drupal\wsdata\Plugin;
+use \Drupal\wsdata\Plugin;
 
 /**
  * HTTP Connector.
@@ -13,7 +13,7 @@ use Drupal\wsdata\Plugin;
  * )
  */
 
-class WSConnectorSimpleHTTP extends WSConnectorBase {
+class WSConnectorSimpleHTTP extends \Drupal\wsdata\Plugin\WSConnectorBase {
     public function getMethods() {
       return array(
         'multiple' => array(
@@ -22,4 +22,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         ),
       );
     }
+
+  public function wscall($type, $method, $argument, $options) {
+    return NULL;
+  }
+
 }

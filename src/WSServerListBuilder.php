@@ -16,6 +16,7 @@ class WSServerListBuilder extends ConfigEntityListBuilder {
   public function buildHeader() {
     $header['label'] = $this->t('Web Service Server');
     $header['id'] = $this->t('Machine name');
+    $header['type'] = $this->t('Connector');
     return $header + parent::buildHeader();
   }
 
@@ -23,10 +24,13 @@ class WSServerListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    $connectors = \Drupal::service('plugin.manager.wsconnector');
+    $connector_definitions = $connectors->getDefinitions();
+    $connector = $connector_definitions[$entity->wsconnector];
+
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
-    // You probably want a few more properties here...
+    $row['type'] = $connector['label']->render();
     return $row + parent::buildRow($entity);
   }
-
 }

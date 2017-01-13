@@ -82,7 +82,17 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
    * Return types of methods supported by the connector.
    */
   public function getMethods() {
-  	return $this->wsconnectorInst->getMethods();
+    return $this->wsconnectorInst->getMethods();
+  }
+
+  public function getMethodCardinality($method) {
+    $types = $this->getMethods();
+    if (isset($types['single'][$method])) {
+      return 'single';
+    } elseif (isset($types['multiple'][$method])) {
+      return 'multiple';
+    }
+    return FALSE;
   }
 
   /**
