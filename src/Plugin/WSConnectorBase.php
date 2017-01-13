@@ -22,6 +22,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
 
   abstract function getOptions();
   abstract function getMethods();
+  abstract function getOptionsForm();
 
   abstract public function call($options, $method = NULL, $data = NULL);
 

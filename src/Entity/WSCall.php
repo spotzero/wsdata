@@ -74,7 +74,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
   public function getLanguagePlugin() {}
 
-  public function call($method = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '') {}
+  public function call($method = NULL, $replacement = array(), $argument = array(), $options = array(), &$endpoint = '') {}
 
   /**
    * Sets a method on the WSCall.
@@ -86,12 +86,8 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
   public function getReplacements($method = NULL) {}
 
-  public function getOptions() {
-    $options = $this->wsserverInst->getOptions();
-    foreach ($this->options as $key => $value) {
-      $options[$key]['value'] = $value;
-    }
-    return $options;
+  public function getOptionsForm() {
+    return $this->wsserverInst->wsconnectorInst->getOptionsForm();
   }
 
   public function getMethods() {

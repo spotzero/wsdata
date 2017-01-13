@@ -21,15 +21,22 @@ class WSConnectorSimpleHTTP extends \Drupal\wsdata\Plugin\WSConnectorBase {
 
   public function getOptions() {
     return array(
+      'path' => NULL,
+      'method' => array(),
+    );
+  }
+
+  public function getOptionsForm() {
+    return array(
       'path' => array(
-        'title' => $this->t('Path'),
-        'description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
-        'type' => 'textfield',
+        '#title' => $this->t('Path'),
+        '#description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+        '#type' => 'textfield',
       ),
       'method' => array(
-        'title' => $this->t('HTTP Method'),
-        'type' => 'select',
-        'options' => array(
+        '#title' => $this->t('HTTP Method'),
+        '#type' => 'select',
+        '#options' => array(
           'get' => 'GET',
           'post' => 'POST',
           'put' => 'PUT',

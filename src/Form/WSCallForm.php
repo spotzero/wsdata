@@ -64,20 +64,15 @@ class WSCallForm extends EntityForm {
       $wscall_entity->setMethod($values['add_method'], $values['new_method_name'], $values['new_method_path']);
     }
 
+    $form['options'] = $wscall_entity->getOptionsForm();
     $options = $wscall_entity->getOptions();
     foreach ($options as $name => $option) {
-      $form['options'][$name] = array();
-      foreach ($option as $key => $value) {
-        if ($key == 'value') {
-          $key = 'default_value';
-        }
-        $form['options'][$name]['#' . $key] = $value;
+      if (isset($form['options'][$name]['#default_value'])) {
+        $form['options'][$name]['#default_value'] = $option;
       }
     }
     return $form;
   }
-
-
 
   /**
    * {@inheritdoc}
