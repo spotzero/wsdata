@@ -1,6 +1,6 @@
 <?php
 /**
- * Handle a NPS sort.
+ * Handle a WSField sorting.
  *
  * @ingroup views_sort_handlers
  */

@@ -26,6 +26,11 @@ function wsfields_views_views_data() {
         'help' => t('WSFields Remote Field'),
         'handler' => 'wsfields_views_handler_sort',
       );
+      $data[$entity_type][$field['field_name'] . '_filter']['filter'] = array(
+        'title' => $field['field_name'],
+        'help' => t('WSFields Remote Field Filter'),
+        'handler' => 'wsfields_views_handler_filter',
+      );
     }
   }
   return $data;

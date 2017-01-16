@@ -10,3 +10,4 @@ dependencies[] = views
 
 files[] = handlers/wsfields_views_handler_field.inc
 files[] = handlers/wsfields_views_handler_sort.inc
+files[] = handlers/wsfields_views_handler_filter.inc
