@@ -27,7 +27,12 @@ class wsfields_views_handler_sort extends views_handler_sort {
       $delta = current($lang);
       $index[$id] = $delta['value'];
     }
-    asort($index);
+
+    if (strtolower($this->options['order']) == 'desc') {
+      arsort($index);
+    } else {
+      asort($index);
+    }
 
     $newvalues = array();
     foreach($index as $id => $tmp) {
