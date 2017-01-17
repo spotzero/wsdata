@@ -14,7 +14,6 @@ class wsfields_views_handler_field extends views_handler_field_entity {
 
   function get_value($values, $field = NULL) {
     $field = $this->field;
-
     if (isset($this->entities[$this->view->row_index])) {
       $entity = $this->entities[$this->view->row_index];
 
@@ -25,21 +24,14 @@ class wsfields_views_handler_field extends views_handler_field_entity {
         $field_info = field_info_field($field);
         if (isset($field_info['translatable']) && $field_info['translatable']) {
           global $language ;
-          $lang_name = $language->language;
-          foreach ($entity->{$field} as $lang => $deltas) {
-            if ($lang == $lang_name) {
-              foreach ($deltas as $values) {
-                $ret[] = $values['safe_value'];
-              }
-            }
-          }
+          $langcode = $language->language;
+        } else {
+          $langcode = LANGUAGE_NONE;
         }
-        else {
-          foreach ($entity->{$field} as $lang => $deltas) {
-            foreach ($deltas as $values) {
-              $ret[] = $values['safe_value'];
-            }
-          }
+
+        foreach($entity->{$field}[$langcode] as $key => $delta) {          
+          $val = field_view_value($this->entity_type, $entity, $field, $delta, array(), $langcode);
+          $ret[] = $val['#markup'];
         }
         $ret = implode(', ', $ret);
         return $ret;
