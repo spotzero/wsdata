@@ -61,7 +61,11 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
     $this->wsserverInst = entity_load('wsserver', $this->wsserver);
-    $this->wsparserManager = \Drupal::service('plugin.manager.wsparser');
+    $wsparserManager = \Drupal::service('plugin.manager.wsparser');
+    $wspdefs = $wsparserManager->getDefinitions();
+  	if (isset($wspdefs[$this->wsparser])) {
+      $this->wspaserInst = $wsparserManager->createInstance($this->wsparser);
+  	}
   }
 
   public function setEndpoint($endpoint) {
