@@ -28,4 +28,5 @@ function ws_entityreference_wsfields_entityreference_data_alter($data, $field) {
   }
 
   $data = $field_data;
+  return $data;
 }
