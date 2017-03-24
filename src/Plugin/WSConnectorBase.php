@@ -27,14 +27,17 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
     return array();
   }
 
-  abstract public function call($options, $method = NULL, $data = NULL);
+  abstract public function call($options, $method, $replacements = [], $data = NULL);
 
-  public function __construct($endpoint) {
-    $this->endpoint = trim($endpoint);
+  public function __construct() {
     $this->expires = 0;
     $this->cacheDefaultTime = 0;
     $this->cacheDefaultOverride = FALSE;
     $this->staleCache = FALSE;
+  }
+
+  public function setEndpoint($endpoint) {
+    $this->endpoint = trim($endpoint);
   }
 
   public function getEndpoint() {

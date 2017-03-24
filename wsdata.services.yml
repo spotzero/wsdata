@@ -7,3 +7,4 @@ services:
     parent: default_plugin_manager
   wsdata.data:
     class: Drupal\wsdata\WSDataService
+    arguments: []

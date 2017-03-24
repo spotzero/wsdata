@@ -46,7 +46,7 @@ class WSConnectorREST extends \Drupal\wsdata\Plugin\WSConnectorBase {
     );
   }
 
-  public function call($options, $method = NULL, $data = NULL) {
+  public function call($options, $method, $replacements = [], $data = NULL) {
     return NULL;
   }
 }
