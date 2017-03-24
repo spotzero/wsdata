@@ -79,6 +79,7 @@ class WSCallForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $wscall_entity = $this->entity;
+    $wscall_entity->setOptions($form_state->getValues());
     $status = $wscall_entity->save();
 
     switch ($status) {

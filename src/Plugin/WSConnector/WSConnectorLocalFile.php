@@ -26,12 +26,12 @@ class WSConnectorLocalFile extends \Drupal\wsdata\Plugin\WSConnectorBase {
     return array('read', 'write', 'append');
   }
 
-public function getOptions() {
-  return array(
-    'filename' => NULL,
-    'readonly' => TRUE,
-  );
-}
+  public function getOptions() {
+    return array(
+      'filename' => NULL,
+      'readonly' => TRUE,
+    );
+  }
 
   public function getOptionsForm() {
     return array(
@@ -40,7 +40,7 @@ public function getOptions() {
         '#type' => 'textfield',
       ),
       'readonly' => array(
-        '#title' => $this->t('Prevent writing to this file.'),
+        '#title' => t('Prevent writing to this file.'),
         '#type' => 'checkbox',
       ),
     );

@@ -57,6 +57,7 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   public $endpoint;
   public $wsconnector;
   public $settings;
+  public $wsconnectorInst;
 
   protected $state;
   protected $languagehandling;
@@ -66,7 +67,7 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   	$wsconnectorman = \Drupal::service('plugin.manager.wsconnector');
   	$wscdefs = $wsconnectorman->getDefinitions();
   	if (isset($wscdefs[$this->wsconnector])) {
-  	  $this->wsconnectorInst = $wsconnectorman->createInstance($this->wsconnector);
+      $this->wsconnectorInst = $wsconnectorman->createInstance($this->wsconnector);
   	}
   	$drupalstate = \Drupal::state();
   	$this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, array());

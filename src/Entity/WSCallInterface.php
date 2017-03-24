@@ -15,5 +15,6 @@ interface WSCallInterface extends ConfigEntityInterface {
   public function getReplacements($type, $replacement = array());
   public function getMethods();
   public function getOptionsForm();
-  public function setOptions();
+  public function setOptions($options);
+  public function getOptions();
 }

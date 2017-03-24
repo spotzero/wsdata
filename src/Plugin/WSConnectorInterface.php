@@ -9,7 +9,7 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  */
 interface WSConnectorInterface extends PluginInspectionInterface {
 
-
+  public function getOptionsForm();
   // Add get/set methods for your plugin type here.
 
 }

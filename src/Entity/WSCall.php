@@ -73,21 +73,29 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   }
 
   public function getLanguagePlugin() {}
-
-  public function call($method = NULL, $replacement = array(), $argument = array(), $options = array(), &$endpoint = '') {}
+  public function call($type, $key = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '') {}
 
   /**
    * Sets a method on the WSCall.
    * Doesn't save the WSCall though.
    */
-  public function setOptions($options = array()) {
+  public function setOptions($values = array()) {
+    if ($this->wsserverInst->wsconnectorInst) {
+      $this->options[$this->wsserver] = $this->wsserverInst->wsconnectorInst->saveOptions($values);
+    }
     $this->needSave = TRUE;
   }
 
-  public function getReplacements($method = NULL) {}
+  public function getReplacements($type, $replacement = array()) {}
 
   public function getOptionsForm() {
-    return $this->wsserverInst->wsconnectorInst->getOptionsForm();
+    if ($this->wsserverInst->wsconnectorInst) {
+      return $this->wsserverInst->wsconnectorInst->getOptionsForm();
+    }
+  }
+
+  public function getOptions() {
+    return $this->options[$this->wsserver];
   }
 
   public function getMethods() {

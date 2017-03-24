@@ -22,7 +22,10 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
 
   abstract function getOptions();
   abstract function getMethods();
-  abstract function getOptionsForm();
+
+  public function getOptionsForm() {
+    return array();
+  }
 
   abstract public function call($options, $method = NULL, $data = NULL);
 
@@ -81,5 +84,14 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
 
   protected function clearError() {
     $this->error = NULL;
+  }
+
+  public function saveOptions($values) {
+    $options = array();
+
+    foreach (array_keys($this->getOptionsForm()) as $option) {
+      $options[$option] = $values[$option];
+    }
+    return $options;
   }
 }
