@@ -292,6 +292,7 @@ class WsConfigController extends EntityAPIControllerExportable {
   }
 
   public function export($entity, $prefix = '') {
+    $entity = clone $entity;
     unset($entity->wsconfig_type);
     unset($entity->connector);
     unset($entity->created);
