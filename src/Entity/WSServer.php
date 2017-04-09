@@ -179,4 +179,8 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
 
     return 0;
   }
+
+  public function getConnector() {
+    return $this->wsconnectorInst;
+  }
 }

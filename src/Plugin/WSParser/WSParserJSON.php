@@ -13,7 +13,7 @@ use Drupal\wsdata\Plugin;
  * )
  */
 
-class WSParserJSON extends WSParserBase {
+class WSParserJSON extends \Drupal\wsdata\Plugin\WSParserBase {
 
   // Parse the web service response string, and returns a structured data array
   public function parse($data) {

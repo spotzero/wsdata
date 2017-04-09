@@ -49,7 +49,6 @@ class WSConnectorLocalFile extends \Drupal\wsdata\Plugin\WSConnectorBase {
   public function call($options, $method, $replacements = [], $data = NULL) {
     $filename = $this->endpoint . '/' . $options['filename'];
     $flags = 0;
-    dpm($filename);
     switch ($method) {
       case 'append':
         $flags = FILE_APPEND;

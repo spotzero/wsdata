@@ -58,14 +58,17 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public $wsserver;
   public $wsparser;
 
+  protected $wsserverInst;
+  protected $wsparserInst;
+
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
     $this->wsserverInst = entity_load('wsserver', $this->wsserver);
     $wsparserManager = \Drupal::service('plugin.manager.wsparser');
     $wspdefs = $wsparserManager->getDefinitions();
-  	if (isset($wspdefs[$this->wsparser])) {
-      $this->wspaserInst = $wsparserManager->createInstance($this->wsparser);
-  	}
+    if (isset($wspdefs[$this->wsparser])) {
+      $this->wsparserInst = $wsparserManager->createInstance($this->wsparser);
+    }
   }
 
   public function setEndpoint($endpoint) {
@@ -104,5 +107,25 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
   public function getMethods() {
     return $this->wsserverInst->getMethods();
+  }
+
+  public function addData($data) {
+    if (!isset($this->wsparserInst)) {
+      $wsparserManager = \Drupal::service('plugin.manager.wsparser');
+      $wspdefs = $wsparserManager->getDefinitions();
+      $this->wsparserInst = $wsparserManager->createInstance($this->wsparser);
+    }
+    return $this->wsparserInst->addData($data);
+  }
+
+  public function getData($key = NULL) {
+    if (isset($this->wsparserInst)) {
+      return $this->wsparserInst->getData($key);
+    }
+    return NULL;
+  }
+
+  public function getConnector() {
+    return $this->wsserverInst->getConnector();
   }
 }

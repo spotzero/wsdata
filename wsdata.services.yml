@@ -5,6 +5,6 @@ services:
   plugin.manager.wsparser:
     class: Drupal\wsdata\Plugin\WSParserManager
     parent: default_plugin_manager
-  wsdata.data:
+  wsdata:
     class: Drupal\wsdata\WSDataService
     arguments: []

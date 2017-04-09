@@ -14,7 +14,7 @@ use Drupal\wsdata\Plugin;
  * )
  */
 
-class WSParserXML extends WSParserBase {
+class WSParserXML extends \Drupal\wsdata\Plugin\WSParserBase {
 
   // Parse the web service response string, and returns a structured data array
   public function parse($data) {
