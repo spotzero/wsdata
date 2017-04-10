@@ -15,8 +15,8 @@ use Drupal\wsdata\Plugin;
 
 class WSDecoderJSON extends \Drupal\wsdata\Plugin\WSDecoderBase {
 
-  // Parse the web service response string, and returns a structured data array
-  public function parse($data) {
+  // Decode the web service response string, and returns a structured data array
+  public function decode($data) {
     if (!isset($data) || empty($data)) {
       return;
     }

@@ -16,8 +16,8 @@ use Drupal\wsdata\Plugin;
 
 class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
 
-  // Parse the web service response string, and returns a structured data array
-  public function parse($data) {
+  // Decode the web service response string, and returns a structured data array
+  public function decode($data) {
     if (!isset($data) || empty($data)) {
       return;
     }
@@ -30,7 +30,7 @@ class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
       }
       $data = get_object_vars($data);
       foreach( $data as $key => $value) {
-        $data[$key] = $this->_parsexml($value);
+        $data[$key] = $this->_decodexml($value);
       }
     }
     catch (exception $e) {
@@ -46,16 +46,16 @@ class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
   }
 
   // XML Parsing helper function, converts nested XML objects into arrays
-  private function _parsexml($value) {
+  private function _decodexml($value) {
     if (is_object($value) and get_class($value)) {
       $value = get_object_vars($value);
       foreach ($value as $k => $v) {
-        $value[$k] = $this->_parsexml($v);
+        $value[$k] = $this->_decodexml($v);
       }
     }
     elseif (is_array($value)) {
       foreach($value as $key => $xml) {
-        $value[$key] = $this->_parsexml($xml);
+        $value[$key] = $this->_decodexml($xml);
       }
     }
 

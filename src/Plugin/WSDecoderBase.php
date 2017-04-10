@@ -8,7 +8,7 @@ use Drupal\Component\Plugin\PluginBase;
  * Base class for Wsdecoder plugin plugins.
  */
 abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
-  // Storage for parsed data
+  // Storage for decoded data
   public $data;
 
   // Storage for error information
@@ -20,8 +20,8 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   // Returns an array of the content type of the data this processor accepts
   abstract public function accepts();
 
-  // Parse the web service response string into a structured array and return the array
-  abstract protected function parse($data);
+  // Decode the web service response string into a structured array and return the array
+  abstract protected function decode($data);
 
   public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
@@ -42,7 +42,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    *  using $key as a key.  $key should be a string, with the character ':'
    *  delimiting the parts of the key.
    *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
-   *  N.B.  This function can be overridden to work with whatever the ->parse function
+   *  N.B.  This function can be overridden to work with whatever the ->decode function
    *  is implemented to return.
    *
    * @param string $key [optional]
@@ -149,7 +149,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    * Add data to an empty object or replace all existing data
    *
    * @param mixed $data
-   *  A set of data to parse.
+   *  A set of data to decode.
    * @param string $language [optional]
    *  Language key for the data being added
    *
@@ -166,11 +166,11 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   public function addData($data, $lang = NULL) {
     if (!is_null($lang) and !empty($data)) {
       $this->languages[$lang] = $lang;
-      $this->data[$lang] = $this->parse($data);
+      $this->data[$lang] = $this->decode($data);
     }
     else {
-      // Default action, just parse the data
-      $this->data = $this->parse($data);
+      // Default action, just decode the data
+      $this->data = $this->decode($data);
     }
   }
 }

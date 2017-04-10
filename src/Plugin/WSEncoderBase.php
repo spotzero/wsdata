@@ -12,4 +12,5 @@ abstract class WSEncoderBase extends PluginBase implements WSEncoderInterface {
 
   // Add common methods and abstract methods for your plugin type here.
 
+  abstract function encode( &$data, &$replacement, &$url);
 }
