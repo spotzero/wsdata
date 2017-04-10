@@ -16,6 +16,9 @@ wsdata.wscall.*:
     wsdecoder:
       label: 'WS Decoder'
       type: string
+    wsencoder:
+      label: 'WS Encoder'
+      type: string
     options:
       label: 'Options'
       type: struct
