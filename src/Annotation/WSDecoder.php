@@ -5,14 +5,14 @@ namespace Drupal\wsdata\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a Wsparser plugin item annotation object.
+ * Defines a WSDecoder plugin item annotation object.
  *
- * @see \Drupal\wsdata\Plugin\WSParserPluginManager
+ * @see \Drupal\wsdata\Plugin\WSDecoderPluginManager
  * @see plugin_api
  *
  * @Annotation
  */
-class WSParser extends Plugin {
+class WSDecoder extends Plugin {
 
 
   /**
