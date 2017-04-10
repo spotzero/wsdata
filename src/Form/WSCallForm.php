@@ -75,7 +75,7 @@ class WSCallForm extends EntityForm {
 
     $decoders = \Drupal::service('plugin.manager.wsdecoder');
     $decoder_definitions = $decoders->getDefinitions();
-    $options = array();
+    $options = array('' => $this->t('None'));
     foreach ($decoder_definitions as $key => $decoder) {
       $options[$key] = $decoder['label']->render();
     }
@@ -83,11 +83,32 @@ class WSCallForm extends EntityForm {
     $form['wsdecoder'] = [
       '#type' => 'select',
       '#title' => $this->t('Decoder'),
-      '#description' => $this->t('Decoder to decode the result'),
+      '#description' => $this->t('Decoder to decode the result.'),
       '#options' => $options,
       '#required' => TRUE,
       '#default_value' => $wscall_entity->wsdecoder,
     ];
+
+    $encoders = \Drupal::service('plugin.manager.wsencoder');
+    $encoder_definitions = $encoders->getDefinitions();
+    $options = array('' => $this->t('None'));
+    foreach ($encoder_definitions as $key => $encoder) {
+      $options[$key] = $encoder['label']->render();
+    }
+
+    $form['wsencoder'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Encoder'),
+      '#description' => $this->t('Encoder to encode the data sent to the web service.'),
+      '#options' => $options,
+      '#required' => TRUE,
+      '#default_value' => $wscall_entity->wsencoder,
+    ];
+
+    if (!\Drupal::moduleHandler()->moduleExists('wsdata_extras')) {
+      $form['wsdecoder']['#description'] .= '  ' . $this->t('Looking for more decoder plugins?  Try enabling the <em>wsdata_extras</em> module.');
+      $form['wsencoder']['#description'] .= '  ' . $this->t('Looking for more encoder plugins?  Try enabling the <em>wsdata_extras</em> module.');
+    }
 
     return $form;
   }

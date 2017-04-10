@@ -1,0 +1,5 @@
+name: Web Service Data Extras
+type: module
+description: Collection of extra encoder and decoder plugins
+core: 8.x
+package: WSData
