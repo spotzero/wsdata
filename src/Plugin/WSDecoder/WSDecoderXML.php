@@ -1,20 +1,20 @@
 <?php
 
-namespace Drupal\wsdata\Plugin\WSParser;
+namespace Drupal\wsdata\Plugin\WSDecoder;
 
 use Drupal\wsdata\Plugin;
 
 
 /**
- * XML Parser.
+ * XML Decoder.
  *
- * @WSParser(
- *   id = "WSParserXML",
- *   label = @Translation("XML Parser", context = "WSParser"),
+ * @WSDecoder(
+ *   id = "WSDecoderXML",
+ *   label = @Translation("XML Decoder", context = "WSDecoder"),
  * )
  */
 
-class WSParserXML extends \Drupal\wsdata\Plugin\WSParserBase {
+class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
 
   // Parse the web service response string, and returns a structured data array
   public function parse($data) {

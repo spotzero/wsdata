@@ -7,13 +7,13 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Provides the Wsparser plugin plugin manager.
+ * Provides the Wsdecoder plugin plugin manager.
  */
-class WSParserManager extends DefaultPluginManager {
+class WSDecoderManager extends DefaultPluginManager {
 
 
   /**
-   * Constructor for WSParserManager objects.
+   * Constructor for WSDecoderManager objects.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -24,10 +24,10 @@ class WSParserManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/WSParser', $namespaces, $module_handler, 'Drupal\wsdata\Plugin\WSParserInterface', 'Drupal\wsdata\Annotation\WSParser');
+    parent::__construct('Plugin/WSDecoder', $namespaces, $module_handler, 'Drupal\wsdata\Plugin\WSDecoderInterface', 'Drupal\wsdata\Annotation\WSDecoder');
 
-    $this->alterInfo('wsdata_wsparser_info');
-    $this->setCacheBackend($cache_backend, 'wsdata_wsparser_plugins');
+    $this->alterInfo('wsdata_wsdecoder_info');
+    $this->setCacheBackend($cache_backend, 'wsdata_wsdecoder_plugins');
   }
 
 }

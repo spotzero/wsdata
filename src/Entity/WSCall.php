@@ -56,18 +56,18 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public $options;
 
   public $wsserver;
-  public $wsparser;
+  public $wsdecoder;
 
   protected $wsserverInst;
-  protected $wsparserInst;
+  protected $wsdecoderInst;
 
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
     $this->wsserverInst = entity_load('wsserver', $this->wsserver);
-    $wsparserManager = \Drupal::service('plugin.manager.wsparser');
-    $wspdefs = $wsparserManager->getDefinitions();
-    if (isset($wspdefs[$this->wsparser])) {
-      $this->wsparserInst = $wsparserManager->createInstance($this->wsparser);
+    $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
+    $wspdefs = $wsdecoderManager->getDefinitions();
+    if (isset($wspdefs[$this->wsdecoder])) {
+      $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
     }
   }
 
@@ -110,17 +110,17 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   }
 
   public function addData($data) {
-    if (!isset($this->wsparserInst)) {
-      $wsparserManager = \Drupal::service('plugin.manager.wsparser');
-      $wspdefs = $wsparserManager->getDefinitions();
-      $this->wsparserInst = $wsparserManager->createInstance($this->wsparser);
+    if (!isset($this->wsdecoderInst)) {
+      $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
+      $wspdefs = $wsdecoderManager->getDefinitions();
+      $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
     }
-    return $this->wsparserInst->addData($data);
+    return $this->wsdecoderInst->addData($data);
   }
 
   public function getData($key = NULL) {
-    if (isset($this->wsparserInst)) {
-      return $this->wsparserInst->getData($key);
+    if (isset($this->wsdecoderInst)) {
+      return $this->wsdecoderInst->getData($key);
     }
     return NULL;
   }

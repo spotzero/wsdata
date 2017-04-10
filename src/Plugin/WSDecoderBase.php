@@ -5,9 +5,9 @@ namespace Drupal\wsdata\Plugin;
 use Drupal\Component\Plugin\PluginBase;
 
 /**
- * Base class for Wsparser plugin plugins.
+ * Base class for Wsdecoder plugin plugins.
  */
-abstract class WSParserBase extends PluginBase implements WSParserInterface {
+abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   // Storage for parsed data
   public $data;
 

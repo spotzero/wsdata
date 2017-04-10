@@ -13,8 +13,8 @@ wsdata.wscall.*:
     wsserver:
       label: 'WS Server'
       type: string
-    wsparser:
-      label: 'WS Parser'
+    wsdecoder:
+      label: 'WS Decoder'
       type: string
     options:
       label: 'Options'

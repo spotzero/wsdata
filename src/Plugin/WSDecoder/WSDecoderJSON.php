@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\wsdata\Plugin\WSParser;
+namespace Drupal\wsdata\Plugin\WSDecoder;
 
 use Drupal\wsdata\Plugin;
 
 /**
- *  JSON Parser.
+ *  JSON Decoder.
  *
- * @WSParser(
- *   id = "WSParserJSON",
- *   label = @Translation("JSON Parser", context = "WSParser"),
+ * @WSDecoder(
+ *   id = "WSDecoderJSON",
+ *   label = @Translation("JSON Decoder", context = "WSDecoder"),
  * )
  */
 
-class WSParserJSON extends \Drupal\wsdata\Plugin\WSParserBase {
+class WSDecoderJSON extends \Drupal\wsdata\Plugin\WSDecoderBase {
 
   // Parse the web service response string, and returns a structured data array
   public function parse($data) {

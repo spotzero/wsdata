@@ -73,20 +73,20 @@ class WSCallForm extends EntityForm {
       }
     }
 
-    $parsers = \Drupal::service('plugin.manager.wsparser');
-    $parser_definitions = $parsers->getDefinitions();
+    $decoders = \Drupal::service('plugin.manager.wsdecoder');
+    $decoder_definitions = $decoders->getDefinitions();
     $options = array();
-    foreach ($parser_definitions as $key => $parser) {
-      $options[$key] = $parser['label']->render();
+    foreach ($decoder_definitions as $key => $decoder) {
+      $options[$key] = $decoder['label']->render();
     }
 
-    $form['wsparser'] = [
+    $form['wsdecoder'] = [
       '#type' => 'select',
-      '#title' => $this->t('Parser'),
-      '#description' => $this->t('Parser to decode the result'),
+      '#title' => $this->t('Decoder'),
+      '#description' => $this->t('Decoder to decode the result'),
       '#options' => $options,
       '#required' => TRUE,
-      '#default_value' => $wscall_entity->wsparser,
+      '#default_value' => $wscall_entity->wsdecoder,
     ];
 
     return $form;
