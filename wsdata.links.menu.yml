@@ -15,4 +15,3 @@ entity.wsserver.collection:
   description: 'List Web Service Servers'
   parent: system.admin_structure
   weight: 99
-

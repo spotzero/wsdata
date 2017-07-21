@@ -9,8 +9,9 @@ use Drupal\Component\Plugin\PluginBase;
  */
 abstract class WSEncoderBase extends PluginBase implements WSEncoderInterface {
 
+  /**
+   * Encode data into format just sending it off.
+   */
+  abstract public function encode(&$data, &$replacement, &$url);
 
-  // Add common methods and abstract methods for your plugin type here.
-
-  abstract function encode( &$data, &$replacement, &$url);
 }

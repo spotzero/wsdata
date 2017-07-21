@@ -2,20 +2,21 @@
 
 namespace Drupal\wsdata;
 
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Provides a WSCall view builder.
  */
 class WSCallViewBuilder extends EntityViewBuilder {
-  public function viewMultiple(array $entities = array(), $view_mode = 'full', $langcode = NULL) {
-    dpm($entities);
+
+  /**
+   * {@inheritdoc}
+   */
+  public function viewMultiple(array $entities = [], $view_mode = 'full', $langcode = NULL) {
+    // @TODO: Load linked configuration for display.
     return parent::viewMultiple($entities, $view_mode, $langcode);
   }
+
   /**
    * {@inheritdoc}
    */
@@ -23,18 +24,19 @@ class WSCallViewBuilder extends EntityViewBuilder {
     parent::buildComponents($build, $entities, $displays, $view_mode);
 
     foreach ($entities as $id => $entity) {
-      $build[$id]['label'] = array(
+      $build[$id]['label'] = [
         '#weight' => -100,
         '#plain_text' => $entity->label(),
-      );
-      $build[$id]['separator'] = array(
+      ];
+      $build[$id]['separator'] = [
         '#weight' => -150,
         '#markup' => ' | ',
-      );
-      $build[$id]['view_mode'] = array(
+      ];
+      $build[$id]['view_mode'] = [
         '#weight' => -200,
         '#plain_text' => $view_mode,
-      );
+      ];
     }
   }
+
 }

@@ -9,4 +9,3 @@ entity.wsserver.add_form:
   title: 'Add Web Service Server'
   appears_on:
     - entity.wsserver.collection
-

@@ -33,4 +33,5 @@ class WSServerListBuilder extends ConfigEntityListBuilder {
     $row['type'] = $connector['label']->render();
     return $row + parent::buildRow($entity);
   }
+
 }

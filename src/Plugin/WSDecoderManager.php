@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class WSDecoderManager extends DefaultPluginManager {
 
-
   /**
    * Constructor for WSDecoderManager objects.
    *

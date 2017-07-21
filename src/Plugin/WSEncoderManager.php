@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class WSEncoderManager extends DefaultPluginManager {
 
-
   /**
    * Constructor for WSEncoderManager objects.
    *

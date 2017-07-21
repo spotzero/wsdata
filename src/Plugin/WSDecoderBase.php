@@ -8,19 +8,26 @@ use Drupal\Component\Plugin\PluginBase;
  * Base class for Wsdecoder plugin plugins.
  */
 abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
-  // Storage for decoded data
+  /**
+   * Storage for decoded data.
+   */
   public $data;
 
-  // Storage for error information
+  // Storage for error information.
   protected $error;
 
-  // Languages which we have data for
+  // Languages which we have data for.
   protected $languages = FALSE;
 
-  // Returns an array of the content type of the data this processor accepts
+  /**
+   * Returns an array of the content type of the data this processor accepts.
+   */
   abstract public function accepts();
 
-  // Decode the web service response string into a structured array and return the array
+  /**
+   * Decode the web service response string into a structured array
+   * and return the array.
+   */
   abstract protected function decode($data);
 
   public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
@@ -45,18 +52,18 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    *  N.B.  This function can be overridden to work with whatever the ->decode function
    *  is implemented to return.
    *
-   * @param string $key [optional]
-   *  Data key to load
-   * @param string $lang [optional]
-   *  Language key
-   * @return mixed|boolean
-   *  Returns the requested data, FALSE otherwise.
+   * @param string $key
+   *   Optional - Data key to load
+   * @param string $lang
+   *   Optional - Language key
+   * @return mixed
+   *   Returns the requested data, FALSE otherwise.
    */
   public function getData($key = NULL, $lang = NULL) {
     $return_data = FALSE;
     if (is_array($this->data)) {
 
-      // Paths to load data from
+      // Paths to load data from.
       $paths = array();
 
       // Split the logic based on whether we have translated data
@@ -64,7 +71,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
       // - Return a key of data for a given language
       // - Return a key of data for all languages
 
-      // First, see if we want a specific language
+      // First, see if we want a specific language.
       if ($this->languages) {
         if (!is_null($lang) and array_key_exists($lang, $this->data)) {
           $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
@@ -81,7 +88,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
         }
       }
 
-      // Get the raw data
+      // Get the raw data.
       $return_data = $this->data;
 
       // Simplest case, return all data.
@@ -89,7 +96,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
         return $return_data;
       }
 
-      // Second simplest case, one specific value
+      // Second simplest case, one specific value.
       if (!empty($paths[$key])) {
         $location = explode(':', $paths[$key]);
         foreach ($location as $l) {
@@ -103,7 +110,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
         return $return_data;
       }
 
-      // Third case, one specific value in a given language
+      // Third case, one specific value in a given language.
       if (!empty($paths[$lang]) and count($paths) == 1) {
         $location = explode(':', $path[$lang]);
         foreach ($location as $l) {
@@ -114,16 +121,16 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
             $return_data = FALSE;
           }
         }
-        // Language specific data is always keyed by the language
+        // Language specific data is always keyed by the language.
         $return_data[$lang] = $return_data;
         return $return_data;
       }
 
-      // Lastly, the complicated case. Keyed value for all languages
+      // Lastly, the complicated case. Keyed value for all languages.
       if ($this->languages and count($paths) > 1) {
         $keyed_data = array();
         foreach ($paths as $p => $path) {
-          // Reset return data
+          // Reset return data.
           $return_data = $this->data;
           $location = explode(':', $path);
           foreach ($location as $l) {
@@ -146,22 +153,22 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   }
 
   /**
-   * Add data to an empty object or replace all existing data
+   * Add data to an empty object or replace all existing data.
+   *
+   * In some cases, it may require multiple web service requests
+   * to load language specific content. You can add each
+   * request data result to the same processor object. getData()
+   * should then return the merged data keyed by language.
+   *
+   * If your webservice returns all data for all languages in
+   * a single request, leave $lang to NULL (not LANGUAGE_NONE).
+   * LANGUAGE_NONE is considered a valid language and triggers
+   * the language keying.
    *
    * @param mixed $data
-   *  A set of data to decode.
-   * @param string $language [optional]
-   *  Language key for the data being added
-   *
-   *  In some cases, it may require multiple web service requests
-   *  to load language specific content. You can add each
-   *  request data result to the same processor object. getData()
-   *  should then return the merged data keyed by language.
-   *
-   *  If your webservice returns all data for all languages in
-   *  a single request, leave $lang to NULL (not LANGUAGE_NONE).
-   *  LANGUAGE_NONE is considered a valid language and triggers
-   *  the language keying.
+   *   A set of data to decode.
+   * @param string $lang
+   *   Optional - Language key for the data being added.
    */
   public function addData($data, $lang = NULL) {
     if (!is_null($lang) and !empty($data)) {
@@ -169,8 +176,9 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
       $this->data[$lang] = $this->decode($data);
     }
     else {
-      // Default action, just decode the data
+      // Default action, just decode the data.
       $this->data = $this->decode($data);
     }
   }
+
 }
