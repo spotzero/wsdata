@@ -10,13 +10,23 @@ use Drupal\Component\Plugin\PluginBase;
 abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   /**
    * Storage for decoded data.
+   *
+   * @var mixed
    */
   public $data;
 
-  // Storage for error information.
+  /**
+   * Storage for error information.
+   *
+   * @var string
+   */
   protected $error;
 
-  // Languages which we have data for.
+  /**
+   * Languages which we have data for.
+   *
+   * @var mixed
+   */
   protected $languages = FALSE;
 
   /**
@@ -29,11 +39,13 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   }
 
   /**
-   * Decode the web service response string into a structured array
-   * and return the array.
+   * Decode the web service response string into an array.
    */
   abstract protected function decode($data);
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct($data = NULL, &$entity = NULL, $lang = NULL) {
     $this->entity = $entity;
     if (isset($data) and $data) {
@@ -41,7 +53,9 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
     }
   }
 
-  // Retrieve error message, if any.
+  /**
+   * Retrieve error message, if any.
+   */
   public function getError() {
     return $this->error;
   }
@@ -52,14 +66,15 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    * This function retrieves data from the structured array in $this->data
    *  using $key as a key.  $key should be a string, with the character ':'
    *  delimiting the parts of the key.
-   *  I.E.  The key  something:someplace with retrive $this->data['something']['someplace']
-   *  N.B.  This function can be overridden to work with whatever the ->decode function
-   *  is implemented to return.
+   *  I.E.  The key  something:someplace with retrive $this->data['foo']['bar']
+   *  N.B.  This function can be overridden to work with whatever the ->decode
+   *  function is implemented to return.
    *
    * @param string $key
-   *   Optional - Data key to load
+   *   Optional - Data key to load.
    * @param string $lang
-   *   Optional - Language key
+   *   Optional - Language key.
+   *
    * @return mixed
    *   Returns the requested data, FALSE otherwise.
    */
@@ -68,12 +83,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
     if (is_array($this->data)) {
 
       // Paths to load data from.
-      $paths = array();
-
-      // Split the logic based on whether we have translated data
-      // - Return all the data for a given language
-      // - Return a key of data for a given language
-      // - Return a key of data for all languages
+      $paths = [];
 
       // First, see if we want a specific language.
       if ($this->languages) {
@@ -132,7 +142,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
 
       // Lastly, the complicated case. Keyed value for all languages.
       if ($this->languages and count($paths) > 1) {
-        $keyed_data = array();
+        $keyed_data = [];
         foreach ($paths as $p => $path) {
           // Reset return data.
           $return_data = $this->data;

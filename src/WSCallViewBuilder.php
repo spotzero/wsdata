@@ -14,6 +14,7 @@ class WSCallViewBuilder extends EntityViewBuilder {
    */
   public function viewMultiple(array $entities = [], $view_mode = 'full', $langcode = NULL) {
     // @TODO: Load linked configuration for display.
+    $todo = 'update this view';
     return parent::viewMultiple($entities, $view_mode, $langcode);
   }
 

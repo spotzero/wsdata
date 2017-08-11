@@ -2,21 +2,23 @@
 
 namespace Drupal\wsdata\Plugin\WSDecoder;
 
-use Drupal\wsdata\Plugin;
+use Drupal\wsdata\Plugin\WSDecoderBase;
 
 /**
- *  String Decoder.
+ * String Decoder.
  *
  * @WSDecoder(
  *   id = "WSDecoderString",
  *   label = @Translation("String Decoder (Passes data as is)", context = "WSDecoder"),
  * )
  */
+class WSDecoderString extends WSDecoderBase {
 
-class WSDecoderString extends \Drupal\wsdata\Plugin\WSDecoderBase {
-
-  // Decode the web service response string, and returns a structured data array
+  /**
+   * Return data as is.
+   */
   public function decode($data) {
     return $data;
   }
+
 }

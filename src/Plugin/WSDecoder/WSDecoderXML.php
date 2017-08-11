@@ -2,8 +2,7 @@
 
 namespace Drupal\wsdata\Plugin\WSDecoder;
 
-use Drupal\wsdata\Plugin;
-
+use Drupal\wsdata\Plugin\WSDecoderBase;
 
 /**
  * XML Decoder.
@@ -13,10 +12,11 @@ use Drupal\wsdata\Plugin;
  *   label = @Translation("XML Decoder", context = "WSDecoder"),
  * )
  */
+class WSDecoderXML extends WSDecoderBase {
 
-class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
-
-  // Decode the web service response string, and returns a structured data array
+  /**
+   * Decode the web service response string.
+   */
   public function decode($data) {
     if (!isset($data) || empty($data)) {
       return;
@@ -26,11 +26,11 @@ class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
     try {
       $data = new SimpleXMLElement($data);
       if ($data->count() == 0) {
-        return array($data->getName() => $data->__toString());
+        return [$data->getName() => $data->__toString()];
       }
       $data = get_object_vars($data);
-      foreach( $data as $key => $value) {
-        $data[$key] = $this->_decodexml($value);
+      foreach ($data as $key => $value) {
+        $data[$key] = $this->decodeXml($value);
       }
     }
     catch (exception $e) {
@@ -40,25 +40,30 @@ class WSDecoderXML extends \Drupal\wsdata\Plugin\WSDecoderBase {
     return $data;
   }
 
-
-   function accepts() {
-    return array('xml');
+  /**
+   * Accepts XML data.
+   */
+  public function accepts() {
+    return ['xml'];
   }
 
-  // XML Parsing helper function, converts nested XML objects into arrays
-  private function _decodexml($value) {
+  /**
+   * XML Parsing helper function, converts nested XML objects into arrays.
+   */
+  private function decodeXml($value) {
     if (is_object($value) and get_class($value)) {
       $value = get_object_vars($value);
       foreach ($value as $k => $v) {
-        $value[$k] = $this->_decodexml($v);
+        $value[$k] = $this->decodeXml($v);
       }
     }
     elseif (is_array($value)) {
-      foreach($value as $key => $xml) {
-        $value[$key] = $this->_decodexml($xml);
+      foreach ($value as $key => $xml) {
+        $value[$key] = $this->decodeXml($xml);
       }
     }
 
     return $value;
   }
+
 }

@@ -2,21 +2,22 @@
 
 namespace Drupal\wsdata\Plugin\WSEncoder;
 
-use Drupal\wsdata\Plugin;
+use Drupal\wsdata\Plugin\WSEncoderBase;
 
 /**
- *  String Encoder.
+ * String Encoder.
  *
  * @WSEncoder(
  *   id = "WSEncoderString",
  *   label = @Translation("String Encoder (Passes data as is)", context = "WSEncoder"),
  * )
  */
+class WSEncoderString extends WSEncoderBase {
 
-class WSEncoderString extends \Drupal\wsdata\Plugin\WSEncoderBase {
-
-  // Decode the web service response string, and returns a structured data array
+  /**
+   * Doesn't do anything.
+   */
   public function encode(&$data, &$replacements, &$url) {
-    return;
   }
+
 }
