@@ -6,7 +6,7 @@ Implement a WSEncoder plugin and configure your WSCall to use it.
 
 ## How do I parse and restructure the data returned by a web service call?
 
-Implement a WSDecoder plugun and configure your WSCall to use it.
+Implement a WSDecoder plugin and configure your WSCall to use it.
 
 ## How do I make WSData support a new web service protocol like SOAP or XML-RPC?
 
