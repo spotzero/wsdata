@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class WSConnectorManager extends DefaultPluginManager {
 
-
   /**
    * Constructor for WSConnectorManager objects.
    *

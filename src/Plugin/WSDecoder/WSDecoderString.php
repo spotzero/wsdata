@@ -15,6 +15,8 @@ use Drupal\wsdata\Plugin\WSDecoderBase;
 class WSDecoderString extends WSDecoderBase {
 
   /**
+   * {@inheritdoc}
+   *
    * Return data as is.
    */
   public function decode($data) {

@@ -9,7 +9,9 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  */
 interface WSConnectorInterface extends PluginInspectionInterface {
 
+  /**
+   * Return the custom settings form for the wscall page.
+   */
   public function getOptionsForm();
-  // Add get/set methods for your plugin type here.
 
 }

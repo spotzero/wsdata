@@ -2,7 +2,7 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
-use Drupal\wsdata\Plugin;
+use Drupal\wsdata\Plugin\WSConnectorBase;
 
 /**
  * REST Connector.
@@ -13,7 +13,7 @@ use Drupal\wsdata\Plugin;
  * )
  */
 
-class WSConnectorREST extends \Drupal\wsdata\Plugin\WSConnectorBase {
+class WSConnectorREST extends WSConnectorBase {
   public function getMethods() {
     return array('create', 'read', 'update', 'delete', 'index');
   }

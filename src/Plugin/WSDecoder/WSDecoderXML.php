@@ -15,6 +15,8 @@ use Drupal\wsdata\Plugin\WSDecoderBase;
 class WSDecoderXML extends WSDecoderBase {
 
   /**
+   * {@inheritdoc}
+   *
    * Decode the web service response string.
    */
   public function decode($data) {
@@ -41,10 +43,10 @@ class WSDecoderXML extends WSDecoderBase {
   }
 
   /**
-   * Accepts XML data.
+   * {@inheritdoc}
    */
   public function accepts() {
-    return ['xml'];
+    return ['text/xml'];
   }
 
   /**

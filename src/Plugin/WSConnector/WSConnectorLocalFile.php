@@ -2,7 +2,7 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
-use \Drupal\wsdata\Plugin;
+use Drupal\wsdata\Plugin\WSConnectorBase;
 
 
 /**
@@ -13,8 +13,7 @@ use \Drupal\wsdata\Plugin;
  *   label = @Translation("Local file connector", context = "WSConnector"),
  * )
  */
-
-class WSConnectorLocalFile extends \Drupal\wsdata\Plugin\WSConnectorBase {
+class WSConnectorLocalFile extends WSConnectorBase {
   public function __construct($endpoint) {
     $this->languagePlugins = array(
       'replace',
