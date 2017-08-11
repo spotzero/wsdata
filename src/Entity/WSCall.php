@@ -95,7 +95,11 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
   public function getReplacements($type, $replacement = array()) {}
 
-  public function getOptionsForm() {
+  public function getOptionsForm($wsserver = NULL, $options = []) {
+    if (isset($wsserver)) {
+      $wsserverInst =  entity_load('wsserver', $wsserver);
+      return $wsserverInst->wsconnectorInst->getOptionsForm();
+    }
     if ($this->wsserverInst->wsconnectorInst) {
       return $this->wsserverInst->wsconnectorInst->getOptionsForm();
     }

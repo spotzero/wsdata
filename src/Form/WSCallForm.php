@@ -55,6 +55,10 @@ class WSCallForm extends EntityForm {
       '#options' => $options,
       '#required' => TRUE,
       '#default_value' => $wscall_entity->wsserver,
+      '#ajax' => [
+        'callback' => '::wsserverForm',
+        'wrapper' => 'wsserver-wrapper',
+      ],
     ];
 
     $triggering = $form_state->getTriggeringElement();
@@ -64,12 +68,16 @@ class WSCallForm extends EntityForm {
       $wscall_entity->setMethod($values['add_method'], $values['new_method_name'], $values['new_method_path']);
     }
 
-    $form['options'] = $wscall_entity->getOptionsForm($options);
+    $form['options'] = [
+      '#id' => 'wsserver-wrapper',
+      '#type' => 'container',
+      'wsserveroptions' => $wscall_entity->getOptionsForm($form_state->getValue('wsserver'), $options),
+    ];
 
     $options = $wscall_entity->getOptions();
     foreach ($options as $name => $option) {
-      if (isset($form['options'][$name])) {
-        $form['options'][$name]['#default_value'] = $option;
+      if (isset($form['options']['wsserveroptions'][$name])) {
+        $form['options']['wsserveroptions'][$name]['#default_value'] = $option;
       }
     }
 
@@ -114,11 +122,19 @@ class WSCallForm extends EntityForm {
   }
 
   /**
+   * Ajax Callback.
+   */
+  public function wsserverForm(array $form, FormStateInterface $form_state)  {
+    return $form['options'];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
     $wscall_entity = $this->entity;
     $wscall_entity->setOptions($form_state->getValues());
+
     $status = $wscall_entity->save();
 
     switch ($status) {

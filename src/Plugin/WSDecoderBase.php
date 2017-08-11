@@ -22,7 +22,11 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   /**
    * Returns an array of the content type of the data this processor accepts.
    */
-  abstract public function accepts();
+  public function accepts() {
+    return [
+      'application/octet-stream',
+    ];
+  }
 
   /**
    * Decode the web service response string into a structured array

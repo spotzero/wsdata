@@ -7,7 +7,7 @@ use Drupal\wsdata\Plugin;
 /**
  *  String Encoder.
  *
- * @WSDecoder(
+ * @WSEncoder(
  *   id = "WSEncoderString",
  *   label = @Translation("String Encoder (Passes data as is)", context = "WSEncoder"),
  * )
@@ -16,5 +16,7 @@ use Drupal\wsdata\Plugin;
 class WSEncoderString extends \Drupal\wsdata\Plugin\WSEncoderBase {
 
   // Decode the web service response string, and returns a structured data array
-  public function encode(&$data, &$replacements, &$url) {}
+  public function encode(&$data, &$replacements, &$url) {
+    return;
+  }
 }
