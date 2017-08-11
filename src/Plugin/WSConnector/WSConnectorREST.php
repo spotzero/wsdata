@@ -12,41 +12,54 @@ use Drupal\wsdata\Plugin\WSConnectorBase;
  *   label = @Translation("RESTful Connector", context = "WSConnector"),
  * )
  */
-
 class WSConnectorREST extends WSConnectorBase {
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMethods() {
-    return array('create', 'read', 'update', 'delete', 'index');
+    return ['create', 'read', 'update', 'delete', 'index'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptions() {
-    return array(
+    return [
       'path' => NULL,
-      'methods' => array(),
-    );
+      'methods' => [],
+    ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptionsForm() {
-    return array(
-      'path' => array(
+    return [
+      'path' => [
         '#title' => $this->t('Path'),
         '#description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
         '#type' => 'textfield',
-      ),
-      'methods' => array(
+      ],
+      'methods' => [
         '#title' => $this->t('Supported Operations'),
         '#type' => 'checkboxes',
-        '#options' => array(
+        '#options' => [
           'create' => t('RESTful create method (POST to <em>Endpoint/Path</em>)'),
           'read' => t('RESTful read method (GET to <em>Endpoint/Path/ID</em>)'),
           'update' => t('RESTful update method (PUT to <em>Endpoint/Path/ID</em>)'),
           'delete' => t('RESTful delete method (DELETE to <em>Endpoint/Path/ID</em>)'),
           'index' => t('RESTful index method (GET to <em>Endpoint/Path</em>)'),
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function call($options, $method, $replacements = [], $data = NULL) {
     return NULL;
   }
+
 }

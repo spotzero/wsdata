@@ -14,10 +14,16 @@ use Drupal\wsdata\Plugin\WSConnectorBase;
  */
 class WSConnectorSimpleHTTP extends WSConnectorBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMethods() {
     return ['call'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptions() {
     return [
       'path' => NULL,
@@ -25,6 +31,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptionsForm() {
     return [
       'path' => [
@@ -47,7 +56,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function call($options, $method, $replacements = [], $data = NULL) {
+    // TODO: Implement.
     return NULL;
   }
 

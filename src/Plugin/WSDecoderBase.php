@@ -126,7 +126,7 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
 
       // Third case, one specific value in a given language.
       if (!empty($paths[$lang]) and count($paths) == 1) {
-        $location = explode(':', $path[$lang]);
+        $location = explode(':', $paths[$lang]);
         foreach ($location as $l) {
           if (isset($return_data[$l])) {
             $return_data = $return_data[$l];

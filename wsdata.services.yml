@@ -10,4 +10,5 @@ services:
     parent: default_plugin_manager
   wsdata:
     class: Drupal\wsdata\WSDataService
-    arguments: []
+    arguments:
+      - '@entity_type.manager'

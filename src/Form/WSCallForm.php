@@ -3,7 +3,11 @@
 namespace Drupal\wsdata\Form;
 
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\wsdata\Plugin\WSEncoderManager;
+use Drupal\wsdata\Plugin\WSDecoderManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class WSCallForm.
@@ -11,6 +15,31 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\wsdata\Form
  */
 class WSCallForm extends EntityForm {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    WSEncoderManager $plugin_manager_wsencoder,
+    WSDecoderManager $plugin_manager_wsdecoder,
+    ModuleHandlerInterface $module_handler
+  ) {
+    $this->plugin_manager_wsencoder = $plugin_manager_wsencoder;
+    $this->plugin_manager_wsdecoder = $plugin_manager_wsdecoder;
+    $this->module_handler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    // Instantiates this form class.
+    return new static(
+      $container->get('plugin.manager.wsencoder'),
+      $container->get('plugin.manager.wsdecoder'),
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -81,9 +110,8 @@ class WSCallForm extends EntityForm {
       }
     }
 
-    $decoders = \Drupal::service('plugin.manager.wsdecoder');
-    $decoder_definitions = $decoders->getDefinitions();
-    $options = array('' => $this->t('None'));
+    $decoder_definitions = $this->plugin_manager_wsdecoder->getDefinitions();
+    $options = ['' => $this->t('None')];
     foreach ($decoder_definitions as $key => $decoder) {
       $options[$key] = $decoder['label']->render();
     }
@@ -97,9 +125,8 @@ class WSCallForm extends EntityForm {
       '#default_value' => $wscall_entity->wsdecoder,
     ];
 
-    $encoders = \Drupal::service('plugin.manager.wsencoder');
-    $encoder_definitions = $encoders->getDefinitions();
-    $options = array('' => $this->t('None'));
+    $encoder_definitions = $this->plugin_manager_wsencoder->getDefinitions();
+    $options = ['' => $this->t('None')];
     foreach ($encoder_definitions as $key => $encoder) {
       $options[$key] = $encoder['label']->render();
     }
@@ -113,7 +140,7 @@ class WSCallForm extends EntityForm {
       '#default_value' => $wscall_entity->wsencoder,
     ];
 
-    if (!\Drupal::moduleHandler()->moduleExists('wsdata_extras')) {
+    if (!$this->module_handler->moduleExists('wsdata_extras')) {
       $form['wsdecoder']['#description'] .= '  ' . $this->t('Looking for more decoder plugins?  Try enabling the <em>wsdata_extras</em> module.');
       $form['wsencoder']['#description'] .= '  ' . $this->t('Looking for more encoder plugins?  Try enabling the <em>wsdata_extras</em> module.');
     }
@@ -124,7 +151,7 @@ class WSCallForm extends EntityForm {
   /**
    * Ajax Callback.
    */
-  public function wsserverForm(array $form, FormStateInterface $form_state)  {
+  public function wsserverForm(array $form, FormStateInterface $form_state) {
     return $form['options'];
   }
 

@@ -61,6 +61,9 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   protected $wsserverInst;
   protected $wsdecoderInst;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
     $this->wsserverInst = entity_load('wsserver', $this->wsserver);
@@ -71,33 +74,53 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setEndpoint($endpoint) {
     $this->wsserverInst->setEndpoint($endpoint);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getEndpoint() {
     return $this->wsserverInst->getEndpoint();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getLanguagePlugin() {}
-  public function call($type, $key = NULL, $replacement = array(), $argument = array(), $options = array(), &$method = '') {}
 
   /**
-   * Sets a method on the WSCall.
+   * {@inheritdoc}
+   */
+  public function call($type, $key = NULL, $replacement = [], $argument = [], $options = [], &$method = '') {}
+
+  /**
+   * {@inheritdoc}
+   *
    * Doesn't save the WSCall though.
    */
-  public function setOptions($values = array()) {
+  public function setOptions($values = []) {
     if ($this->wsserverInst->wsconnectorInst) {
       $this->options[$this->wsserver] = $this->wsserverInst->wsconnectorInst->saveOptions($values);
     }
     $this->needSave = TRUE;
   }
 
-  public function getReplacements($type, $replacement = array()) {}
+  /**
+   * {@inheritdoc}
+   */
+  public function getReplacements($type, $replacement = []) {}
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptionsForm($wsserver = NULL, $options = []) {
     if (isset($wsserver)) {
-      $wsserverInst =  entity_load('wsserver', $wsserver);
+      $wsserverInst = entity_load('wsserver', $wsserver);
       return $wsserverInst->wsconnectorInst->getOptionsForm();
     }
     if ($this->wsserverInst->wsconnectorInst) {
@@ -105,23 +128,34 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOptions() {
     return $this->options[$this->wsserver];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMethods() {
     return $this->wsserverInst->getMethods();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addData($data) {
     if (!isset($this->wsdecoderInst)) {
       $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
-      $wspdefs = $wsdecoderManager->getDefinitions();
       $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
     }
     return $this->wsdecoderInst->addData($data);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getData($key = NULL) {
     if (isset($this->wsdecoderInst)) {
       return $this->wsdecoderInst->getData($key);
@@ -129,7 +163,11 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     return NULL;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getConnector() {
     return $this->wsserverInst->getConnector();
   }
+
 }

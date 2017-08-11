@@ -4,6 +4,8 @@ namespace Drupal\wsdata\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\wsdata\Plugin\WSConnectorManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class WSServerForm.
@@ -11,6 +13,23 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\wsdata\Form
  */
 class WSServerForm extends EntityForm {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(WSConnectorManager $plugin_manager_wsconnector) {
+    $this->plugin_manager_wsconnector = $plugin_manager_wsconnector;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    // Instantiates this form class.
+    return new static(
+      $container->get('plugin.manager.wsconnector')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -46,9 +65,9 @@ class WSServerForm extends EntityForm {
       '#required' => TRUE,
     ];
 
-    $connectors = \Drupal::service('plugin.manager.wsconnector');
-    $connector_definitions = $connectors->getDefinitions();
-    $options = array();
+    $connector_definitions = $this->plugin_manager_wsconnector->getDefinitions();
+
+    $options = [];
     foreach ($connector_definitions as $key => $connector) {
       $options[$key] = $connector['label']->render();
     }

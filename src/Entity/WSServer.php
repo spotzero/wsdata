@@ -38,7 +38,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  * )
  */
 class WSServer extends ConfigEntityBase implements WSServerInterface {
-  static $WSCONFIG_DEFAULT_DEGRADED_BACKOFF = 900;
+
+  static public $WSCONFIG_DEFAULT_DEGRADED_BACKOFF = 900;
 
   /**
    * The Web Service Server ID.
@@ -62,58 +63,69 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   protected $state;
   protected $languagehandling;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
-  	$wsconnectorman = \Drupal::service('plugin.manager.wsconnector');
-  	$wscdefs = $wsconnectorman->getDefinitions();
-  	if (isset($wscdefs[$this->wsconnector])) {
+    $wsconnectorman = \Drupal::service('plugin.manager.wsconnector');
+    $wscdefs = $wsconnectorman->getDefinitions();
+    if (isset($wscdefs[$this->wsconnector])) {
       $this->wsconnectorInst = $wsconnectorman->createInstance($this->wsconnector);
       $this->wsconnectorInst->setEndpoint($this->endpoint);
-  	}
-  	$drupalstate = \Drupal::state();
-  	$this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, array());
-  }
-
-  public function __destruct() {
-  	$drupalstate = \Drupal::state();
-  	$drupalstate->set('wsdata.wsserver.' . $this->id, $this->state);
+    }
+    $drupalstate = \Drupal::state();
+    $this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, []);
   }
 
   /**
-   * Return types of methods supported by the connector.
+   * {@inheritdoc}
+   */
+  public function __destruct() {
+    $drupalstate = \Drupal::state();
+    $drupalstate->set('wsdata.wsserver.' . $this->id, $this->state);
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getMethods() {
     return $this->wsconnectorInst->getMethods();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getDefaultMethod() {
     $methods = array_keys($this->getMethods());
     return reset($methods);
   }
 
   /**
+   * {@inheritdoc}
+   *
    * Return supported languageplugins.
    */
   public function getEnabledLanguagePlugin() {
-  	return ['default'];
+    return ['default'];
   }
 
   /**
-   * Set the endpoint.
+   * {@inheritdoc}
    */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;
   }
 
   /**
-   * Get the endpoint.
+   * {@inheritdoc}
    */
   public function getEndpoint() {
     return $this->endpoint;
   }
 
   /**
-   * Disabled the wsserver.
+   * {@inheritdoc}
    */
   public function disable($degraded = FALSE) {
     $reason = '';
@@ -131,11 +143,11 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
     }
 
     $this->state['disabled'] = TRUE;
-    \Drupal::logger('wsdata')->warning(t('WSServer %label (%type) was disabled.', array('%label' => $this->label(), '%type' => $this->wsconnector)) . $reason);
+    \Drupal::logger('wsdata')->warning(t('WSServer %label (%type) was disabled.', ['%label' => $this->label(), '%type' => $this->wsconnector]) . $reason);
   }
 
   /**
-   * Enable the wsserver
+   * {@inheritdoc}
    */
   public function enable($degraded = FALSE) {
     unset($this->state['degraded']);
@@ -146,14 +158,14 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
       $reason = '  ' . t('Automatically re-enabling previously degrated service.');
     }
 
-    \Drupal::logger('wsdata')->notice( t('WSConfig Type %label (%type) was enabled.', array('%label' => $this->label(), '%type' => $this->wsconnector)) . $reason);
+    \Drupal::logger('wsdata')->notice(t('WSConfig Type %label (%type) was enabled.', ['%label' => $this->label(), '%type' => $this->wsconnector]) . $reason);
   }
 
   /**
-   * Check if wsserver is disabled.
+   * {@inheritdoc}
    */
   public function isDisabled() {
-  	if (!isset($this->state['degraded_backoff'])) {
+    if (!isset($this->state['degraded_backoff'])) {
       $this->state['degraded_backoff'] = wsserver::$WSCONFIG_DEFAULT_DEGRADED_BACKOFF;
     }
 
@@ -166,7 +178,7 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   }
 
   /**
-   * Cause the WSServer to become degraded.
+   * {@inheritdoc}
    */
   public function getDegraded() {
     if (!isset($this->state['degraded_backoff'])) {
@@ -180,7 +192,11 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
     return 0;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getConnector() {
     return $this->wsconnectorInst;
   }
+
 }
