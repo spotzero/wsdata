@@ -74,7 +74,7 @@ class WSCallForm extends EntityForm {
     $servers = entity_load_multiple('wsserver');
     $options = [];
     foreach ($servers as $server) {
-      $options[$server->id()] = $server->label();
+      $options[$server->id()] = $server->label() . ' (' . $server->getEndpoint() . ')';
     }
 
     $form['wsserver'] = [

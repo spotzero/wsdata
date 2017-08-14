@@ -2,7 +2,11 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
+use Drupal\Core\Utility\Token;
+use Drupal\wsdata\WSDataInvalidMethodException;
 use Drupal\wsdata\Plugin\WSConnectorBase;
+use GuzzleHttp\Client;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * HTTP Connector.
@@ -17,8 +21,36 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
+  public function __construct(
+         array $configuration,
+         $plugin_id,
+         $plugin_definition,
+         Client $http_client,
+         Token $token
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->http_client = $http_client;
+    $this->token = $token;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('http_client'),
+      $container->get('token')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMethods() {
-    return ['call'];
+    return ['get', 'post', 'put', 'delete', 'head', 'options'];
   }
 
   /**
@@ -35,6 +67,8 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function getOptionsForm() {
+    $methods = $this->getMethods();
+
     return [
       'path' => [
         '#title' => t('Path'),
@@ -44,14 +78,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       'method' => [
         '#title' => t('HTTP Method'),
         '#type' => 'select',
-        '#options' => [
-          'get' => 'GET',
-          'post' => 'POST',
-          'put' => 'PUT',
-          'delete' => 'DELETE',
-          'head' => 'HEAD',
-          'options' => 'OPTIONS',
-        ],
+        '#options' => array_combine($methods, $methods),
       ],
     ];
   }
@@ -59,9 +86,19 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
-  public function call($options, $method, $replacements = [], $data = NULL) {
-    // TODO: Implement.
-    return NULL;
+  public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    if (!in_array($method, $this->getMethods())) {
+      throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
+    }
+
+    $uri = $this->endpoint . '/' . $options['path'];
+    foreach ($replacements as $token => $replace) {
+      $uri = str_replace($token, $replace, $uri);
+    }
+
+    $uri = $this->token->replace($uri, $tokens);
+
+    $this->http_client->request($method, $uri, $options['options']);
   }
 
 }

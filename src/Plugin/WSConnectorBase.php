@@ -3,6 +3,7 @@
 namespace Drupal\wsdata\Plugin;
 
 use Drupal\Component\Plugin\PluginBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for Wsconnector plugin plugins.
@@ -16,6 +17,17 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   protected $error;
 
   protected $languagePlugins = ['default'];
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
+  }
 
   /**
    * Return available options supported by the connector.
