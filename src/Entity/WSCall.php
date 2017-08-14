@@ -16,7 +16,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "form" = {
  *       "add" = "Drupal\wsdata\Form\WSCallForm",
  *       "edit" = "Drupal\wsdata\Form\WSCallForm",
- *       "delete" = "Drupal\wsdata\Form\WSCallDeleteForm"
+ *       "delete" = "Drupal\wsdata\Form\WSCallDeleteForm",
+ *       "test" = "Drupal\wsdata\Form\WSCallTestForm"
  *     },
  *     "route_provider" = {
  *       "html" = "Drupal\wsdata\WSCallHtmlRouteProvider",

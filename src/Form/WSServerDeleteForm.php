@@ -22,7 +22,7 @@ class WSServerDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.wsserver_entity.collection');
+    return new Url('entity.wsserver.collection');
   }
 
   /**

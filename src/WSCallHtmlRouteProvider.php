@@ -56,4 +56,35 @@ class WSCallHtmlRouteProvider extends AdminHtmlRouteProvider {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCanonicalRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('canonical')) {
+      $entity_type_id = $entity_type->id();
+      $route = new Route($entity_type->getLinkTemplate('canonical'));
+      // Use the edit form handler, if available, otherwise default.
+      $operation = 'default';
+      if ($entity_type->getFormClass('test')) {
+        $operation = 'test';
+      }
+      $route
+      ->setDefaults([
+        '_entity_form' => "{$entity_type_id}.{$operation}",
+        '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title'
+      ])
+      ->setRequirement('_entity_access', "{$entity_type_id}.view")
+      ->setOption('parameters', [
+        $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+      ]);
+
+      // Entity types with serial IDs can specify this in their route
+      // requirements, improving the matching process.
+      if ($this->getEntityTypeIdKeyType($entity_type) === 'integer') {
+        $route->setRequirement($entity_type_id, '\d+');
+      }
+      return $route;
+    }
+  }
+
 }
