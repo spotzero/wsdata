@@ -79,91 +79,90 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    *   Returns the requested data, FALSE otherwise.
    */
   public function getData($key = NULL, $lang = NULL) {
+    if (!is_array($this->data)) {
+      return $this->data;
+    }
+
     $return_data = FALSE;
-    if (is_array($this->data)) {
+    // Paths to load data from.
+    $paths = [];
 
-      // Paths to load data from.
-      $paths = [];
-
-      // First, see if we want a specific language.
-      if ($this->languages) {
-        if (!is_null($lang) and array_key_exists($lang, $this->data)) {
-          $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
-        }
-        else {
-          foreach ($this->languages as $lang) {
-            $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
-          }
-        }
+    // First, see if we want a specific language.
+    if ($this->languages) {
+      if (!is_null($lang) and array_key_exists($lang, $this->data)) {
+        $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
       }
       else {
-        if (!empty($key)) {
-          $paths[$key] = $key;
+        foreach ($this->languages as $lang) {
+          $paths[$lang] = !empty($key) ? $lang . ':' . $key : $lang;
         }
       }
-
-      // Get the raw data.
-      $return_data = $this->data;
-
-      // Simplest case, return all data.
-      if (empty($paths)) {
-        return $return_data;
-      }
-
-      // Second simplest case, one specific value.
-      if (!empty($paths[$key])) {
-        $location = explode(':', $paths[$key]);
-        foreach ($location as $l) {
-          if (isset($return_data[$l])) {
-            $return_data = $return_data[$l];
-          }
-          else {
-            $return_data = FALSE;
-          }
-        }
-        return $return_data;
-      }
-
-      // Third case, one specific value in a given language.
-      if (!empty($paths[$lang]) and count($paths) == 1) {
-        $location = explode(':', $paths[$lang]);
-        foreach ($location as $l) {
-          if (isset($return_data[$l])) {
-            $return_data = $return_data[$l];
-          }
-          else {
-            $return_data = FALSE;
-          }
-        }
-        // Language specific data is always keyed by the language.
-        $return_data[$lang] = $return_data;
-        return $return_data;
-      }
-
-      // Lastly, the complicated case. Keyed value for all languages.
-      if ($this->languages and count($paths) > 1) {
-        $keyed_data = [];
-        foreach ($paths as $p => $path) {
-          // Reset return data.
-          $return_data = $this->data;
-          $location = explode(':', $path);
-          foreach ($location as $l) {
-            if (isset($return_data[$l])) {
-              $return_data = $return_data[$l];
-            }
-            else {
-              $return_data = FALSE;
-            }
-          }
-          $keyed_data[$p] = $return_data;
-        }
-
-        // Finally, put the keyed data back into the return data.
-        return $keyed_data;
+    }
+    else {
+      if (!empty($key)) {
+        $paths[$key] = $key;
       }
     }
 
-    return $return_data;
+    // Get the raw data.
+    $return_data = $this->data;
+
+    // Simplest case, return all data.
+    if (empty($paths)) {
+      return $return_data;
+    }
+
+    // Second simplest case, one specific value.
+    if (!empty($paths[$key])) {
+      $location = explode(':', $paths[$key]);
+      foreach ($location as $l) {
+        if (isset($return_data[$l])) {
+          $return_data = $return_data[$l];
+        }
+        else {
+          $return_data = FALSE;
+        }
+      }
+      return $return_data;
+    }
+
+    // Third case, one specific value in a given language.
+    if (!empty($paths[$lang]) and count($paths) == 1) {
+      $location = explode(':', $paths[$lang]);
+      foreach ($location as $l) {
+        if (isset($return_data[$l])) {
+          $return_data = $return_data[$l];
+        }
+        else {
+          $return_data = FALSE;
+        }
+      }
+      // Language specific data is always keyed by the language.
+      $return_data[$lang] = $return_data;
+      return $return_data;
+    }
+
+    // Lastly, the complicated case. Keyed value for all languages.
+    if ($this->languages and count($paths) > 1) {
+      $keyed_data = [];
+      foreach ($paths as $p => $path) {
+        // Reset return data.
+        $return_data = $this->data;
+        $location = explode(':', $path);
+        foreach ($location as $l) {
+          if (isset($return_data[$l])) {
+            $return_data = $return_data[$l];
+          }
+          else {
+            $return_data = FALSE;
+          }
+        }
+        $keyed_data[$p] = $return_data;
+      }
+
+      // Finally, put the keyed data back into the return data.
+      return $keyed_data;
+    }
   }
 
   /**

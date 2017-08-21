@@ -90,7 +90,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
     }
-
     $uri = $this->endpoint . '/' . $options['path'];
     foreach ($replacements as $token => $replace) {
       $uri = str_replace($token, $replace, $uri);
@@ -98,7 +97,14 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $uri = $this->token->replace($uri, $tokens);
 
-    $this->http_client->request($method, $uri, $options['options']);
-  }
+    $response = $this->http_client->request($method, $uri, $options);
+    $status = $response->getStatusCode();
 
+    if ($status >= 199 and $status <= 300) {
+      return (string)$response->getBody();
+    }
+
+    $this->setError($status, $response->getReasonPhrase());
+    return FALSE;
+  }
 }

@@ -133,7 +133,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function getOptions() {
-    return $this->options[$this->wsserver];
+    return isset($this->options[$this->wsserver]) ? $this->options[$this->wsserver] : array();
   }
 
   /**

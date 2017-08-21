@@ -104,6 +104,7 @@ class WSCallForm extends EntityForm {
     ];
 
     $options = $wscall_entity->getOptions();
+
     foreach ($options as $name => $option) {
       if (isset($form['options']['wsserveroptions'][$name])) {
         $form['options']['wsserveroptions'][$name]['#default_value'] = $option;
