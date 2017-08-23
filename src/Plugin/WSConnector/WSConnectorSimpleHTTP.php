@@ -97,7 +97,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $uri = $this->token->replace($uri, $tokens);
 
+    $options['http_errors'] = FALSE;
     $response = $this->http_client->request($method, $uri, $options);
+
     $status = $response->getStatusCode();
 
     if ($status >= 199 and $status <= 300) {

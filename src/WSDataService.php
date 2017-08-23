@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManager;
  * Service for processing WSData requests.
  */
 class WSDataService {
+  protected $error;
 
   /**
    * {@inheritdoc}
@@ -36,8 +37,22 @@ class WSDataService {
 
     $data = $conn->call($options, $method, $replacements, $data);
 
-    $wscall->addData($data);
-    return $wscall->getData($key);
+    if ($data) {
+      $wscall->addData($data);
+      return $wscall->getData($key);
+    } else {
+      $this->error = $conn->getError();
+      return FALSE;
+    }
+  }
+
+  public function getError() {
+    if ($this->error) {
+      $error = $this->error;
+      $this->error = NULL;
+      return $error;
+    }
+    return NULL;
   }
 
 }
