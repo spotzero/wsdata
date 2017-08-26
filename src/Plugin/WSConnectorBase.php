@@ -3,6 +3,7 @@
 namespace Drupal\wsdata\Plugin;
 
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Utility\Token;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,11 +22,30 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * {@inheritdoc}
    */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    Token $token
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->token = $token;
+
+    $this->expires = 0;
+    $this->cacheDefaultTime = 0;
+    $this->cacheDefaultOverride = FALSE;
+    $this->staleCache = FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition
+      $plugin_definition,
+      $container->get('token')
     );
   }
 
@@ -40,6 +60,11 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   abstract public function getMethods();
 
   /**
+   * Return an array of replacements.
+   */
+  abstract public function getReplacements(array $options);
+
+  /**
    * Return the settings form provided by the connector.
    */
   public function getOptionsForm() {
@@ -49,17 +74,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * Make the connector call.
    */
-  abstract public function call($options, $method, $replacements = [], $data = NULL);
-
-  /**
-   * Constructor.
-   */
-  public function __construct() {
-    $this->expires = 0;
-    $this->cacheDefaultTime = 0;
-    $this->cacheDefaultOverride = FALSE;
-    $this->staleCache = FALSE;
-  }
+  abstract public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []);
 
   /**
    * Setter for the endpoint.
@@ -151,6 +166,26 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
       $options[$option] = $values[$option];
     }
     return $options;
+  }
+
+  /**
+   * Internal function for finding tokens.
+   */
+  protected function findTokens($string) {
+    preg_match_all('/\[([\w:]+)\]/', $string, $matches);
+    return $matches[1];
+  }
+
+  /**
+   * Internal function for applying replacements.
+   */
+  protected function applyReplacements($string, array $replacements = [], array $tokens = []) {
+    foreach ($replacements as $token => $replace) {
+      $string = str_replace('[' . $token . ']', $replace, $string);
+    }
+
+    $string = $this->token->replace($string, $tokens);
+    return $string;
   }
 
 }

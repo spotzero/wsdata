@@ -28,7 +28,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
          Client $http_client,
          Token $token
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $token);
     $this->http_client = $http_client;
     $this->token = $token;
   }
@@ -66,6 +66,13 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
+  public function getReplacements(array $options) {
+    return $this->findTokens($this->endpoint . '/' . $options['path']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOptionsForm() {
     $methods = $this->getMethods();
 
@@ -91,13 +98,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
     }
     $uri = $this->endpoint . '/' . $options['path'];
-    foreach ($replacements as $token => $replace) {
-      $uri = str_replace($token, $replace, $uri);
-    }
-
-    $uri = $this->token->replace($uri, $tokens);
-
+    $uri = $this->applyReplacements($uri, $replacements, $tokens);
     $options['http_errors'] = FALSE;
+
     $response = $this->http_client->request($method, $uri, $options);
 
     $status = $response->getStatusCode();

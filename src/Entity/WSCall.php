@@ -114,7 +114,9 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function getReplacements($type, $replacement = []) {}
+  public function getReplacements() {
+    return $this->wsserverInst->wsconnectorInst->getReplacements($this->getOptions());
+  }
 
   /**
    * {@inheritdoc}

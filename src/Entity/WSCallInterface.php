@@ -32,7 +32,7 @@ interface WSCallInterface extends ConfigEntityInterface {
   /**
    * Get the available replacement tokens.
    */
-  public function getReplacements($type, $replacement = []);
+  public function getReplacements();
 
   /**
    * Get the available methods.

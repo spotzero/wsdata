@@ -31,6 +31,14 @@ class WSConnectorREST extends WSConnectorBase {
     ];
   }
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReplacements(array $options) {
+    return $this->findTokens($options['path']);
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -58,7 +66,7 @@ class WSConnectorREST extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
-  public function call($options, $method, $replacements = [], $data = NULL) {
+  public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
     return NULL;
   }
 

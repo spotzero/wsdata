@@ -2,6 +2,7 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
+use Drupal\Core\Utility\Token;
 use Drupal\wsdata\Plugin\WSConnectorBase;
 
 /**
@@ -13,16 +14,6 @@ use Drupal\wsdata\Plugin\WSConnectorBase;
  * )
  */
 class WSConnectorLocalFile extends WSConnectorBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct($endpoint) {
-    $this->languagePlugins = [
-      'replace',
-    ];
-    parent::__construct($endpoint);
-  }
 
   /**
    * {@inheritdoc}
@@ -60,8 +51,16 @@ class WSConnectorLocalFile extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
-  public function call($options, $method, $replacements = [], $data = NULL) {
+  public function getReplacements(array $options) {
+    return $this->findTokens($this->endpoint . '/' . $options['filename']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
     $filename = $this->endpoint . '/' . $options['filename'];
+    $filename = $this->applyReplacements($filename, $replacements, $tokens);
     $flags = 0;
     switch ($method) {
       case 'append':

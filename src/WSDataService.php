@@ -24,11 +24,15 @@ class WSDataService {
     if (!is_object($wscall)) {
       $wscall = $this->entity_type_manager->getStorage('wscall')->load($wscall);
     }
+
     $options = array_merge($options,  $wscall->getOptions());
     $conn = $wscall->getConnector();
 
     if ($method and !in_array($method, $conn->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $wscall->wsserverInst->wsconnector));
+    }
+    elseif (isset($options['method']) and in_array($options['method'], $conn->getMethods())) {
+      $method = $options['method'];
     }
     else {
       $methods = $conn->getMethods();
@@ -36,7 +40,7 @@ class WSDataService {
     }
 
     $data = $conn->call($options, $method, $replacements, $data);
-
+    return $data;
     if ($data) {
       $wscall->addData($data);
       return $wscall->getData($key);

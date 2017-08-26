@@ -50,6 +50,18 @@ class WSCallTestForm extends EntityForm {
       ],
     ];
 
+    $form['replacements'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Tokens'),
+    ];
+
+    foreach ($this->entity->getReplacements() as $replacement) {
+      $form['replacements'][$replacement] = [
+        '#type' => 'textfield',
+        '#title' => $replacement,
+      ];
+    }
+
     if ($element and $element['#id'] == 'call') {
       $form['responsewrapper'] = [
         '#type' => 'fieldset',
@@ -71,7 +83,12 @@ class WSCallTestForm extends EntityForm {
   public function call(array $form, FormStateInterface $form_state) {
     $form_state->setRebuild(TRUE);
     $form_state->disableCache();
-    $form_state->setValue('wscall_response', $this->wsdata->call($this->entity->id()));
+
+    $replacements = [];
+    foreach ($this->entity->getReplacements() as $replacement) {
+      $replacements[$replacement] = $form_state->getValue($replacement);
+    }
+    $form_state->setValue('wscall_response', $this->wsdata->call($this->entity->id(), NULL, $replacements));
   }
 
   /**
