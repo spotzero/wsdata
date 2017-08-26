@@ -12,7 +12,7 @@ use Drupal\wsdata\Plugin\WSConnectorBase;
  *   label = @Translation("RESTful Connector", context = "WSConnector"),
  * )
  */
-class WSConnectorREST extends WSConnectorBase {
+class WSConnectorREST extends WSConnectorSimpleHTTP {
 
   /**
    * {@inheritdoc}
