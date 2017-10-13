@@ -414,7 +414,7 @@ function wsconfig_get_list_tokens($wsconfig = "") {
     foreach ($data as $calltitle => $call) {
       $matches = array();
       if (is_string($call)) {
-        preg_match_all("/%[a-z0-9_]+/", $call, $matches);
+        preg_match_all("/%[a-zA-Z0-9_]+/", $call, $matches);
         if (count($matches[0]) > 0) {
           $calltitle = explode('_data_method', $calltitle);
           $list[$record->name][$calltitle[0]] = $matches[0];
