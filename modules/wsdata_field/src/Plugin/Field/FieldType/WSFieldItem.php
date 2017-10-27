@@ -24,7 +24,17 @@ use Drupal\wsdata\Plugin\WSDecoderManager;
  * )
  */
 class WSFieldItem extends FieldItemBase {
-/**
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultStorageSettings() {
+    return array(
+      'custom_storage' => TRUE,
+    ) + parent::defaultStorageSettings();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function defaultFieldSettings() {
@@ -38,10 +48,8 @@ class WSFieldItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-
     $properties['summary'] = DataDefinition::create('string')
       ->setLabel(t('Summary'));
-
     return $properties;
   }
 

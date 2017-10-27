@@ -1,3 +1,10 @@
 <?php
 
-
+/**
+ * Implements hook_form_alter().
+ */
+function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ('field_storage_config_edit_form' == $form_id) {
+    kint($form_state);
+  }
+}
