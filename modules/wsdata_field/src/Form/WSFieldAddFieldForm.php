@@ -226,6 +226,7 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
         $field = $this->entityManager->getStorage('field_config')->create($field_values);
         $field->save();
 
+
         $this->configureEntityFormDisplay($values['field_name'], $widget_id);
         $this->configureEntityViewDisplay($values['field_name'], $formatter_id);
 
@@ -234,6 +235,7 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
         $route_parameters = [
           'field_config' => $field->id(),
         ] + FieldUI::getRouteBundleParameter($entity_type, $this->bundle);
+        $destinations[] = ['route_name' => "entity.field_config.{$this->entityTypeId}_wsfield_edit_form", 'route_parameters' => $route_parameters];
         $destinations[] = ['route_name' => "entity.field_config.{$this->entityTypeId}_storage_edit_form", 'route_parameters' => $route_parameters];
         $destinations[] = ['route_name' => "entity.field_config.{$this->entityTypeId}_field_edit_form", 'route_parameters' => $route_parameters];
         $destinations[] = ['route_name' => "entity.{$this->entityTypeId}.field_ui_fields", 'route_parameters' => $route_parameters];

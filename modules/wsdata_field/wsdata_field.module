@@ -4,7 +4,32 @@
  * Implements hook_form_alter().
  */
 function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  if ('field_storage_config_edit_form' == $form_id) {
-    kint($form_state);
-  }
+//   if ('field_storage_config_edit_form' == $form_id) {
+//     $wscalls = entity_load_multiple('wscall');
+//     $options = [];
+//     foreach ($wscalls as $wscall) {
+//       $options[$wscall->id()] = $wscall->label();
+//     }
+
+//     $form['wscall'] = array(
+//       '#type' => 'select',
+//       '#title' => t('Wscall'),
+//       '#default_value' => $settings['wscall'],
+//       '#options' => $options,
+//     );
+//   }
 }
+
+
+
+
+// function wsdata_field_entity_load(array $entities, $entity_type_id) {
+//   if ('field_storage_config' == $entity_type_id) {
+//     foreach ($entities as $entity) {
+//       if ($entity->hasCustomStorage() == TRUE) {
+//         // Load the WSdata settings.
+//         $settings = $entity->getSettings();
+//       }
+//     }
+//   }
+// }

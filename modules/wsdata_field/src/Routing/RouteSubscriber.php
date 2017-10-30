@@ -60,7 +60,6 @@ class RouteSubscriber extends RouteSubscriberBase {
           $defaults['bundle'] = !$entity_type->hasKey('bundle') ? $entity_type_id : '';
         }
 
-
         $route = new Route(
           "$path/fields/add-wsfield",
           [
@@ -70,7 +69,16 @@ class RouteSubscriber extends RouteSubscriberBase {
           ['_permission' => 'administer ' . $entity_type_id . ' wsfields'],
           $options
         );
-        $collection->add("wsdata_field.field_storage_config_add_$entity_type_id", $route);
+        $collection->add("wsdata_field.field_wsfield_config_add_$entity_type_id", $route);
+
+        $route = new Route(
+          "$path/fields/{field_config}/wsfield_config",
+          ['_entity_form' => 'wsfield_config.edit'] + $defaults,
+          ['_permission' => 'administer ' . $entity_type_id . ' wsfields'],
+          $options
+        );
+        $collection->add("entity.field_config.{$entity_type_id}_wsfield_edit_form", $route);
+
       }
     }
   }
