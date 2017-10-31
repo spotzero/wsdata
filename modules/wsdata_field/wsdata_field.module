@@ -124,7 +124,6 @@ function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
  * @return mixed
  */
 function _wsdata_field_traverse_result($result, $tokens) {
-  //kint(reset($tokens));
   if (isset($result[reset($tokens)])) {
     $new_token_list = array_shift(reset($tokens));
     if (empty($new_token_list)) {

@@ -89,8 +89,7 @@ class WSFieldConfigForm extends EntityForm {
       '#type' => 'select',
       '#title' => t('Web Service Call'),
       '#options' => $options,
-      //'#required' => TRUE,
-      //'#empty_option' => '- Select -',
+      '#required' => TRUE,
       '#default_value' => $wsfield_config_entity->wscall,
       '#ajax' => [
         'callback' => '::wsfieldreplacementForm',
@@ -117,6 +116,7 @@ class WSFieldConfigForm extends EntityForm {
 
     $form['returnToken'] = array(
       '#type' => 'textfield',
+      '#required' => TRUE,
       '#title' => t('Token to select'),
       '#default_value' => $wsfield_config_entity->returnToken,
       '#description' => t('Seperate element names with a ":" to select nested elements.'),
