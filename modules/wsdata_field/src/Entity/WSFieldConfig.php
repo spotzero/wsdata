@@ -14,7 +14,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "form" = {
  *       "add" = "Drupal\wsdata_field\Form\WSFieldConfigForm",
  *       "edit" = "Drupal\wsdata_field\Form\WSFieldConfigForm",
- *       "delete" = "Drupal\wsdata_field\Form\WSFieldConfigDeleteForm",
  *     },
  *   },
  *   config_prefix = "wsfield_cofig",

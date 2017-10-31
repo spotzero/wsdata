@@ -1,35 +1,77 @@
 <?php
 
-/**
- * Implements hook_form_alter().
- */
-function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-//   if ('field_storage_config_edit_form' == $form_id) {
-//     $wscalls = entity_load_multiple('wscall');
-//     $options = [];
-//     foreach ($wscalls as $wscall) {
-//       $options[$wscall->id()] = $wscall->label();
-//     }
+use Drupal\Core\Url;
 
-//     $form['wscall'] = array(
-//       '#type' => 'select',
-//       '#title' => t('Wscall'),
-//       '#default_value' => $settings['wscall'],
-//       '#options' => $options,
-//     );
-//   }
+
+/**
+ * Implements hook_entity_operation().
+ */
+function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+  // Check if this field has the custom stroage flag set to true.
+  if ('field_config' == $entity->getEntityTypeId()) {
+    if ($entity->getFieldStorageDefinition()->hasCustomStorage()) {
+      // Also need to check see if there is a wsfield_config associated to it.
+      $wsfield_config = entity_load('wsfield_config', $entity->get('field_name'));
+      if ($wsfield_config != NULL) {
+        $operations = array();
+        // Set the route paramters.
+        $route_parameters = [
+          'field_config' => $entity->get('id'),
+          'node_type' => $entity->get('bundle'),
+        ];
+
+        // Create the link to edit the wsfield configurations.
+        $operations['edit_wsfield'] = [
+          'title' => t('Web service configurations'),
+          'weight' => 50,
+          'url' =>  Url::fromRoute("entity.field_config.{$entity->getTargetEntityTypeId()}_wsfield_edit_form", $route_parameters),
+          'attributes' => ['title' => t('Edit web service configurations'), 'class' => array('dropbutton-action', 'web-service-config')],
+        ];
+      }
+      return $operations;
+    }
+  }
 }
 
+/**
+ * Implements hook_entity_delete().
+ */
+function wsdata_field_entity_delete(Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'field_storage_config' && $entity->hasCustomStorage()) {
+    // It's a field storage config that has a custom storage,
+    $wsfield_config = entity_load('wsfield_config', $entity->get('field_name'));
+    if ($wsfield_config != NULL) {
+      // If there is a wsfield config we should delete it.
+      $wsfield_config->delete();
+    }
+  }
+}
 
+/**
+ * Implements hook_entity_load().
+ */
+function wsdata_field_entity_load(array $entities, $entity_type_id) {
+  if ('node' == $entity_type_id) {
+    foreach ($entities as $entity) {
+      // Fetch the field definitions for the this node.
+      $fields = $entity->getFieldDefinitions();
+      foreach ($fields as $field) {
+        // Get the fields storage definitions.
+        $field_storage = $field->getFieldStorageDefinition();
+        // Check if it has the custom storage flag set to true.
+        if ($field_storage->hasCustomStorage()) {
+          // Check to make sure the object is of type FieldStorageConfig.
+          if (is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
+            // Fetch the wsfield config entity.
+            $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
+            if ($wsfield_config != NULL) {
+              // If the wsfield config exist we are in business replace the value with the return of the wscall.
+              $entity->set($field_storage->get('field_name'), 'THIS IS THE WSDATA FIELD');
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
-
-// function wsdata_field_entity_load(array $entities, $entity_type_id) {
-//   if ('field_storage_config' == $entity_type_id) {
-//     foreach ($entities as $entity) {
-//       if ($entity->hasCustomStorage() == TRUE) {
-//         // Load the WSdata settings.
-//         $settings = $entity->getSettings();
-//       }
-//     }
-//   }
-// }

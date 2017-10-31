@@ -36,7 +36,7 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'wsfield_field_storage_add_form';
+    return 'wsfield_field_add_form';
   }
 
   /**
@@ -224,7 +224,9 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
 
         $this->entityManager->getStorage('field_storage_config')->create($field_storage_values)->save();
         $field = $this->entityManager->getStorage('field_config')->create($field_values);
+        $field->setDefaultValueCallback('wsdata_field_default_value');
         $field->save();
+        $field->setDefaultValueCallback('wsdata_field_default_value');
 
 
         $this->configureEntityFormDisplay($values['field_name'], $widget_id);
