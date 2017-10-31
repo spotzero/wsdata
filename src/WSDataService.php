@@ -40,7 +40,6 @@ class WSDataService {
     }
 
     $data = $conn->call($options, $method, $replacements, $data);
-    return $data;
     if ($data) {
       $wscall->addData($data);
       return $wscall->getData($key);

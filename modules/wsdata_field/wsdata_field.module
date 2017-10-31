@@ -66,7 +66,19 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
             $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
             if ($wsfield_config != NULL) {
               // If the wsfield config exist we are in business replace the value with the return of the wscall.
-              $entity->set($field_storage->get('field_name'), 'THIS IS THE WSDATA FIELD');
+
+              // TODO: Sort out the replacement patterns issue.
+              $replacements = [];
+
+              $wsdata  = \Drupal::service('wsdata');
+              $result = $wsdata->call($wsfield_config->wscall, NULL, $replacements);
+
+              // TODO: Need to figure out a good way to travers the result set.
+              $tokens = explode(':', $wsfield_config->returnToken);
+              $result_token = _wsdata_field_traverse_result($result, $tokens);
+
+              // Set the entity fields value with the result value.
+              $entity->set($field_storage->get('field_name'), $result_token);
             }
           }
         }
@@ -75,3 +87,27 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
   }
 }
 
+/**
+ * Function to travers the result set to find the base element.
+ * This function will recurse down to the last token if it exist.
+ *
+ * @param array $result The returned result from the service.
+ * @param array $tokens array of tokens to search for.
+ * @return mixed
+ */
+function _wsdata_field_traverse_result($result, $tokens) {
+  //kint(reset($tokens));
+  if (isset($result[reset($tokens)])) {
+    $new_token_list = array_shift(reset($tokens));
+    if (empty($new_token_list)) {
+      return $result[reset($tokens)];
+    }
+    else {
+      $new_result = $result[reset($tokens)];
+      return _wsdata_field_traverse_result($new_result, $new_token_list);
+    }
+  }
+  else {
+    return '';
+  }
+}

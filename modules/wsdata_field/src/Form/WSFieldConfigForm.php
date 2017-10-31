@@ -119,6 +119,7 @@ class WSFieldConfigForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => t('Token to select'),
       '#default_value' => $wsfield_config_entity->returnToken,
+      '#description' => t('Seperate element names with a ":" to select nested elements.'),
     );
     return $form;
   }
