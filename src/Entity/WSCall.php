@@ -108,6 +108,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     if ($this->wsserverInst->wsconnectorInst) {
       $this->options[$this->wsserver] = $this->wsserverInst->wsconnectorInst->saveOptions($values);
     }
+
     $this->needSave = TRUE;
   }
 

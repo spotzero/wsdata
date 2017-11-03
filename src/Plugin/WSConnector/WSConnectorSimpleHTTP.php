@@ -100,9 +100,16 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $uri = $this->endpoint . '/' . $options['path'];
     $uri = $this->applyReplacements($uri, $replacements, $tokens);
     $options['http_errors'] = FALSE;
+    // Set the data inside the $options param.
+    if (!empty($data)) {
+      $options['body'] = $data;
+    }
+    // TODO: Ideally the $options should come preloaded with the headers options.
+    $options['headers'] = [
+      'Content-Type' => 'application/json; charset=utf-8',
+    ];
 
     $response = $this->http_client->request($method, $uri, $options);
-
     $status = $response->getStatusCode();
 
     if ($status >= 199 and $status <= 300) {

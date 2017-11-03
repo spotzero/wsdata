@@ -10,7 +10,8 @@
   - [ ] wsdata_extras
   - [ ] wsdata_field
   - [ ] wsdata_rules
-
+- [ ] Better header Control
+  - [ ] Implement the header options for the wscall and wsconnectors.
 
 ## WSData Fields Implementation Plan
 
