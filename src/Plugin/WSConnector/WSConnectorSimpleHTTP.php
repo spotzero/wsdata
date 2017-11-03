@@ -60,7 +60,18 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     return [
       'path' => NULL,
       'method' => [],
+      'headers' => [],
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function saveOptions($values) {
+    $token_service = \Drupal::token();
+    // Fix the headers values.
+    $values['headers'] = array($values['key'] => $token_service->replace($values['value']));
+    return parent::saveOptions($values);
   }
 
   /**
@@ -75,19 +86,36 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    */
   public function getOptionsForm() {
     $methods = $this->getMethods();
-
-    return [
-      'path' => [
-        '#title' => t('Path'),
-        '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
-        '#type' => 'textfield',
-      ],
-      'method' => [
-        '#title' => t('HTTP Method'),
-        '#type' => 'select',
-        '#options' => array_combine($methods, $methods),
-      ],
+    $form['path'] = [
+      '#title' => t('Path'),
+      '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+      '#type' => 'textfield',
+      '#maxlength' => 512,
     ];
+
+    $form['method'] = [
+      '#title' => t('HTTP Method'),
+      '#type' => 'select',
+      '#options' => array_combine($methods, $methods),
+    ];
+
+    $form['headers'] = [
+      '#type' => 'container',
+    ];
+
+    for($i = 0; $i < 1; $i++) {
+      $form['headers'][$i]['key'] = [
+        '#type' => 'textfield',
+        '#title' => t('Key'),
+      ];
+
+      $form['headers'][$i]['value'] = [
+        '#type' => 'textfield',
+        '#title' => t('Value'),
+      ];
+    }
+
+    return $form;
   }
 
   /**
@@ -97,17 +125,14 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
     }
+
     $uri = $this->endpoint . '/' . $options['path'];
     $uri = $this->applyReplacements($uri, $replacements, $tokens);
     $options['http_errors'] = FALSE;
-    // Set the data inside the $options param.
+
     if (!empty($data)) {
       $options['body'] = $data;
     }
-    // TODO: Ideally the $options should come preloaded with the headers options.
-    $options['headers'] = [
-      'Content-Type' => 'application/json; charset=utf-8',
-    ];
 
     $response = $this->http_client->request($method, $uri, $options);
     $status = $response->getStatusCode();

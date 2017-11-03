@@ -98,19 +98,17 @@ class WSFieldConfigForm extends EntityForm {
     ];
 
     // Fetch the replacement tokens for this wscall.
-
     $form['replacements'] = [
       '#id' => 'wscall-replacement-tokens-wrapper',
       '#type' => 'container',
-      'wscalloptions' => [],
     ];
     // TODO: The ajax call back is not working so all of this is theoretical.
-    if (!empty($form_state->getValue('wscall'))) {
-      $wscall_id_value = $form_state->getValue('wscall');
-      foreach ($wscalls[$wscall_id_value]->getReplacements() as $replacement) {
+    if (!empty($wsfield_config_entity->wscall)) {
+      foreach ($wscalls[$wsfield_config_entity->wscall]->getReplacements() as $replacement) {
         $form['replacements'][$replacement] = [
           '#type' => 'textfield',
           '#title' => $replacement,
+          '#default_value' => isset($wsfield_config_entity->replacements[$replacement]) ? $wsfield_config_entity->replacements[$replacement] : '',
         ];
       }
     }
@@ -137,7 +135,15 @@ class WSFieldConfigForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
+    $wscall_entity = entity_load('wscall', $form_state->getValue('wscall'));
+
+    $replacements = [];
+    foreach ($wscall_entity->getReplacements() as $replacement) {
+      $replacements[$replacement] = $form_state->getValue($replacement);
+    }
+
     $wsfieldconfig_entity = $this->entity;
+    $wsfieldconfig_entity->replacements = $replacements;
     $status = $wsfieldconfig_entity->save();
 
     // Set the redirect to the next destination in the steps.

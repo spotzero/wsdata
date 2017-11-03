@@ -66,19 +66,33 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
             $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
             if ($wsfield_config != NULL) {
               // If the wsfield config exist we are in business replace the value with the return of the wscall.
+              $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
-              // TODO: Sort out the replacement patterns issue.
-              $replacements = [];
+              $wscall = entity_load('wscall', $wsfield_config->wscall);
 
-              $wsdata  = \Drupal::service('wsdata');
-              $result = $wsdata->call($wsfield_config->wscall, NULL, $replacements);
+              $options = $wscall->getOptions();
 
-              // TODO: Need to figure out a good way to travers the result set.
-              $tokens = explode(':', $wsfield_config->returnToken);
-              $result_token = _wsdata_field_traverse_result($result, $tokens);
-
-              // Set the entity fields value with the result value.
-              $entity->set($field_storage->get('field_name'), $result_token);
+              $conn = $wscall->getConnector();
+              if ($method and !in_array($method, $conn->getMethods())) {
+                throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $wscall->wsserverInst->wsconnector));
+              }
+              elseif (isset($options['method']) and in_array($options['method'], $conn->getMethods())) {
+                $method = $options['method'];
+              }
+              else {
+                $methods = $conn->getMethods();
+                $method = reset($methods);
+              }
+              $data = $conn->call($options, $method, $replacements, NULL, array('node' => $entity));
+              if ($data) {
+                $wscall->addData($data);
+                $result_token = $wscall->getData($wsfield_config->returnToken);
+                // Set the entity fields value with the result value.
+                $entity->set($field_storage->get('field_name'), $result_token);
+              }
+              else {
+                // Nothing for now ?
+              }
             }
           }
         }
@@ -91,7 +105,7 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
  * Implements hook_form_alter().
  */
 function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  if (preg_match('/^node_(.*)_edit_form/', $form_id)) {
+  if (preg_match('/^node_(.*)_edit_form/', $form_id) || preg_match('/^node_(.*)_form/', $form_id)) {
     $entity = $form_state->getFormObject()->getEntity();
     $fields = $entity->getFieldDefinitions();
     foreach ($fields as $field) {
@@ -112,29 +126,5 @@ function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
         }
       }
     }
-  }
-}
-
-/**
- * Function to travers the result set to find the base element.
- * This function will recurse down to the last token if it exist.
- *
- * @param array $result The returned result from the service.
- * @param array $tokens array of tokens to search for.
- * @return mixed
- */
-function _wsdata_field_traverse_result($result, $tokens) {
-  if (isset($result[reset($tokens)])) {
-    $new_token_list = array_shift(reset($tokens));
-    if (empty($new_token_list)) {
-      return $result[reset($tokens)];
-    }
-    else {
-      $new_result = $result[reset($tokens)];
-      return _wsdata_field_traverse_result($new_result, $new_token_list);
-    }
-  }
-  else {
-    return '';
   }
 }
