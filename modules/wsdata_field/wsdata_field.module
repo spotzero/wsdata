@@ -68,31 +68,9 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
               // If the wsfield config exist we are in business replace the value with the return of the wscall.
               $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
-              $wscall = entity_load('wscall', $wsfield_config->wscall);
-
-              $options = $wscall->getOptions();
-
-              $conn = $wscall->getConnector();
-              if ($method and !in_array($method, $conn->getMethods())) {
-                throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $wscall->wsserverInst->wsconnector));
-              }
-              elseif (isset($options['method']) and in_array($options['method'], $conn->getMethods())) {
-                $method = $options['method'];
-              }
-              else {
-                $methods = $conn->getMethods();
-                $method = reset($methods);
-              }
-              $data = $conn->call($options, $method, $replacements, NULL, array('node' => $entity));
-              if ($data) {
-                $wscall->addData($data);
-                $result_token = $wscall->getData($wsfield_config->returnToken);
-                // Set the entity fields value with the result value.
-                $entity->set($field_storage->get('field_name'), $result_token);
-              }
-              else {
-                // Nothing for now ?
-              }
+              $wsdata  = \Drupal::service('wsdata');
+              $result = $wsdata->call($wsfield_config->wscall, NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
+              $entity->set($field_storage->get('field_name'), $result);
             }
           }
         }
