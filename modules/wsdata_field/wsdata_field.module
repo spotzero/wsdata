@@ -1,7 +1,7 @@
 <?php
 
 use Drupal\Core\Url;
-
+use Drupal\field\Entity;
 
 /**
  * Implements hook_entity_operation().
@@ -104,5 +104,25 @@ function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function wsdata_field_views_data_alter(array &$data) {
+  $wsfield_configs = entity_load_multiple('wsfield_config');
+  foreach ($wsfield_configs as $wsfield_config) {
+    // Load the field name to generate the views fields.
+    $field_name = $wsfield_config->id();
+
+    $data['node'][$field_name] = array(
+      'title' => $field_name,
+      'help' => t('WSdata field.'),
+      'field' => array(
+        'title' => $field_name,
+        'id' => 'wsdata_field_views',
+      ),
+    );
   }
 }
