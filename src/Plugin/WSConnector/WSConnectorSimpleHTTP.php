@@ -68,9 +68,8 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function saveOptions($values) {
-    $token_service = \Drupal::token();
     // Fix the headers values.
-    $values['headers'] = array($values['key'] => $token_service->replace($values['value']));
+    $values['headers'] = array($values['key'] => $values['value']);
     return parent::saveOptions($values);
   }
 
@@ -129,6 +128,14 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $uri = $this->endpoint . '/' . $options['path'];
     $uri = $this->applyReplacements($uri, $replacements, $tokens);
     $options['http_errors'] = FALSE;
+
+    // Perform the token replace on the headers.
+    if (!empty($options['headers'])) {
+      $token_service = \Drupal::token();
+      foreach ($options['headers'] as $key => $values) {
+        $options['headers'][$key] = $token_service->replace($values);
+      }
+    }
 
     if (!empty($data)) {
       $options['body'] = $data;
