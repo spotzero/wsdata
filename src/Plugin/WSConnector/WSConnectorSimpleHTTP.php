@@ -133,7 +133,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     if (!empty($options['headers'])) {
       $token_service = \Drupal::token();
       foreach ($options['headers'] as $key => $values) {
-        $options['headers'][$key] = $token_service->replace($values);
+        $options['headers'][$key] = $token_service->replace($values, $tokens);
       }
     }
 

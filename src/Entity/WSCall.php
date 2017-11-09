@@ -3,6 +3,9 @@
 namespace Drupal\wsdata\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 
 /**
  * Defines the Web Service Call entity.
@@ -97,7 +100,43 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function call($type, $key = NULL, $replacement = [], $argument = [], $options = [], &$method = '') {}
+  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [])  {
+    // Build out the Cache ID based on the parameters passed.
+    $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key));
+    $cid = md5(serialize($cid_array));
+    if ($cache = \Drupal::cache('wsdata')->get($cid)) {
+      $data = $cache->data;
+    }
+    else {
+      $conn = $this->getConnector();
+      $options = array_merge($options, $this->getOptions());
+
+      if ($method and !in_array($method, $conn->getMethods())) {
+        throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $this->wsserverInst->wsconnector));
+      }
+      elseif (isset($options['method']) and in_array($options['method'], $conn->getMethods())) {
+        $method = $options['method'];
+      }
+      else {
+        $methods = $conn->getMethods();
+        $method = reset($methods);
+      }
+
+      // Fetch the cache tags for this call and the server instance call.
+      $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags());
+      $data = $conn->call($options, $method, $replacements, $data, $tokens);
+      // Set the cache for this data.
+      \Drupal::cache('wsdata')->set($cid, $data, Cache::PERMANENT, $cache_tags);
+    }
+
+    if ($data) {
+      $this->addData($data);
+      return $this->getData($key);
+    } else {
+      \Drupal::logger('wsdata')->error(print_r($conn->getError(), TRUE));
+      return FALSE;
+    }
+  }
 
   /**
    * {@inheritdoc}
