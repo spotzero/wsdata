@@ -48,13 +48,13 @@ class WSDataFieldsViews extends FieldPluginBase {
     if ($entity->hasField($field_name)) {
       // Load the wsfield config entity.
       $wsfield_config = entity_load('wsfield_config', $field_name);
+      $wscall = entity_load('wscall', $wsfield_config->wscall);
 
       // Get the replacements.
       $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
       // Create the call based on the wsfield configurations.
-      $wsdata  = \Drupal::service('wsdata');
-      $return = $wsdata->call($wsfield_config->wscall, NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
+      $return = $wscall->call(NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
     }
     return $return;
   }
