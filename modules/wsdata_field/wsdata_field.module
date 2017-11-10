@@ -58,21 +58,18 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
       foreach ($fields as $field) {
         // Get the fields storage definitions.
         $field_storage = $field->getFieldStorageDefinition();
-        // Check if it has the custom storage flag set to true.
-        if ($field_storage->hasCustomStorage()) {
-          // Check to make sure the object is of type FieldStorageConfig.
-          if (is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
-            // Fetch the wsfield config entity.
-            $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
-            if ($wsfield_config != NULL) {
-              // If the wsfield config exist we are in business replace the value with the return of the wscall.
-              $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
+        // Check if it has the custom storage flag set to true. && Check to make sure the object is of type FieldStorageConfig.
+        if ($field_storage->hasCustomStorage() && is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
+          // Fetch the wsfield config entity.
+          $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
+          if ($wsfield_config != NULL) {
+            // If the wsfield config exist we are in business replace the value with the return of the wscall.
+            $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
-              $wscall = entity_load('wscall', 'energycap_billing_data');
-              $result = $wscall->call(NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
-              // Set the field with the wsdata results.
-              $entity->set($field_storage->get('field_name'), $result);
-            }
+            $wscall = entity_load('wscall', 'energycap_billing_data');
+            $result = $wscall->call(NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
+            // Set the field with the wsdata results.
+            $entity->set($field_storage->get('field_name'), $result);
           }
         }
       }
