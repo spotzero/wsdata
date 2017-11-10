@@ -41,6 +41,7 @@ class WSFieldConfig extends ConfigEntityBase {
   public $replacements;
   public $returnToken;
 
+
   /**
    * {@inheritdoc}
    */

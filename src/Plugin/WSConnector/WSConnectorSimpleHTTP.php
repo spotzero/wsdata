@@ -68,8 +68,17 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function saveOptions($values) {
-    // Fix the headers values.
-    $values['headers'] = array($values['key'] => $values['value']);
+    // Check how many key values and create the array.
+    foreach ($values as $key => $value) {
+      if (preg_match("/^key_([0-9]+)/", $key, $matches)) {
+        if (isset($matches[1])) {
+          $values['headers'][$matches[1]] = array('key_' . $matches[1] => $values['key_' . $matches[1]],
+                                                  'value_' . $matches[1] => $values['value_' . $matches[1]]);
+          unset($values['key_' . $matches[1]]);
+          unset($values['value_' . $matches[1]]);
+        }
+      }
+    }
     return parent::saveOptions($values);
   }
 
@@ -99,16 +108,17 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     ];
 
     $form['headers'] = [
-      '#type' => 'container',
+      '#title' => t('Headers'),
+      '#type' => 'fieldset',
     ];
 
-    for($i = 0; $i < 1; $i++) {
-      $form['headers'][$i]['key'] = [
+    for($i = 0; $i < 2; $i++) {
+      $form['headers'][$i]['key_' . $i] = [
         '#type' => 'textfield',
         '#title' => t('Key'),
       ];
 
-      $form['headers'][$i]['value'] = [
+      $form['headers'][$i]['value_' . $i] = [
         '#type' => 'textfield',
         '#title' => t('Value'),
       ];

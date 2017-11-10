@@ -104,10 +104,20 @@ class WSCallForm extends EntityForm {
     ];
 
     $options = $wscall_entity->getOptions();
-
     foreach ($options as $name => $option) {
       if (isset($form['options']['wsserveroptions'][$name])) {
-        $form['options']['wsserveroptions'][$name]['#default_value'] = $option;
+        if (is_array($option)) {
+          // Traverse down the options till we can build out the form structure.
+          for ($i = 0; $i < count($option); $i++) {
+            // I think this can be improved.
+            foreach ($option[$i] as $options_key => $options_value) {
+              $form['options']['wsserveroptions'][$name][$i][$options_key]['#default_value'] = $options_value;
+            }
+          }
+        }
+        else {
+          $form['options']['wsserveroptions'][$name]['#default_value'] = $option;
+        }
       }
     }
 
