@@ -25,28 +25,8 @@ class WSDataService {
       $wscall = $this->entity_type_manager->getStorage('wscall')->load($wscall);
     }
 
-    $options = array_merge($options,  $wscall->getOptions());
-    $conn = $wscall->getConnector();
-
-    if ($method and !in_array($method, $conn->getMethods())) {
-      throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $wscall->wsserverInst->wsconnector));
-    }
-    elseif (isset($options['method']) and in_array($options['method'], $conn->getMethods())) {
-      $method = $options['method'];
-    }
-    else {
-      $methods = $conn->getMethods();
-      $method = reset($methods);
-    }
-
-    $data = $conn->call($options, $method, $replacements, $data, $tokens);
-    if ($data) {
-      $wscall->addData($data);
-      return $wscall->getData($key);
-    } else {
-      $this->error = $conn->getError();
-      return FALSE;
-    }
+    $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens);
+    return $data;
   }
 
   public function getError() {
