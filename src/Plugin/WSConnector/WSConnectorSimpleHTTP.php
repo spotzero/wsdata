@@ -142,11 +142,14 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     // Perform the token replace on the headers.
     if (!empty($options['headers'])) {
       $token_service = \Drupal::token();
-      foreach ($options['headers'] as $key => $values) {
-        $options['headers'][$key] = $token_service->replace($values, $tokens);
+      for ($i = 0; $i < count($options['headers']); $i++) {
+        if (!empty($options['headers'][$i]['key_' . $i])) {
+          $options['headers'][$options['headers'][$i]['key_' . $i]] = $token_service->replace($options['headers'][$i]['value_' . $i], $tokens);
+        }
+        unset($options['headers'][$i]['key_' . $i]);
+        unset($options['headers'][$i]['value_' . $i]);
       }
     }
-
     if (!empty($data)) {
       $options['body'] = $data;
     }
