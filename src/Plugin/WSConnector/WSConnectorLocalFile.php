@@ -35,7 +35,7 @@ class WSConnectorLocalFile extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
-  public function getOptionsForm() {
+  public function getOptionsForm($options = []) {
     return [
       'filename' => [
         '#title' => t('Filename'),

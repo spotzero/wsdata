@@ -42,7 +42,7 @@ class WSConnectorREST extends WSConnectorSimpleHTTP {
   /**
    * {@inheritdoc}
    */
-  public function getOptionsForm() {
+  public function getOptionsForm($options = []) {
     return [
       'path' => [
         '#title' => t('Path'),

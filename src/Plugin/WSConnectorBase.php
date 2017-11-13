@@ -67,7 +67,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * Return the settings form provided by the connector.
    */
-  public function getOptionsForm() {
+  public function getOptionsForm($options = []) {
     return [];
   }
 
