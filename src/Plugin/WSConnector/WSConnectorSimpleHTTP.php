@@ -113,11 +113,8 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $header_count = 1;
 
     if (isset($options['form_state'])) {
-      if ($options['form_state']->get('header_count')) {
-        $header_count = $options['form_state']->get('header_count');
-      }
-      else {
-        $options['form_state']->set('header_count', 1);
+      if ($options['form_state']->getUserInput()['headers_count']) {
+        $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
       }
     }
 
@@ -125,6 +122,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       '#title' => t('Headers'),
       '#type' => 'fieldset',
       '#attributes' => ['id' => 'wsconnector-headers'],
+    ];
+
+    $form['headers']['headers_count'] = [
+      '#type' => 'hidden',
+      '#value' => $header_count,
     ];
 
     for($i = 0; $i < $header_count; $i++) {
@@ -143,9 +145,8 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       $form['headers']['add_another'] = [
         '#type'   => 'submit',
         '#value'  => t('Add another'),
-        '#submit' => ['Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnector_http_header_add_item'],
         '#ajax'   => [
-          'callback' => 'Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnector_http_header_ajax_callback',
+          'callback' => [$this, 'wsconnectorHttpHeaderAjaxCallback'],
           'wrapper'  => 'wsconnector-headers',
         ],
       ];
@@ -154,16 +155,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     return $form;
   }
 
-  public static function wsconnector_http_header_add_item(array &$form, FormStateInterface $form_state) {
-    $count = $form_state->get('header_count');
-    $form_state->set('header_count', ($count + 1));
-    $form_state->setRebuild();
-  }
   /**
    * Ajax callback function.
    */
-  public static function wsconnector_http_header_ajax_callback(array &$form, FormStateInterface $form_state) {
-    return $form['headers'];
+  public function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
+    return $form['options']['wsserveroptions']['headers'];
   }
 
   /**
