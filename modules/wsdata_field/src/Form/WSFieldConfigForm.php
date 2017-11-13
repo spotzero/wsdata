@@ -102,7 +102,7 @@ class WSFieldConfigForm extends EntityForm {
       '#id' => 'wscall-replacement-tokens-wrapper',
       '#type' => 'container',
     ];
-    // TODO: The ajax call back is not working so all of this is theoretical.
+    // Ajax callback to get the replacements tokens.
     if (!empty($wsfield_config_entity->wscall)) {
       foreach ($wscalls[$wsfield_config_entity->wscall]->getReplacements() as $replacement) {
         $form['replacements'][$replacement] = [

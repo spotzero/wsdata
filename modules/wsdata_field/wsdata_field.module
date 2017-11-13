@@ -84,21 +84,23 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
 function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if (preg_match('/^node_(.*)_edit_form/', $form_id) || preg_match('/^node_(.*)_form/', $form_id)) {
     $entity = $form_state->getFormObject()->getEntity();
-    $fields = $entity->getFieldDefinitions();
-    foreach ($fields as $field) {
-      // Get the fields storage definitions.
-      $field_storage = $field->getFieldStorageDefinition();
-      // Check if it has the custom storage flag set to true.
-      if ($field_storage->hasCustomStorage()) {
-        // Check to make sure the object is of type FieldStorageConfig.
-        if (is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
-          // Fetch the wsfield config entity.
-          $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
-          if ($wsfield_config != NULL) {
-            // Make the field hidden by adding a class.
-            $form[$field_storage->get('field_name')]['#attributes'] = array(
-              'class' => 'hidden',
-            );
+    if ($entity->getEntityTypeId() == 'node') {
+      $fields = $entity->getFieldDefinitions();
+      foreach ($fields as $field) {
+        // Get the fields storage definitions.
+        $field_storage = $field->getFieldStorageDefinition();
+        // Check if it has the custom storage flag set to true.
+        if ($field_storage->hasCustomStorage()) {
+          // Check to make sure the object is of type FieldStorageConfig.
+          if (is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
+            // Fetch the wsfield config entity.
+            $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
+            if ($wsfield_config != NULL) {
+              // Make the field hidden by adding a class.
+              $form[$field_storage->get('field_name')]['#attributes'] = array(
+                'class' => 'hidden',
+              );
+            }
           }
         }
       }
