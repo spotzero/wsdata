@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\energy_och_calculation\Plugin\Block\ChCEmissions.
+ * Contains \Drupal\wsdata_block\Plugin\Block\WSDataBlock.
  */
 
 namespace Drupal\wsdata_block\Plugin\Block;
@@ -16,7 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @Block(
  *   id = "wsdata_block",
- *   admin_label = @Translation("Wsdata block"),
+ *   admin_label = @Translation("Wsdata Block"),
  *   category = @Translation("wsdata")
  * )
  */
@@ -41,23 +41,32 @@ class WSDataBlock extends BlockBase {
       '#required' => TRUE,
       '#default_value' => $this->configuration['wscall'],
       '#ajax' => [
-        'callback' => '::WSBlockReplacement',
+        'callback' => [$this, 'wsdataBlockReplacements'],
         'wrapper' => 'wscall-replacement-tokens-wrapper',
       ],
     ];
+
+    $triggering = $form_state->getTriggeringElement();
+
+    if (!empty($this->configuration['wscall'])) {
+      $wscall = $this->configuration['wscall'];
+    }
+    if (preg_match('/^edit-settings-wscall/', $triggering['#id'])) {
+      $wscall = $triggering['#value'];
+    }
 
     // Fetch the replacement tokens for this wscall.
     $form['replacements'] = [
       '#id' => 'wscall-replacement-tokens-wrapper',
       '#type' => 'container',
     ];
-    // TODO: The ajax call back is not working so all of this is theoretical.
-    if (!empty($this->configuration['wscall'])) {
-      foreach ($wscalls[$this->configuration['wscall']]->getReplacements() as $replacement) {
+    // Based on the wscall create the replacements section of the wscall.
+    if (!empty($wscall)) {
+      foreach ($wscalls[$wscall]->getReplacements() as $replacement) {
         $form['replacements'][$replacement] = [
           '#type' => 'textfield',
           '#title' => $replacement,
-          '#default_value' => isset($this->configuration['replacements']->replacements[$replacement]) ? $this->configuration['replacements']->replacements[$replacement] : '',
+          '#default_value' => isset($this->configuration['replacements'][$replacement]) ? $this->configuration['replacements'][$replacement] : '',
         ];
       }
     }
@@ -81,8 +90,8 @@ class WSDataBlock extends BlockBase {
   /**
    * Ajax callback function.
    */
-  public function WSBlockReplacement(array $form, FormStateInterface $form_state) {
-    return $form['replacements'];
+  public function wsdataBlockReplacements(array &$form, FormStateInterface $form_state) {
+    return $form['settings']['replacements'];
   }
 
   /**
@@ -90,8 +99,13 @@ class WSDataBlock extends BlockBase {
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $this->configuration['wscall'] = $form_state->getValue('wscall');
-    // TODO: Loop thru the replacements and save them as an array.
-    $this->configuration['replacements'] = $form_state->getValue('replacements');
+    // Loop thru the replacements and save them as an array.
+    $replacement = [];
+    $wscall = entity_load('wscall', $this->configuration['wscall']);
+    foreach ($wscall->getReplacements() as $rep) {
+      $replacement[$rep] = $form_state->getValue('replacements')[$rep];
+    }
+    $this->configuration['replacements'] = $replacement;
     $this->configuration['body'] = $form_state->getValue('body');
     $this->configuration['returnToken'] = $form_state->getValue('returnToken');
   }
@@ -103,7 +117,7 @@ class WSDataBlock extends BlockBase {
     // Fetch the wscall.
     $wscall = entity_load('wscall', $this->configuration['wscall']);
     // Fetch the context from the page ?
-    $result = $wscall->call(NULL, array(), $this->configuration['body'], array(), $this->configuration['returnToken']);
+    $result = $wscall->call(NULL, $this->configuration['replacements'], $this->configuration['body'], array(), $this->configuration['returnToken']);
 
     $form['wsdata_block_data'] = [
       '#prefix' => '<div class="wsdata_block">',
