@@ -88,6 +88,7 @@ class WSCallTestForm extends EntityForm {
     foreach ($this->entity->getReplacements() as $replacement) {
       $replacements[$replacement] = $form_state->getValue($replacement);
     }
+
     $form_state->setValue('wscall_response', $this->wsdata->call($this->entity->id(), NULL, $replacements));
   }
 

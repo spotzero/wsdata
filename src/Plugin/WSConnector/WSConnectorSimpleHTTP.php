@@ -63,6 +63,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       'path' => NULL,
       'method' => [],
       'headers' => [],
+      'body' => NULL,
     ];
   }
 
@@ -117,6 +118,12 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
       }
     }
+
+    $form['body'] = [
+      '#type' => 'textarea',
+      '#title' => t('Body'),
+      '#description' => t('Note: body will only be passed when the method allowes (post, put)')
+    ];
 
     $form['headers'] = [
       '#title' => t('Headers'),
@@ -186,6 +193,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         unset($options['headers'][$i]);
       }
     }
+
     if (!empty($data)) {
       $options['body'] = $data;
     }

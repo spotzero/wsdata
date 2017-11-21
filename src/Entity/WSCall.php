@@ -105,7 +105,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key));
     $cid = md5(serialize($cid_array));
     if ($cache = \Drupal::cache('wsdata')->get($cid)) {
-      $data = $cache->data;
+      $cache_data = $cache->data;
     }
     else {
       $conn = $this->getConnector();
@@ -124,10 +124,10 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
       // Fetch the cache tags for this call and the server instance call.
       $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags());
-      $data = $conn->call($options, $method, $replacements, $data, $tokens);
+      $cache_data = $conn->call($options, $method, $replacements, $data, $tokens);
       // Set the cache for this data if there wasn't an error.
       if (empty($conn->getError())) {
-        \Drupal::cache('wsdata')->set($cid, $data, Cache::PERMANENT, $cache_tags);
+        \Drupal::cache('wsdata')->set($cid, $cache_data, Cache::PERMANENT, $cache_tags);
       }
       else {
         \Drupal::logger('wsdata')->error(t('wsdata %wsdata_name failed with error %code %message',
@@ -135,8 +135,8 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       }
     }
 
-    if ($data) {
-      $this->addData($data);
+    if ($cache_data) {
+      $this->addData($cache_data);
       return $this->getData($key);
     } else {
       return FALSE;

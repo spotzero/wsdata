@@ -115,7 +115,6 @@ class WSFieldConfigForm extends EntityForm {
 
     $form['returnToken'] = array(
       '#type' => 'textfield',
-      '#required' => TRUE,
       '#title' => t('Token to select'),
       '#default_value' => $wsfield_config_entity->returnToken,
       '#description' => t('Seperate element names with a ":" to select nested elements.'),

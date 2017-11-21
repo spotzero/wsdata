@@ -66,8 +66,9 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
             if ($wsfield_config != NULL) {
               // If the wsfield config exist we are in business replace the value with the return of the wscall.
               $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
-              $wscall = entity_load('wscall', 'energycap_billing_data');
-              $result = $wscall->call(NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
+              $wscall = entity_load('wscall', $wsfield_config->wscall);
+
+              $result = $wscall->call(NULL, $replacements, $wsfield_config->returnToken, array(), NULL, array('node' => $entity));
               // Set the field with the wsdata results.
               $entity->set($field_storage->get('field_name'), $result);
             }
