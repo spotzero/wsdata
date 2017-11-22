@@ -16,3 +16,6 @@ wsdata_field.wsfield_cofig.*:
     returnToken:
       label: 'Return Token'
       type: string
+    data:
+      label: 'Data'
+      type: string

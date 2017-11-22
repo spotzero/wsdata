@@ -40,6 +40,7 @@ class WSFieldConfig extends ConfigEntityBase {
   public $wscall;
   public $replacements;
   public $returnToken;
+  public $data;
 
 
   /**

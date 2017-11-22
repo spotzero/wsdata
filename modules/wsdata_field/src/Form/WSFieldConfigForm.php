@@ -113,6 +113,11 @@ class WSFieldConfigForm extends EntityForm {
       }
     }
 
+    $form['data'] = [
+      '#type' => 'textarea',
+      '#title' => t('Data'),
+    ];
+
     $form['returnToken'] = array(
       '#type' => 'textfield',
       '#title' => t('Token to select'),

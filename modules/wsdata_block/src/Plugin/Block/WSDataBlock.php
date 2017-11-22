@@ -10,6 +10,7 @@ namespace Drupal\wsdata_block\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'Green House Gas Emissions' block.
@@ -114,10 +115,9 @@ class WSDataBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    // Fetch the wscall.
-    $wscall = entity_load('wscall', $this->configuration['wscall']);
-    // Fetch the context from the page ?
-    $result = $wscall->call(NULL, $this->configuration['replacements'], $this->configuration['body'], array(), $this->configuration['returnToken']);
+
+    $wsdata  = \Drupal::service('wsdata');
+    $result = $wsdata->call($this->configuration['wscall'], NULL, $this->configuration['replacements'], $this->configuration['body'], array(), $this->configuration['returnToken']);
 
     $form['wsdata_block_data'] = [
       '#prefix' => '<div class="wsdata_block">',

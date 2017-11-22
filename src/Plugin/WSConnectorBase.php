@@ -93,7 +93,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * Whether returned data can be cached.
    */
-  public function supportsCaching() {
+  public function supportsCaching($method = NULL) {
     return FALSE;
   }
 

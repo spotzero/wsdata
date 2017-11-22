@@ -3,6 +3,7 @@
 namespace Drupal\wsdata\Plugin\WSEncoder;
 
 use Drupal\wsdata\Plugin\WSEncoderBase;
+use Drupal\Component\Serialization\Json;
 
 /**
  * String Encoder.
@@ -20,5 +21,4 @@ class WSEncoderJSON extends WSEncoderBase {
   public function encode(&$data, &$replacements, &$url) {
     $data = Json::encode($data);
   }
-
 }

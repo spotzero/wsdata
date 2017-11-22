@@ -63,7 +63,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       'path' => NULL,
       'method' => [],
       'headers' => [],
-      'body' => NULL,
     ];
   }
 
@@ -111,6 +110,12 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       '#options' => array_combine($methods, $methods),
     ];
 
+    $form['expires'] = [
+      '#type' => 'number',
+      '#title' => t('Expire'),
+      '#description' => t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
+    ];
+
     $header_count = 1;
 
     if (isset($options['form_state'])) {
@@ -118,12 +123,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
       }
     }
-
-    $form['body'] = [
-      '#type' => 'textarea',
-      '#title' => t('Body'),
-      '#description' => t('Note: body will only be passed when the method allowes (post, put)')
-    ];
 
     $form['headers'] = [
       '#title' => t('Headers'),
@@ -202,6 +201,15 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
 
     $response = $this->http_client->request($method, $uri, $options);
+
+    // Set the cache expire time.
+    if (isset($options['expires']) && !empty($options['expires'])) {
+      $this->expires = (integer)$options['expires'];
+    }
+    else {
+      $this->setCacheExpire($response);
+    }
+
     $status = $response->getStatusCode();
 
     if ($status >= 199 and $status <= 300) {
@@ -210,6 +218,29 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $this->setError($status, $response->getReasonPhrase());
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsCaching($method = NULL) {
+    // If the request is a GET support caching.
+    if (in_array($method, ['get'])) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  public function setCacheExpire($response) {
+    // Check the
+    $cache_header = $response->getHeader('Cache-Control');
+    foreach ($cache_header as $control_header) {
+      if (preg_match("/^max-age=\d+/", $control_header)) {
+        $this->expires = (integer)str_replace('max-age=', '' ,$control_header);
+      }
+    }
   }
 }
 
