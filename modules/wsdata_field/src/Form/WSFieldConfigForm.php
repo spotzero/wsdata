@@ -9,6 +9,7 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field_ui\FieldUI;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+
 /**
  * Class WSFieldsConfigForm.
  *
@@ -51,13 +52,11 @@ class WSFieldConfigForm extends EntityForm {
     return parent::buildForm($form, $form_state);
   }
 
-
   /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-
 
      // Load the field configurations.
     $field_config = $form_state->get('field_config');
@@ -78,61 +77,22 @@ class WSFieldConfigForm extends EntityForm {
       '#value' => $field_config->get('field_name'),
     ];
 
-    // Load the wscall entities.
-    $wscalls = entity_load_multiple('wscall');
-    $options = [];
-    foreach ($wscalls as $wscall) {
-      $options[$wscall->id()] = $wscall->label();
+    $wsfield_config = [
+      'wscall' => $wsfield_config_entity->wscall,
+      'replacements' => $wsfield_config_entity->replacements,
+      'data' => $wsfield_config_entity->data,
+      'returnToken' => $wsfield_config_entity->returnToken,
+    ];
+
+    $wscall = $wsfield_config_entity->wscall;
+    $form_state_wscall = $form_state->getValue('wscall');
+    if (isset($form_state_wscall)) {
+      $wscall = $form_state_wscall;
     }
 
-    $form['wscall'] = [
-      '#type' => 'select',
-      '#title' => t('Web Service Call'),
-      '#options' => $options,
-      '#required' => TRUE,
-      '#default_value' => $wsfield_config_entity->wscall,
-      '#ajax' => [
-        'callback' => '::wsfieldreplacementForm',
-        'wrapper' => 'wscall-replacement-tokens-wrapper',
-      ],
-    ];
-
-    // Fetch the replacement tokens for this wscall.
-    $form['replacements'] = [
-      '#id' => 'wscall-replacement-tokens-wrapper',
-      '#type' => 'container',
-    ];
-    // Ajax callback to get the replacements tokens.
-    if (!empty($wsfield_config_entity->wscall)) {
-      foreach ($wscalls[$wsfield_config_entity->wscall]->getReplacements() as $replacement) {
-        $form['replacements'][$replacement] = [
-          '#type' => 'textfield',
-          '#title' => $replacement,
-          '#default_value' => isset($wsfield_config_entity->replacements[$replacement]) ? $wsfield_config_entity->replacements[$replacement] : '',
-        ];
-      }
-    }
-
-    $form['data'] = [
-      '#type' => 'textarea',
-      '#title' => t('Data'),
-    ];
-
-    $form['returnToken'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Token to select'),
-      '#default_value' => $wsfield_config_entity->returnToken,
-      '#description' => t('Seperate element names with a ":" to select nested elements.'),
-    );
+    $elements = wsdata_wscall_configuration_form($wsfield_config, $wscall);
+    $form = array_merge($form, $elements);
     return $form;
-  }
-
-  /**
-   * Ajax Callback.
-   * This is still not working ?
-   */
-  public function wsfieldreplacementForm(array $form, FormStateInterface $form_state) {
-    return $form['replacements'];
   }
 
   /**
@@ -148,6 +108,7 @@ class WSFieldConfigForm extends EntityForm {
 
     $wsfieldconfig_entity = $this->entity;
     $wsfieldconfig_entity->replacements = $replacements;
+    $wsfieldconfig_entity->data = $form_state->getValue('data');
     $status = $wsfieldconfig_entity->save();
 
     // Set the redirect to the next destination in the steps.
