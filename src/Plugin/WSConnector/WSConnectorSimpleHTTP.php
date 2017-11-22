@@ -173,6 +173,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    $token_service = \Drupal::token();
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
     }
@@ -183,7 +184,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     // Perform the token replace on the headers.
     if (!empty($options['headers'])) {
-      $token_service = \Drupal::token();
       for ($i = 0; $i < count($options['headers']); $i++) {
         if (!empty($options['headers'][$i]['key_' . $i])) {
           $options['headers'][$options['headers'][$i]['key_' . $i]] = $token_service->replace($options['headers'][$i]['value_' . $i], $tokens);
@@ -196,6 +196,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     if (!empty($data)) {
       $options['body'] = $data;
+    }
+    if (isset($options['body'])) {
+      $options['body'] = $token_service->replace($options['body'], $tokens);
     }
 
     $response = $this->http_client->request($method, $uri, $options);
