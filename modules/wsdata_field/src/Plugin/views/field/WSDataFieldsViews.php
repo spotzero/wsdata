@@ -54,7 +54,7 @@ class WSDataFieldsViews extends FieldPluginBase {
       $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
       // Create the call based on the wsfield configurations.
-      $return = $wscall->call(NULL, $replacements, NULL, array(), $wsfield_config->returnToken, array('node' => $entity));
+      $result = $wscall->call(NULL, $replacements, $wsfield_config->data, array(), $wsfield_config->returnToken, array('node' => $entity));
     }
     return $return;
   }
