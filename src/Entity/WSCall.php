@@ -133,7 +133,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       }
 
       // Encode the payload data.
-      $this->wsencoderInst->encode($data);
+      $this->wsencoderInst->encode($data, $replacements, $options['path']);
       // Call the connector.
       $cache_data = $conn->call($options, $method, $replacements, $data, $tokens);
 
