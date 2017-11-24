@@ -9,7 +9,6 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field_ui\FieldUI;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
  * Class WSFieldsConfigForm.
  *
@@ -90,7 +89,9 @@ class WSFieldConfigForm extends EntityForm {
       $wscall = $form_state_wscall;
     }
 
-    $elements = wsdata_wscall_configuration_form($wsfield_config, $wscall);
+    $wsdata  = \Drupal::service('wsdata');
+    $elements = $wsdata->wscallForm($this->configuration, $wscall);
+
     $form = array_merge($form, $elements);
     return $form;
   }

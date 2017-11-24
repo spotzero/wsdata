@@ -50,7 +50,8 @@ class WSCallTestForm extends EntityForm {
       ],
     ];
 
-    $elements = wsdata_wscall_configuration_form(array(), $this->entity->id());
+    $wsdata  = \Drupal::service('wsdata');
+    $elements = $wsdata->wscallForm(array(), $this->entity->id());
 
     $form['replacements'] = [
       '#type' => 'fieldset',

@@ -32,8 +32,8 @@ class WSDataBlock extends BlockBase {
     if (isset($form_state_wscall['wscall'])) {
       $wscall = $form_state_wscall['wscall'];
     }
-
-    $elements = wsdata_wscall_configuration_form($this->configuration, $wscall);
+    $wsdata  = \Drupal::service('wsdata');
+    $elements = $wsdata->wscallForm($this->configuration, $wscall);
     $form = array_merge($form, $elements);
     return $form;
   }
