@@ -144,7 +144,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
         $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags());
         \Drupal::cache('wsdata')->set($cid, $cache_data, $expires, $cache_tags);
       }
-      else {
+      elseif(!empty($conn->getError())) {
         \Drupal::logger('wsdata')->error(t('wsdata %wsdata_name failed with error %code %message',
           array('%wsdata_name' => $this->id, '%code' => $conn->getError()['code'], '%message' => $conn->getError()['message'])));
       }

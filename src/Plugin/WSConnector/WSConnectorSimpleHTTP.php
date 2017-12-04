@@ -199,6 +199,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     if (isset($options['body'])) {
       $options['body'] = $token_service->replace($options['body'], $tokens);
     }
+
     $response = $this->http_client->request($method, $uri, $options);
 
     // Set the cache expire time.
