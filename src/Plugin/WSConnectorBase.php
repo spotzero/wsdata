@@ -67,7 +67,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * Return the settings form provided by the connector.
    */
-  public function getOptionsForm() {
+  public function getOptionsForm($options = []) {
     return [];
   }
 
@@ -93,7 +93,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   /**
    * Whether returned data can be cached.
    */
-  public function supportsCaching() {
+  public function supportsCaching($method = NULL) {
     return FALSE;
   }
 

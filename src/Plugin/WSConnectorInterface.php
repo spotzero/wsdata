@@ -12,6 +12,6 @@ interface WSConnectorInterface extends ContainerFactoryPluginInterface {
   /**
    * Return the custom settings form for the wscall page.
    */
-  public function getOptionsForm();
+  public function getOptionsForm($options = []);
 
 }

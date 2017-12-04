@@ -7,6 +7,8 @@ use Drupal\wsdata\WSDataInvalidMethodException;
 use Drupal\wsdata\Plugin\WSConnectorBase;
 use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * HTTP Connector.
@@ -60,7 +62,26 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     return [
       'path' => NULL,
       'method' => [],
+      'headers' => [],
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function saveOptions($values) {
+    // Check how many key values and create the array.
+    foreach ($values as $key => $value) {
+      if (preg_match("/^key_([0-9]+)/", $key, $matches)) {
+        if (isset($matches[1]) && !empty($values['key_' . $matches[1]])) {
+          $values['headers'][$matches[1]] = array('key_' . $matches[1] => $values['key_' . $matches[1]],
+                                                  'value_' . $matches[1] => $values['value_' . $matches[1]]);
+          unset($values['key_' . $matches[1]]);
+          unset($values['value_' . $matches[1]]);
+        }
+      }
+    }
+    return parent::saveOptions($values);
   }
 
   /**
@@ -73,35 +94,121 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
   /**
    * {@inheritdoc}
    */
-  public function getOptionsForm() {
-    $methods = $this->getMethods();
+  public function getOptionsForm($options = []) {
 
-    return [
-      'path' => [
-        '#title' => t('Path'),
-        '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
-        '#type' => 'textfield',
-      ],
-      'method' => [
-        '#title' => t('HTTP Method'),
-        '#type' => 'select',
-        '#options' => array_combine($methods, $methods),
-      ],
+    $methods = $this->getMethods();
+    $form['path'] = [
+      '#title' => t('Path'),
+      '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+      '#type' => 'textfield',
+      '#maxlength' => 512,
     ];
+
+    $form['method'] = [
+      '#title' => t('HTTP Method'),
+      '#type' => 'select',
+      '#options' => array_combine($methods, $methods),
+    ];
+
+    $form['expires'] = [
+      '#type' => 'number',
+      '#title' => t('Expire'),
+      '#description' => t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
+    ];
+
+    $header_count = 1;
+
+    if (isset($options['form_state'])) {
+      if ($options['form_state']->getUserInput()['headers_count']) {
+        $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
+      }
+    }
+
+    $form['headers'] = [
+      '#title' => t('Headers'),
+      '#type' => 'fieldset',
+      '#attributes' => ['id' => 'wsconnector-headers'],
+    ];
+
+    $form['headers']['headers_count'] = [
+      '#type' => 'hidden',
+      '#value' => $header_count,
+    ];
+
+    for($i = 0; $i < $header_count; $i++) {
+      $form['headers'][$i]['key_' . $i] = [
+        '#type' => 'textfield',
+        '#title' => t('Key'),
+      ];
+
+      $form['headers'][$i]['value_' . $i] = [
+        '#type' => 'textfield',
+        '#title' => t('Value'),
+      ];
+    }
+
+    if (isset($options['form_state'])) {
+      $form['headers']['add_another'] = [
+        '#type'   => 'submit',
+        '#value'  => t('Add another'),
+        '#ajax'   => [
+          'callback' => [$this, 'wsconnectorHttpHeaderAjaxCallback'],
+          'wrapper'  => 'wsconnector-headers',
+        ],
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * Ajax callback function.
+   */
+  public function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
+    return $form['options']['wsserveroptions']['headers'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    $token_service = \Drupal::token();
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
     }
+
     $uri = $this->endpoint . '/' . $options['path'];
     $uri = $this->applyReplacements($uri, $replacements, $tokens);
     $options['http_errors'] = FALSE;
 
+    // Perform the token replace on the headers.
+    if (!empty($options['headers'])) {
+      for ($i = 0; $i < count($options['headers']); $i++) {
+        if (!empty($options['headers'][$i]['key_' . $i])) {
+          $options['headers'][$options['headers'][$i]['key_' . $i]] = $token_service->replace($options['headers'][$i]['value_' . $i], $tokens);
+        }
+        unset($options['headers'][$i]['key_' . $i]);
+        unset($options['headers'][$i]['value_' . $i]);
+        unset($options['headers'][$i]);
+      }
+    }
+
+    if (!empty($data)) {
+      $options['body'] = $data;
+    }
+    if (isset($options['body'])) {
+      $options['body'] = $token_service->replace($options['body'], $tokens);
+    }
+
     $response = $this->http_client->request($method, $uri, $options);
+
+    // Set the cache expire time.
+    if (isset($options['expires']) && !empty($options['expires'])) {
+      $this->expires = (integer)$options['expires'];
+    }
+    else {
+      $this->setCacheExpire($response);
+    }
 
     $status = $response->getStatusCode();
 
@@ -112,4 +219,29 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $this->setError($status, $response->getReasonPhrase());
     return FALSE;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsCaching($method = NULL) {
+    // If the request is a GET support caching.
+    if (in_array($method, ['get'])) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  public function setCacheExpire($response) {
+    // Check the
+    $cache_header = $response->getHeader('Cache-Control');
+    foreach ($cache_header as $control_header) {
+      if (preg_match("/^max-age=\d+/", $control_header)) {
+        $this->expires = (integer)str_replace('max-age=', '' ,$control_header);
+      }
+    }
+  }
 }
+
+

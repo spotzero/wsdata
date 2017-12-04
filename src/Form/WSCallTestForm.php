@@ -50,17 +50,18 @@ class WSCallTestForm extends EntityForm {
       ],
     ];
 
+    $wsdata  = \Drupal::service('wsdata');
+    $elements = $wsdata->wscallForm(array(), $this->entity->id());
+
     $form['replacements'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Tokens'),
     ];
 
-    foreach ($this->entity->getReplacements() as $replacement) {
-      $form['replacements'][$replacement] = [
-        '#type' => 'textfield',
-        '#title' => $replacement,
-      ];
-    }
+    $form['replacements']['wscall_form'] = $elements;
+
+    // Remove the wscall, we dont need it.
+    unset($form['replacements']['wscall_form']['wscall']);
 
     if ($element and $element['#id'] == 'call') {
       $form['responsewrapper'] = [
@@ -88,7 +89,9 @@ class WSCallTestForm extends EntityForm {
     foreach ($this->entity->getReplacements() as $replacement) {
       $replacements[$replacement] = $form_state->getValue($replacement);
     }
-    $form_state->setValue('wscall_response', $this->wsdata->call($this->entity->id(), NULL, $replacements));
+
+    $response = $this->wsdata->call($this->entity->id(), NULL, $replacements, $form_state->getValue('data'), array(), $form_state->getValue('returnToken'));
+    $form_state->setValue('wscall_response', (is_array($response) ? print_r($response, TRUE) : $response));
   }
 
   /**

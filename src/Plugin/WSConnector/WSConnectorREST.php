@@ -42,15 +42,15 @@ class WSConnectorREST extends WSConnectorSimpleHTTP {
   /**
    * {@inheritdoc}
    */
-  public function getOptionsForm() {
+  public function getOptionsForm($options = []) {
     return [
       'path' => [
-        '#title' => $this->t('Path'),
-        '#description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+        '#title' => t('Path'),
+        '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
         '#type' => 'textfield',
       ],
       'methods' => [
-        '#title' => $this->t('Supported Operations'),
+        '#title' => t('Supported Operations'),
         '#type' => 'checkboxes',
         '#options' => [
           'create' => t('RESTful create method (POST to <em>Endpoint/Path</em>)'),

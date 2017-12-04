@@ -3,6 +3,7 @@
 namespace Drupal\wsdata\Plugin\WSDecoder;
 
 use Drupal\wsdata\Plugin\WSDecoderBase;
+use Drupal\Component\Serialization\Json;
 
 /**
  * JSON Decoder.
@@ -28,7 +29,7 @@ class WSDecoderJSON extends WSDecoderBase {
     }
 
     $data = trim($data);
-    return json_decode($data, TRUE);
+    return Json::decode($data);
   }
 
   /**

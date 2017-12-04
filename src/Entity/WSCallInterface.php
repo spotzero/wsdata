@@ -27,7 +27,7 @@ interface WSCallInterface extends ConfigEntityInterface {
   /**
    * Make the web service call.
    */
-  public function call($type, $key = NULL, $replacement = [], $argument = [], $options = [], &$method = '');
+  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = []);
 
   /**
    * Get the available replacement tokens.

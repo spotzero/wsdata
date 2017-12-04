@@ -3,3 +3,6 @@ type: module
 description: Web service data sources as field storage backends
 core: 8.x
 package: WSData
+dependencies:
+  - wsdata
+  - token
