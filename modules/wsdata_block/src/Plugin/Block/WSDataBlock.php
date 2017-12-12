@@ -28,10 +28,17 @@ class WSDataBlock extends BlockBase {
    */
   public function blockForm($form, FormStateInterface $form_state) {
     $wscall = $this->configuration['wscall'];
+
+    // Occasionally this can return a subfomstate and not a form_state interface.
+    if ($form_state instanceof \Drupal\Core\Form\SubformState) {
+      $form_state = $form_state->getCompleteFormState();
+    }
+
     $form_state_wscall = $form_state->getValue('settings');
     if (isset($form_state_wscall['wscall'])) {
       $wscall = $form_state_wscall['wscall'];
     }
+
     $wsdata  = \Drupal::service('wsdata');
     $elements = $wsdata->wscallForm($this->configuration, $wscall);
     $form = array_merge($form, $elements);
