@@ -90,7 +90,7 @@ class WSFieldConfigForm extends EntityForm {
     }
 
     $wsdata  = \Drupal::service('wsdata');
-    $elements = $wsdata->wscallForm($this->configuration, $wscall);
+    $elements = $wsdata->wscallForm($wsfield_config, $wscall);
 
     $form = array_merge($form, $elements);
     return $form;
