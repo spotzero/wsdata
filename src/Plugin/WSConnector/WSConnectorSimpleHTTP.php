@@ -152,19 +152,24 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         '#type'   => 'submit',
         '#value'  => t('Add another'),
         '#ajax'   => [
-          'callback' => [$this, 'wsconnectorHttpHeaderAjaxCallback'],
+          'callback' => '\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAjaxCallback',
           'wrapper'  => 'wsconnector-headers',
         ],
+        '#submit' => ['\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAddItemCallback'],
+        '#limit_validation_errors' => [],
       ];
     }
 
     return $form;
   }
 
+  public function wsconnectorHttpHeaderAddItemCallback(array &$form, FormStateInterface $form_state) {
+    return $form['options']['wsserveroptions']['headers'];
+  }
   /**
    * Ajax callback function.
    */
-  public function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
+  public static function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
     return $form['options']['wsserveroptions']['headers'];
   }
 
