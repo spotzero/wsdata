@@ -137,6 +137,16 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       // Call the connector.
       $cache_data = $conn->call($options, $method, $replacements, $data, $tokens);
 
+      // If the debug mode is enabled let's create a payload to display to ksm.
+      if (\Drupal::state()->get('wsdata_debug_mode')) {
+        $debug['options'] = $options;
+        $debug['replacements'] = $replacements;
+        $debug['method'] = $method;
+        $debug['data'] = $data;
+        $debug['tokens'] = $tokens;
+        ksm($debug);
+      }
+
       // Set the cache for this data if there wasn't an error && if the connector support caching.
       if (empty($conn->getError()) && $conn->supportsCaching($method)) {
         $expires = time() + $conn->expires();
