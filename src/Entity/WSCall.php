@@ -165,7 +165,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * Doesn't save the WSCall though.
    */
   public function setOptions($values = []) {
-    if ($this->wsserverInst->wsconnectorInst) {
+    if (isset($this->wsserverInst->wsconnectorInst)) {
       $this->options[$this->wsserver] = $this->wsserverInst->wsconnectorInst->saveOptions($values);
     }
 
@@ -187,7 +187,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       $wsserverInst = entity_load('wsserver', $wsserver);
       return $wsserverInst->wsconnectorInst->getOptionsForm($options);
     }
-    if ($this->wsserverInst->wsconnectorInst) {
+    if (isset($this->wsserverInst->wsconnectorInst)) {
       return $this->wsserverInst->wsconnectorInst->getOptionsForm($options);
     }
   }

@@ -119,8 +119,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $header_count = 1;
 
     if (isset($options['form_state'])) {
-      if ($options['form_state']->getUserInput()['headers_count']) {
-        $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
+      $input = $options['form_state']->getUserInput();
+      if (isset($input['headers_count'])) {
+        $header_count = $input['headers_count'] + 1;
       }
     }
 
@@ -155,7 +156,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
           'callback' => '\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAjaxCallback',
           'wrapper'  => 'wsconnector-headers',
         ],
-        '#submit' => ['\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAddItemCallback'],
         '#limit_validation_errors' => [],
       ];
     }
@@ -163,9 +163,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     return $form;
   }
 
-  public function wsconnectorHttpHeaderAddItemCallback(array &$form, FormStateInterface $form_state) {
-    return $form['options']['wsserveroptions']['headers'];
-  }
   /**
    * Ajax callback function.
    */
