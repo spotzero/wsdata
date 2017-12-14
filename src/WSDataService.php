@@ -2,7 +2,7 @@
 
 namespace Drupal\wsdata;
 
-use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -14,7 +14,7 @@ class WSDataService {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManager $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
     $this->entity_type_manager = $entity_type_manager;
   }
 
