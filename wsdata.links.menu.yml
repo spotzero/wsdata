@@ -15,3 +15,11 @@ entity.wsserver.collection:
   description: 'List Web Service Servers'
   parent: system.admin_structure
   weight: 99
+
+# Web Service Data settings form.
+wsdata.admin_settings_form:
+  title: 'WSData settings'
+  route_name: wsdata.settings
+  description: 'Configure global settings for the wsdata module.'
+  parent: system.admin_config_services
+  weight: 99

@@ -61,6 +61,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
   public $wsserver;
   public $wsdecoder;
+  public $wsencoder;
 
   protected $wsserverInst;
   protected $wsdecoderInst;
