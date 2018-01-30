@@ -117,22 +117,6 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
       '#required' => FALSE,
     ];
 
-    // Provide a separate label element for the "Re-use existing field" case
-    // and place it outside the $form['add'] wrapper because those elements
-    // are displayed inline.
-    if ($existing_field_storage_options) {
-      $form['existing_storage_label'] = [
-        '#type' => 'textfield',
-        '#title' => $this->t('Label'),
-        '#size' => 15,
-        '#states' => [
-          '!visible' => [
-            ':input[name="existing_storage_name"]' => ['value' => ''],
-          ],
-        ],
-      ];
-    }
-
     // Place the 'translatable' property as an explicit value so that contrib
     // modules can form_alter() the value for newly created fields. By default
     // we create field storage as translatable so it will be possible to enable

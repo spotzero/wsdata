@@ -6,3 +6,4 @@ package: WSData
 dependencies:
   - wsdata
   - token
+  - field_ui

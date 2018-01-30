@@ -93,6 +93,14 @@ class WSFieldConfigForm extends EntityForm {
     $elements = $wsdata->wscallForm($wsfield_config, $wscall);
 
     $form = array_merge($form, $elements);
+
+    $form['replacements']['token_tree'] = array(
+      '#theme' => 'token_tree_link',
+      '#token_types' => array('node'),
+      '#show_restricted' => TRUE,
+      '#weight' => 90,
+    );
+
     return $form;
   }
 

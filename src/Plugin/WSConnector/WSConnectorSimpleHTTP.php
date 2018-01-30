@@ -119,8 +119,9 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $header_count = 1;
 
     if (isset($options['form_state'])) {
-      if ($options['form_state']->getUserInput()['headers_count']) {
-        $header_count = $options['form_state']->getUserInput()['headers_count'] + 1;
+      $input = $options['form_state']->getUserInput();
+      if (isset($input['headers_count'])) {
+        $header_count = $input['headers_count'] + 1;
       }
     }
 
@@ -152,9 +153,10 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
         '#type'   => 'submit',
         '#value'  => t('Add another'),
         '#ajax'   => [
-          'callback' => [$this, 'wsconnectorHttpHeaderAjaxCallback'],
+          'callback' => '\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAjaxCallback',
           'wrapper'  => 'wsconnector-headers',
         ],
+        '#limit_validation_errors' => [],
       ];
     }
 
@@ -164,7 +166,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
   /**
    * Ajax callback function.
    */
-  public function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
+  public static function wsconnectorHttpHeaderAjaxCallback(array &$form, FormStateInterface $form_state) {
     return $form['options']['wsserveroptions']['headers'];
   }
 
@@ -201,6 +203,16 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
 
     $response = $this->http_client->request($method, $uri, $options);
+
+    // If the debug mode is enabled let's create a payload to display to ksm.
+    if (\Drupal::state()->get('wsdata_debug_mode')) {
+      $debug['method'] = $method;
+      $debug['uri'] = $uri;
+      $debug['options'] = $options;
+      $debug['response']['code'] = $response->getStatusCode();
+      $debug['response']['body'] = (string)$response->getBody();
+      ksm($debug);
+    }
 
     // Set the cache expire time.
     if (isset($options['expires']) && !empty($options['expires'])) {
