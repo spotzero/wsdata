@@ -5,7 +5,7 @@ dependencies: {  }
 id: fetch_all_post
 label: 'Fetch All Post'
 wsserver: example_server
-wsdecoder: WSDecoderJSON
+wsdecoder: ExampleBlockDecoder
 wsencoder: WSEncoderString
 options:
   example_server:
