@@ -4,14 +4,14 @@
   - [ ] REST Connector
 - [ ] Port the Drush support and commands from D7 version.
 - [ ] Write DrupalConsole integration for 3 plugin types
-- [ ] Add caching support
+- [x] Add caching support
 - [ ] Implement sub-modules with specific suport:
-  - [ ] wsdata_block
-  - [ ] wsdata_extras
-  - [ ] wsdata_field
-  - [ ] wsdata_rules
-- [ ] Better header Control
-  - [ ] Implement the header options for the wscall and wsconnectors.
+  - [x] wsdata_block
+  - [ ] wsdata_extras 
+  - [x] wsdata_field
+  - [ ] wsdata_rules (This probably wont be implemented for while, depending on the rules module in D8 being ported. 
+- [x] Better header Control
+  - [x] Implement the header options for the wscall and wsconnectors.
 
 ## WSData Fields Implementation Plan
 
@@ -45,15 +45,16 @@ Search API will need to be tested with fields where "custom_storage" is set to T
 
 ### Components that need implementing
 
-- [ ] Add a UI element to the field storage configuration page to:
-  - [ ] Set custom_storage to TRUE on that field storage entity
-  - [ ] Allow the user to choose a WSCall
-  - [ ] Allow the user to set a which value they need returned from the WSCall result
-  - [ ] Select replacement tokens to be sent to the WSCall
-- [ ] Figure out where the above settings can be storage (either in the field storage entity [preferred] or else where).
-- [ ] Implement hook_entity_load that:
-  - [ ] Checks if the entity being load have wsdata fields
-  - [ ] Loads the WSData service.
-  - [ ] Call the correct WSCalls with configured replacements and such via the WSData service
-  - [ ] Injects the resulting data into the entities.
+- [x] Add a UI element to the field storage configuration page to:
+  - [x] Set custom_storage to TRUE on that field storage entity
+  - [x] Allow the user to choose a WSCall
+  - [x] Allow the user to set a which value they need returned from the WSCall result
+  - [x] Select replacement tokens to be sent to the WSCall
+- [x] Figure out where the above settings can be storage (either in the field storage entity [preferred] or else where).
+- [x] Implement hook_entity_load that:
+  - [x] Checks if the entity being load have wsdata fields
+  - [x] Loads the WSData service.
+  - [x] Call the correct WSCalls with configured replacements and such via the WSData service
+  - [x] Injects the resulting data into the entities.
+  - [ ] Store the result in a particular way that the field display can render the data with the appropriate data.
 
