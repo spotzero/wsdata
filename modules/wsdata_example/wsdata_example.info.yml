@@ -1,0 +1,9 @@
+name: Web Service Data Example
+type: module
+description: Web Service Data example module
+core: 8.x
+package: WSData
+dependencies:
+  - wsdata
+  - wsdata_field
+  - wsdata_block
