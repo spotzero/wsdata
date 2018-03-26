@@ -21,16 +21,6 @@ class WSFieldConfigForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
-    // Instantiates this form class.
-    return new static(
-      $container->get('plugin.manager.wsfieldconfig')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getFormId() {
     return 'wsfield_config_add_form';
   }
