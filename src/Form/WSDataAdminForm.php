@@ -31,7 +31,7 @@ class WSDataAdminForm extends ConfigFormBase {
     $config = $this->config('wsdata_admin.settings');
 
     // Only allow this if the devel module is enabled.
-    if (\Drupal::moduleHandler()->moduleExists('devel')) {
+    if (\Drupal::moduleHandler()->moduleExists('kint')) {
       $disable = FALSE;
     }
     else {
