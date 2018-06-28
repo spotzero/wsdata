@@ -26,7 +26,7 @@ class WSDecoderXML extends WSDecoderBase {
     $data = trim($data);
     libxml_use_internal_errors(TRUE);
     try {
-      $data = new SimpleXMLElement($data);
+      $data = new \SimpleXMLElement($data);
       if ($data->count() == 0) {
         return [$data->getName() => $data->__toString()];
       }
