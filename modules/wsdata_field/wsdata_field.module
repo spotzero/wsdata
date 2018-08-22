@@ -20,6 +20,12 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
           'node_type' => $entity->get('bundle'),
         ];
 
+        // Check if the field is being set on a profile. If so, be sure to set the profile_type route parameter.
+
+        if (\Drupal::service('module_handler')->moduleExists('profile') and 'profile' == $entity->get('entity_type')) {
+          $route_parameters['profile_type'] = $entity->get('bundle');
+        }
+
         // Create the link to edit the wsfield configurations.
         $operations['edit_wsfield'] = [
           'title' => t('Web service configurations'),
