@@ -2,6 +2,7 @@
 
 use Drupal\Core\Url;
 use Drupal\field\Entity;
+use Drupal\field_ui\FieldUI;
 
 /**
  * Implements hook_entity_operation().
@@ -14,17 +15,10 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
       $wsfield_config = entity_load('wsfield_config', $entity->get('field_name'));
       if ($wsfield_config != NULL) {
         $operations = array();
-        // Set the route paramters.
+
         $route_parameters = [
-          'field_config' => $entity->get('id'),
-          'node_type' => $entity->get('bundle'),
-        ];
-
-        // Check if the field is being set on a profile. If so, be sure to set the profile_type route parameter.
-
-        if (\Drupal::service('module_handler')->moduleExists('profile') and 'profile' == $entity->get('entity_type')) {
-          $route_parameters['profile_type'] = $entity->get('bundle');
-        }
+          'field_config' => $entity->id(),
+        ] + FieldUI::getOverviewRouteInfo($entity->get('entity_type'), $entity->get('bundle'))->getRouteParameters();
 
         // Create the link to edit the wsfield configurations.
         $operations['edit_wsfield'] = [
@@ -33,8 +27,9 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
           'url' =>  Url::fromRoute("entity.field_config.{$entity->getTargetEntityTypeId()}_wsfield_edit_form", $route_parameters),
           'attributes' => ['title' => t('Edit web service configurations'), 'class' => array('dropbutton-action', 'web-service-config')],
         ];
+
+        return $operations;
       }
-      return $operations;
     }
   }
 }
