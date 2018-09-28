@@ -16,7 +16,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *       "edit" = "Drupal\wsdata_field\Form\WSFieldConfigForm",
  *     },
  *   },
- *   config_prefix = "wsfield_cofig",
+ *   config_prefix = "wsfield_config",
  *   admin_permission = "administer site configuration",
  *   entity_keys = {
  *     "id" = "id",
