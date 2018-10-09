@@ -1,4 +1,4 @@
-wsdata_field.wsfield_cofig.*:
+wsdata_field.wsfield_config.*:
   type: config_entity
   label: 'Web Service Field config'
   mapping:
