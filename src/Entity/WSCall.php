@@ -133,8 +133,15 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
         $method = reset($methods);
       }
 
+      $context = [
+        'replacements' => $replacements,
+        'data' => $data,
+        'options' => $options,
+        'key' => $key,
+        'tokens' => $tokens,
+      ];
       // Encode the payload data.
-      $this->wsencoderInst->encode($data, $replacements, $options['path']);
+      $this->wsencoderInst->encode($data, $replacements, $options['path'], $context);
       // Call the connector.
       $cache_data = $conn->call($options, $method, $replacements, $data, $tokens);
 
@@ -152,7 +159,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     }
 
     if ($cache_data) {
-      $this->addData($cache_data);
+      $this->addData($cache_data, $context);
       return $this->getData($key);
     } else {
       return FALSE;
@@ -209,12 +216,12 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function addData($data) {
+  public function addData($data, $context = []) {
     if (!isset($this->wsdecoderInst)) {
       $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
       $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
     }
-    return $this->wsdecoderInst->addData($data);
+    return $this->wsdecoderInst->addData($data, NULL, $context);
   }
 
   /**
