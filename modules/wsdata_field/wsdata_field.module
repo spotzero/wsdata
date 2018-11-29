@@ -84,7 +84,7 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
  * Implements hook_form_alter().
  */
 function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  if (preg_match('/^node_(.*)_edit_form/', $form_id) || preg_match('/^node_(.*)_form/', $form_id)) {
+  if ('node_delete_multiple_confirm_form' !== $form_id && (preg_match('/^node_(.*)_edit_form/', $form_id) || preg_match('/^node_(.*)_form/', $form_id))) {
     $entity = $form_state->getFormObject()->getEntity();
     if ($entity->getEntityTypeId() == 'node') {
       $fields = $entity->getFieldDefinitions();
