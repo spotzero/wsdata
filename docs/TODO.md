@@ -1,11 +1,13 @@
 # TODO
 
+Missing features for a full release:
+
 - [ ] Port the Drush support and commands from D7 version.
 - [ ] Write DrupalConsole integration for 3 plugin types
 - [x] Add caching support
-- [ ] Implement sub-modules with specific suport:
+- [x] Implement sub-modules with specific suport:
   - [x] wsdata_block
-  - [ ] wsdata_extras 
+  - [x] wsdata_extras 
   - [x] wsdata_field
 - [x] Better header Control
   - [x] Implement the header options for the wscall and wsconnectors.
