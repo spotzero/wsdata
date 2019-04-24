@@ -7,7 +7,6 @@
   - [x] wsdata_block
   - [ ] wsdata_extras 
   - [x] wsdata_field
-  - [ ] wsdata_rules (This probably wont be implemented for while, depending on the rules module in D8 being ported. 
 - [x] Better header Control
   - [x] Implement the header options for the wscall and wsconnectors.
 

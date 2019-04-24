@@ -1,5 +1,0 @@
-name: Web Service Data Rules actions
-type: module
-description: Make web service calls from rules
-core: 8.x
-package: WSData
