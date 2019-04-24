@@ -24,11 +24,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function __construct(
-         array $configuration,
-         $plugin_id,
-         $plugin_definition,
-         Client $http_client,
-         Token $token
+        array $configuration,
+        $plugin_id,
+        $plugin_definition,
+        Client $http_client,
+        Token $token
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $token);
     $this->http_client = $http_client;
@@ -98,22 +98,22 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $methods = $this->getMethods();
     $form['path'] = [
-      '#title' => t('Path'),
-      '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+      '#title' => $this->t('Path'),
+      '#description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
       '#type' => 'textfield',
       '#maxlength' => 512,
     ];
 
     $form['method'] = [
-      '#title' => t('HTTP Method'),
+      '#title' => $this->t('HTTP Method'),
       '#type' => 'select',
       '#options' => array_combine($methods, $methods),
     ];
 
     $form['expires'] = [
       '#type' => 'number',
-      '#title' => t('Expire'),
-      '#description' => t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
+      '#title' => $this->t('Expire'),
+      '#description' => $this->t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
     ];
 
     $header_count = 1;
@@ -126,7 +126,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
 
     $form['headers'] = [
-      '#title' => t('Headers'),
+      '#title' => $this->t('Headers'),
       '#type' => 'fieldset',
       '#attributes' => ['id' => 'wsconnector-headers'],
     ];
@@ -139,19 +139,19 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     for($i = 0; $i < $header_count; $i++) {
       $form['headers'][$i]['key_' . $i] = [
         '#type' => 'textfield',
-        '#title' => t('Key'),
+        '#title' => $this->t('Key'),
       ];
 
       $form['headers'][$i]['value_' . $i] = [
         '#type' => 'textfield',
-        '#title' => t('Value'),
+        '#title' => $this->t('Value'),
       ];
     }
 
     if (isset($options['form_state'])) {
       $form['headers']['add_another'] = [
         '#type'   => 'submit',
-        '#value'  => t('Add another'),
+        '#value'  => $this->t('Add another'),
         '#ajax'   => [
           'callback' => '\Drupal\wsdata\Plugin\WSConnector\WSConnectorSimpleHTTP::wsconnectorHttpHeaderAjaxCallback',
           'wrapper'  => 'wsconnector-headers',
@@ -255,5 +255,3 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
   }
 }
-
-

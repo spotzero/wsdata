@@ -4,12 +4,15 @@ namespace Drupal\wsdata\Plugin;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Utility\Token;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for Wsconnector plugin plugins.
  */
 abstract class WSConnectorBase extends PluginBase implements WSConnectorInterface {
+  use StringTranslationTrait;
+
   protected $expires;
   protected $cacheDefaultTime;
   protected $cacheDefaultOverride;

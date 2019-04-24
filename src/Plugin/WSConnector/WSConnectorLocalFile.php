@@ -38,11 +38,11 @@ class WSConnectorLocalFile extends WSConnectorBase {
   public function getOptionsForm($options = []) {
     return [
       'filename' => [
-        '#title' => t('Filename'),
+        '#title' => $this->t('Filename'),
         '#type' => 'textfield',
       ],
       'readonly' => [
-        '#title' => t('Prevent writing to this file.'),
+        '#title' => $this->t('Prevent writing to this file.'),
         '#type' => 'checkbox',
       ],
     ];
@@ -67,7 +67,7 @@ class WSConnectorLocalFile extends WSConnectorBase {
         $flags = FILE_APPEND;
       case 'write':
         if (!is_writable($filename)) {
-          $this->setError(1, t('%filename is not writable.', ['%filename' => $filename]));
+          $this->setError(1, $this->t('%filename is not writable.', ['%filename' => $filename]));
           return FALSE;
         }
         return file_put_contents($filename, $data, $flags);
@@ -75,11 +75,11 @@ class WSConnectorLocalFile extends WSConnectorBase {
       case 'read':
       default:
         if (!file_exists($filename)) {
-          $this->setError(1, t('%filename does not exist.', ['%filename' => $filename]));
+          $this->setError(1, $this->t('%filename does not exist.', ['%filename' => $filename]));
           return FALSE;
         }
         if (!is_readable($filename)) {
-          $this->setError(1, t('%filename is not readable.', ['%filename' => $filename]));
+          $this->setError(1, $this->t('%filename is not readable.', ['%filename' => $filename]));
           return FALSE;
         }
         return file_get_contents($filename);

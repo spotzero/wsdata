@@ -45,19 +45,19 @@ class WSConnectorREST extends WSConnectorSimpleHTTP {
   public function getOptionsForm($options = []) {
     return [
       'path' => [
-        '#title' => t('Path'),
-        '#description' => t('The final endpoint will be <em>Server Endpoint/Path</em>'),
+        '#title' => $this->t('Path'),
+        '#description' => $this->t('The final endpoint will be <em>Server Endpoint/Path</em>'),
         '#type' => 'textfield',
       ],
       'methods' => [
-        '#title' => t('Supported Operations'),
+        '#title' => $this->t('Supported Operations'),
         '#type' => 'checkboxes',
         '#options' => [
-          'create' => t('RESTful create method (POST to <em>Endpoint/Path</em>)'),
-          'read' => t('RESTful read method (GET to <em>Endpoint/Path/ID</em>)'),
-          'update' => t('RESTful update method (PUT to <em>Endpoint/Path/ID</em>)'),
-          'delete' => t('RESTful delete method (DELETE to <em>Endpoint/Path/ID</em>)'),
-          'index' => t('RESTful index method (GET to <em>Endpoint/Path</em>)'),
+          'create' => $this->t('RESTful create method (POST to <em>Endpoint/Path</em>)'),
+          'read' => $this->t('RESTful read method (GET to <em>Endpoint/Path/ID</em>)'),
+          'update' => $this->t('RESTful update method (PUT to <em>Endpoint/Path/ID</em>)'),
+          'delete' => $this->t('RESTful delete method (DELETE to <em>Endpoint/Path/ID</em>)'),
+          'index' => $this->t('RESTful index method (GET to <em>Endpoint/Path</em>)'),
         ],
       ],
     ];
