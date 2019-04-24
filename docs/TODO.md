@@ -1,7 +1,5 @@
 # TODO
 
-- [ ] Implement wsconnectors:
-  - [ ] REST Connector
 - [ ] Port the Drush support and commands from D7 version.
 - [ ] Write DrupalConsole integration for 3 plugin types
 - [x] Add caching support
