@@ -91,14 +91,16 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function setEndpoint($endpoint) {
-    $this->wsserverInst->setEndpoint($endpoint);
+    if ($this->wsserverInst) {
+      $this->wsserverInst->setEndpoint($endpoint);
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEndpoint() {
-    return $this->wsserverInst->getEndpoint();
+    return $this->wsserverInst ? $this->wsserverInst->getEndpoint() : FALSE;
   }
 
   /**
@@ -110,6 +112,9 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [])  {
+    if (!$this->wsserverInst) {
+      return FALSE;
+    }
     // Build out the Cache ID based on the parameters passed.
     $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key));
     $cid = md5(serialize($cid_array));
@@ -183,7 +188,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function getReplacements() {
-    return $this->wsserverInst->wsconnectorInst->getReplacements($this->getOptions());
+    return $this->wsserverInst ? $this->wsserverInst->wsconnectorInst->getReplacements($this->getOptions()) : FALSE;
   }
 
   /**
@@ -238,6 +243,6 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function getConnector() {
-    return $this->wsserverInst->getConnector();
+    return $this->wsserverInst ? $this->wsserverInst->getConnector() : FALSE;
   }
 }
