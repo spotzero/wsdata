@@ -103,15 +103,6 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
 
   /**
    * {@inheritdoc}
-   *
-   * Return supported languageplugins.
-   */
-  public function getEnabledLanguagePlugin() {
-    return ['default'];
-  }
-
-  /**
-   * {@inheritdoc}
    */
   public function setEndpoint($endpoint) {
     $this->endpoint = $endpoint;

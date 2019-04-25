@@ -106,17 +106,13 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLanguagePlugin() {}
-
-  /**
-   * {@inheritdoc}
-   */
   public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [])  {
     if (!$this->wsserverInst) {
       return FALSE;
     }
     // Build out the Cache ID based on the parameters passed.
-    $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key));
+    $conn = $this->getConnector();
+    $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key, 'conn' => $conn->getCache()));
     $cid = md5(serialize($cid_array));
     if ($cache = \Drupal::cache('wsdata')->get($cid)) {
       $cache_data = $cache->data;
@@ -124,7 +120,6 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       return $this->getData($key);
     }
     else {
-      $conn = $this->getConnector();
       $options = array_merge($options, $this->getOptions());
 
       if ($method and !in_array($method, $conn->getMethods())) {

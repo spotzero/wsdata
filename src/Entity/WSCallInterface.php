@@ -20,11 +20,6 @@ interface WSCallInterface extends ConfigEntityInterface {
   public function getEndpoint();
 
   /**
-   * Return the configured language handling plugin.
-   */
-  public function getLanguagePlugin();
-
-  /**
    * Make the web service call.
    */
   public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = []);

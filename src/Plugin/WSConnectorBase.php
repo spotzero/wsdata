@@ -75,6 +75,13 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   }
 
   /**
+   * Return cache cid for cases cache rules change.
+   */
+  public function getCache() {
+    return NULL;
+  }
+
+  /**
    * Make the connector call.
    */
   abstract public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []);

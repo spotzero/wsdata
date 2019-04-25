@@ -94,4 +94,11 @@ class WSConnectorSimpleHTTPWithLangReplacement extends WSConnectorSimpleHTTP {
     $replacements['LANGUAGE'] = $options['lang-' . $langcode] ?? $langcode;
     return parent::call($options, $method, $replacements, $data, $tokens);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCache() {
+    return $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+  }
 }

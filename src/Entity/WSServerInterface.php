@@ -10,11 +10,6 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface WSServerInterface extends ConfigEntityInterface {
 
   /**
-   * Getter for Language Plugins.
-   */
-  public function getEnabledLanguagePlugin();
-
-  /**
    * Set the endpoint.
    */
   public function setEndpoint($endpoint);
