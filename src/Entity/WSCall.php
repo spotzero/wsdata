@@ -112,7 +112,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     }
     // Build out the Cache ID based on the parameters passed.
     $conn = $this->getConnector();
-    $cid_array = array_merge($options, $this->getOptions(), $replacements, $tokens, array('data' => $data, 'key' => $key, 'conn' => $conn->getCache()));
+    $cid_array = array_merge($this->getOptions(), $options, $replacements, $tokens, array('data' => $data, 'key' => $key, 'conn' => $conn->getCache()));
     $cid = md5(serialize($cid_array));
     if ($cache = \Drupal::cache('wsdata')->get($cid)) {
       $cache_data = $cache->data;
@@ -120,7 +120,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       return $this->getData($key);
     }
     else {
-      $options = array_merge($options, $this->getOptions());
+      $options = array_merge($this->getOptions(), $options);
 
       if ($method and !in_array($method, $conn->getMethods())) {
         throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, $this->wsserverInst->wsconnector));
