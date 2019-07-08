@@ -2,8 +2,8 @@
 
 Missing features for a full release:
 
-- [ ] Port the Drush support and commands from D7 version.
-- [ ] Write DrupalConsole integration for 3 plugin types
+- [ ] ~~Port the Drush support and commands from D7 version.~~ Not needed in Drupal 8
+- [ ] ~~Write DrupalConsole integration for 3 plugin types~~
 - [x] Add caching support
 - [x] Implement sub-modules with specific suport:
   - [x] wsdata_block
