@@ -111,15 +111,15 @@ class WSCallForm extends EntityForm {
       $wscall_entity->setMethod($values['add_method'], $values['new_method_name'], $values['new_method_path']);
     }
     // Setting the form state in the options so that we can see values in the get options form.
-    $options['form_state'] = $form_state;
+    $form_options = $options = $wscall_entity->getOptions();
+    $form_options['form_state'] = $form_state;
 
     $form['options'] = [
       '#id' => 'wsserver-wrapper',
       '#type' => 'container',
-      'wsserveroptions' => $wscall_entity->getOptionsForm($form_state->getValue('wsserver'), $options),
+      'wsserveroptions' => $wscall_entity->getOptionsForm($form_state->getValue('wsserver'), $form_options),
     ];
 
-    $options = $wscall_entity->getOptions();
     foreach ($options as $name => $option) {
       if (isset($form['options']['wsserveroptions'][$name])) {
         if (is_array($option)) {

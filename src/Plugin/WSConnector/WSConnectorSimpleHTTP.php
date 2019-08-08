@@ -71,16 +71,19 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    */
   public function saveOptions($values) {
     // Check how many key values and create the array.
+    $header = 0;
     foreach ($values as $key => $value) {
       if (preg_match("/^key_([0-9]+)/", $key, $matches)) {
         if (isset($matches[1]) && !empty($values['key_' . $matches[1]])) {
-          $values['headers'][$matches[1]] = array('key_' . $matches[1] => $values['key_' . $matches[1]],
-                                                  'value_' . $matches[1] => $values['value_' . $matches[1]]);
+          $values['headers'][$header] = array('key_' . $header => $values['key_' . $matches[1]],
+                                                  'value_' . $header => $values['value_' . $matches[1]]);
           unset($values['key_' . $matches[1]]);
           unset($values['value_' . $matches[1]]);
+          $header++;
         }
       }
     }
+
     return parent::saveOptions($values);
   }
 
@@ -95,7 +98,6 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function getOptionsForm($options = []) {
-
     $methods = $this->getMethods();
     $form['path'] = [
       '#title' => $this->t('Path'),
@@ -116,7 +118,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       '#description' => $this->t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
     ];
 
-    $header_count = 1;
+    $header_count = sizeof($options['headers']);
 
     if (isset($options['form_state'])) {
       $input = $options['form_state']->getUserInput();
@@ -137,6 +139,10 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     ];
 
     for($i = 0; $i < $header_count; $i++) {
+      $form['headers'][$i] = [
+        '#title' => 'header',
+        '#type' => 'fieldset',
+      ];
       $form['headers'][$i]['key_' . $i] = [
         '#type' => 'textfield',
         '#title' => $this->t('Key'),
