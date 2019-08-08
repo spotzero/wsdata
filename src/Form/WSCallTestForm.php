@@ -90,7 +90,7 @@ class WSCallTestForm extends EntityForm {
       $replacements[$replacement] = $form_state->getValue($replacement);
     }
 
-    $response = $this->wsdata->call($this->entity->id(), NULL, $replacements, $form_state->getValue('data'), array(), $form_state->getValue('returnToken'));
+    $response = $this->wsdata->call($this->entity->id(), NULL, $replacements, $form_state->getValue('data'), [], $form_state->getValue('returnToken'));
     $form_state->setValue('wscall_response', (is_array($response) ? print_r($response, TRUE) : $response));
   }
 

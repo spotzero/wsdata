@@ -41,7 +41,7 @@ class WSDataAdminForm extends ConfigFormBase {
     $form['debug_mode'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Debug Mode'),
-      '#description' => $this->t('Devel module must be installed and enabled for this functionality to work.'),
+      '#description' => $this->t('Devel and Kink modules must be installed and enabled for this functionality to work.'),
       '#disabled' => $disable,
       '#default_value' => \Drupal::state()->get('wsdata_debug_mode'),
     ];
