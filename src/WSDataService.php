@@ -21,12 +21,12 @@ class WSDataService {
   /**
    * Call method to make the WSCall.
    */
-  public function call($wscall, $method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = []) {
+  public function call($wscall, $method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [], $cache_tag = []) {
     if (!is_object($wscall)) {
       $wscall = $this->entity_type_manager->getStorage('wscall')->load($wscall);
     }
 
-    $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens);
+    $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens, $cache_tag);
     return $data;
   }
 

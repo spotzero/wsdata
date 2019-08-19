@@ -106,7 +106,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [])  {
+  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [], $cache_tag = [])  {
     if (!$this->wsserverInst) {
       return FALSE;
     }
@@ -149,7 +149,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       if (empty($conn->getError()) && $conn->supportsCaching($method)) {
         $expires = time() + $conn->expires();
         // Fetch the cache tags for this call and the server instance call.
-        $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags());
+        $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags(), $cache_tag);
         \Drupal::cache('wsdata')->set($cid, $cache_data, $expires, $cache_tags);
       }
       elseif(!empty($conn->getError())) {
