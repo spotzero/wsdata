@@ -78,6 +78,9 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
     $contenttype = FALSE;
+    if (!isset($options['headers'])) {
+      $options['headers'] = [];
+    }
     foreach ($options['headers'] as $key => $header) {
       if (strtolower($header['key_' . $key]) == strtolower('Content-Type')) {
         $contenttype = TRUE;

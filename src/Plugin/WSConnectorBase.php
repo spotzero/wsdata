@@ -173,7 +173,9 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
     $options = [];
 
     foreach (array_keys($this->getOptionsForm()) as $option) {
-      $options[$option] = $values[$option];
+      if (isset($values[$option])) {
+        $options[$option] = $values[$option];
+      }
     }
     return $options;
   }

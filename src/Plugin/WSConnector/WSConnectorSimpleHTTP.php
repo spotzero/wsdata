@@ -118,6 +118,10 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       '#description' => $this->t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
     ];
 
+    if (!isset($options['headers'])) {
+      $options['headers'] = [];
+    }
+
     $header_count = sizeof($options['headers']);
 
     if (isset($options['form_state'])) {
