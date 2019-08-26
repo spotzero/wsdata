@@ -136,7 +136,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       $context = [
         'replacements' => $replacements,
         'data' => $data,
-        'options' => $options,
+        'options' => &$options,
         'key' => $key,
         'tokens' => $tokens,
       ];
