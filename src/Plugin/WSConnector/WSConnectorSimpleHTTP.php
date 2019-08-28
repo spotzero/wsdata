@@ -60,7 +60,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    */
   public function getOptions() {
     return [
-      'path' => NULL,
+      'path' => '',
       'method' => [],
       'headers' => [],
     ];
@@ -75,8 +75,10 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     foreach ($values as $key => $value) {
       if (preg_match("/^key_([0-9]+)/", $key, $matches)) {
         if (isset($matches[1]) && !empty($values['key_' . $matches[1]])) {
-          $values['headers'][$header] = array('key_' . $header => $values['key_' . $matches[1]],
-                                                  'value_' . $header => $values['value_' . $matches[1]]);
+          $values['headers'][$header] = [
+            'key_' . $header => $values['key_' . $matches[1]],
+            'value_' . $header => $values['value_' . $matches[1]],
+          ];
           unset($values['key_' . $matches[1]]);
           unset($values['value_' . $matches[1]]);
           $header++;

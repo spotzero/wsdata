@@ -32,7 +32,7 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
    */
   public function getOptions() {
     return [
-      'path' => NULL,
+      'path' => '',
       'method' => [],
       'headers' => [],
       'query' => '',
