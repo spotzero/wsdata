@@ -9,6 +9,8 @@ use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 
 /**
  * HTTP Connector.
@@ -20,6 +22,36 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
 
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    Client $http_client,
+    Token $token,
+    LanguageManagerInterface $language_manager
+) {
+parent::__construct($configuration, $plugin_id, $plugin_definition, $http_client, $token, $language_manager);
+$this->http_client = $http_client;
+$this->token = $token;
+$this->language_manager = $language_manager;
+}
+
+/**
+* {@inheritdoc}
+*/
+public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+return new static(
+  $configuration,
+  $plugin_id,
+  $plugin_definition,
+  $container->get('http_client'),
+  $container->get('token'),
+  $container->get('language_manager')
+);
+}
   /**
    * {@inheritdoc}
    */
@@ -45,9 +77,11 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
    * {@inheritdoc}
    */
   public function getReplacements(array $options) {
-    return array_unique($this->findTokens($this->endpoint . '/' . $options['path'])
+    $replacements = array_unique($this->findTokens($this->endpoint . '/' . $options['path'])
       + $this->findTokens($options['query'])
       + $this->findTokens(json_encode($options['variables'])));
+    unset($replacements[array_search('LANGUAGE', $replacements)]);
+    return $replacements;
   }
 
   /**
@@ -77,6 +111,9 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    $langcode = $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+    $replacements['LANGUAGE'] = strtoupper($langcode);
+
     $contenttype = FALSE;
     if (!isset($options['headers'])) {
       $options['headers'] = [];
@@ -95,7 +132,7 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
     }
 
     $graphql = [
-      'query' => $options['query'],
+      'query' => $this->applyReplacements($options['query'], $replacements, $tokens),
       'operationName' => !empty($options['operationName']) ? $options['operationName'] : NULL,
       'variables' => json_decode($options['variables']),
     ];
@@ -108,4 +145,12 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
 
     return parent::call($options, $method, $replacements, $data, $tokens);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCache() {
+    return $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+  }
+
 }

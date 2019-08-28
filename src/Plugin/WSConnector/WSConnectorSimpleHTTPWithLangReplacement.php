@@ -56,6 +56,15 @@ class WSConnectorSimpleHTTPWithLangReplacement extends WSConnectorSimpleHTTP {
   /**
    * {@inheritdoc}
    */
+  public function getReplacements(array $options) {
+    $replacements = parent::getReplacements($options);
+    unset($replacements[array_search('LANGUAGE', $replacements)]);
+    return $replacements;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOptionsForm($options = []) {
     $form = parent::getOptionsForm($options);
 
