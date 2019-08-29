@@ -111,7 +111,7 @@ return new static(
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
-    $langcode = $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+    $langcode = $options['langcode'] ?? $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
     $replacements['LANGUAGE'] = strtoupper($langcode);
 
     $contenttype = FALSE;

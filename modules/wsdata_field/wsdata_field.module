@@ -73,7 +73,21 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
 
               $wsdata  = \Drupal::service('wsdata');
 
-              $result = $wsdata->call($wsfield_config->wscall, NULL, $replacements, $wsfield_config->data, array(), $wsfield_config->returnToken, array($entity_type_id => $entity), $tags);
+              $result = $wsdata->call(
+                $wsfield_config->wscall,
+                NULL,
+                $replacements,
+                $wsfield_config->data,
+                [
+                  'langcode' => $entity->language()->getId(),
+                ],
+                $wsfield_config->returnToken,
+                [
+                  $entity_type_id => $entity,
+                ],
+                $tags
+              );
+
               // Set the field with the wsdata results.
               $entity->set($field_storage->get('field_name'), $result);
             }
