@@ -4,18 +4,52 @@ namespace Drupal\wsdata;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Service for processing WSData requests.
  */
 class WSDataService {
+  use StringTranslationTrait;
+
   protected $error;
+  protected $performance;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
     $this->entity_type_manager = $entity_type_manager;
+    $this->performance = [
+      'calls' => 0,
+      'runtime' => 0.0,
+      'log' => [],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __destruct() {
+    if ($this->performance['calls'] > 0 and \Drupal::state()->get('wsdata_performance_log', 0)) {
+      $message = $this->t(
+        'WSData Performance - %calls calls in %runtime seconds.',
+        [
+          '%calls' => $this->performance['calls'],
+          '%runtime' => round($this->performance['runtime'], 3),
+          '%path' => $this->performance['path'],
+        ]);
+      $message .= "<br>\nCall list:\n<ol>\n";
+      foreach ($this->performance['log'] as $log) {
+        $method = '';
+        if (isset($method)) {
+          $method = ':' . $log['method'];
+        }
+        $message .= '<li>' . $log['wscall'] . $method . ' - ' . round($log['runtime'], 3) . "s</li>\n";
+      }
+      $message .= '</ol>';
+      \Drupal::logger('wsdata')->debug($message);
+    }
   }
 
   /**
@@ -25,8 +59,19 @@ class WSDataService {
     if (!is_object($wscall)) {
       $wscall = $this->entity_type_manager->getStorage('wscall')->load($wscall);
     }
-
+    $start = microtime(TRUE);
     $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens, $cache_tag);
+    $end = microtime(TRUE);
+
+    // Track performance information.
+    $duration = $end - $start;
+    $this->performance['calls']++;
+    $this->performance['runtime'] += $duration;
+    $this->performance['log'][] = [
+      'wscall' => $wscall->label(),
+      'method' => $method,
+      'runtime' => $duration,
+    ];
     return $data;
   }
 
@@ -44,14 +89,14 @@ class WSDataService {
    */
   public function wscallForm($configurations = [], $wscall_option = NULL) {
     $wscalls = $this->entity_type_manager->getStorage('wscall')->loadMultiple();
-    $options = ['' => t('- Select -')];
+    $options = ['' => $this->t('- Select -')];
     foreach ($wscalls as $wscall) {
       $options[$wscall->id()] = $wscall->label();
     }
 
     $element['wscall'] = [
       '#type' => 'select',
-      '#title' => t('Web Service Call'),
+      '#title' => $this->t('Web Service Call'),
       '#options' => $options,
       '#required' => TRUE,
       '#ajax' => [
@@ -80,14 +125,14 @@ class WSDataService {
 
     $element['data'] = [
       '#type' => 'textarea',
-      '#title' => t('Data'),
+      '#title' => $this->t('Data'),
       '#default_value' => (isset($configurations['data']) ? $configurations['data'] : '')
     ];
 
     $element['returnToken'] = [
       '#type' => 'textfield',
-      '#title' => t('Token to select'),
-      '#description' => t('Seperate element names with a ":" to select nested elements.'),
+      '#title' => $this->t('Token to select'),
+      '#description' => $this->t('Seperate element names with a ":" to select nested elements.'),
       '#default_value' => (isset($configurations['returnToken']) ? $configurations['returnToken'] : '')
     ];
     return $element;
