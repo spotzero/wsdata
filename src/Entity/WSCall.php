@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Defines the Web Service Call entity.
@@ -43,6 +44,7 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
  * )
  */
 class WSCall extends ConfigEntityBase implements WSCallInterface {
+  use StringTranslationTrait;
   /**
    * The Web Service Call ID.
    *
@@ -164,8 +166,16 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
         \Drupal::cache('wsdata')->set($cid, $cache_data, $expires, $cache_tags);
       }
       elseif(!empty($conn->getError())) {
-        \Drupal::logger('wsdata')->error(t('wsdata %wsdata_name failed with error %code %message',
-          array('%wsdata_name' => $this->id, '%code' => $conn->getError()['code'], '%message' => $conn->getError()['message'])));
+        \Drupal::logger('wsdata')->error(
+          $this->t(
+            'wsdata %wsdata_name failed with error %code %message',
+            [
+              '%wsdata_name' => $this->id,
+              '%code' => $conn->getError()['code'],
+              '%message' => $conn->getError()['message']
+            ]
+          )
+        );
       }
     }
 
@@ -216,7 +226,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function getOptions() {
-    return isset($this->options[$this->wsserver]) ? $this->options[$this->wsserver] : array();
+    return isset($this->options[$this->wsserver]) ? $this->options[$this->wsserver] : [];
   }
 
   /**
