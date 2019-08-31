@@ -39,6 +39,13 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
   }
 
   /**
+   * Returns whether or not the result on the decoder are cacheable.
+   */
+  public function isCacheable() {
+    return TRUE;
+  }
+
+  /**
    * Decode the web service response string into an array.
    */
   abstract protected function decode($data);
