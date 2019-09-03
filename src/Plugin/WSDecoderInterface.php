@@ -9,7 +9,6 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  */
 interface WSDecoderInterface extends PluginInspectionInterface {
   public function accepts();
-  public function isCachable();
   public function getError();
   public function getData($key = NULL, $lang = NULL);
   public function addData($data, $lang = NULL, $context = []);

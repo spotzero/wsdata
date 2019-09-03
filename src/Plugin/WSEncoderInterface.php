@@ -9,5 +9,4 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  */
 interface WSEncoderInterface extends PluginInspectionInterface {
   public function encode(&$data, &$replacement, &$url);
-  public function isCacheable();
 }

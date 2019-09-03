@@ -186,6 +186,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    $this->status = [];
     $token_service = \Drupal::token();
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
@@ -216,15 +217,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $response = $this->http_client->request($method, $uri, $options);
 
-    // If the debug mode is enabled let's create a payload to display to ksm.
-    if (\Drupal::state()->get('wsdata_debug_mode')) {
-      $debug['method'] = $method;
-      $debug['uri'] = $uri;
-      $debug['options'] = $options;
-      $debug['response']['code'] = $response->getStatusCode();
-      $debug['response']['body'] = (string)$response->getBody();
-      ksm($debug);
-    }
+    $this->status['method'] = $method;
+    $this->status['uri'] = $uri;
+    $this->status['options'] = $options;
+    $this->status['response']['code'] = $response->getStatusCode();
+    $this->status['response']['body'] = (string)$response->getBody();
 
     // Set the cache expire time.
     if (isset($options['expires']) && !empty($options['expires'])) {

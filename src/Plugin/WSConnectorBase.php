@@ -19,6 +19,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
   protected $staleCache;
   protected $endpoint;
   protected $error;
+  protected $status;
 
   protected $languagePlugins = ['default'];
 
@@ -38,6 +39,7 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
     $this->cacheDefaultTime = 0;
     $this->cacheDefaultOverride = FALSE;
     $this->staleCache = FALSE;
+    $this->status = [];
   }
 
   /**
@@ -112,6 +114,13 @@ abstract class WSConnectorBase extends PluginBase implements WSConnectorInterfac
    */
   public function getError() {
     return $this->error;
+  }
+
+  /**
+   * Return the status of the last call.
+   */
+  public function getStatus() {
+    return $this->status;
   }
 
   /**

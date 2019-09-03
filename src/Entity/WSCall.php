@@ -182,7 +182,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
     // Call the connector.
     $result = $conn->call($options, $method, $replacements, $data, $tokens);
-
+    $this->status['call-status'] = $conn->getStatus();
     // Handle error case.
     if(!empty($conn->getError())) {
       $this->status['error'] = TRUE;

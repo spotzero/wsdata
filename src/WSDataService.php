@@ -45,7 +45,7 @@ class WSDataService {
         if (isset($method)) {
           $method = ':' . $log['method'];
         }
-        $message .= '<li>' . $log['wscall'] . $method . ' - ' . round($log['runtime'], 3) . "s</li>\n";
+        $message .= '<li>' . $log['wscall'] . $method . ' - ' . round($log['runtime'], 3) . "s (" . $log['cached'] . ")</li>\n";
       }
       $message .= '</ol>';
       \Drupal::logger('wsdata')->debug($message);
@@ -63,6 +63,11 @@ class WSDataService {
     $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens, $cache_tag);
     $end = microtime(TRUE);
 
+    $status = $wscall->lastCallStatus();
+    if (\Drupal::state()->get('wsdata_debug_mode')) {
+      ksm($status);
+    }
+
     // Track performance information.
     $duration = $end - $start;
     $this->performance['calls']++;
@@ -71,6 +76,7 @@ class WSDataService {
       'wscall' => $wscall->label(),
       'method' => $method,
       'runtime' => $duration,
+      'cached' => $status['cache']['debug'],
     ];
     return $data;
   }
