@@ -77,15 +77,20 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
     $this->wsserverInst = entity_load('wsserver', $this->wsserver);
-    // Set the decoder instance.
-    $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
-    $wspdefs = $wsdecoderManager->getDefinitions();
-    $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
 
-    // Set the enocder instance.
-    $wsencoderManager = \Drupal::service('plugin.manager.wsencoder');
-    $wspenfs = $wsencoderManager->getDefinitions();
-    $this->wsencoderInst = $wsencoderManager->createInstance($this->wsencoder);
+    if ($this->wsdecoder) {
+      // Set the decoder instance.
+      $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
+      $wspdefs = $wsdecoderManager->getDefinitions();
+      $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
+    }
+
+    if ($this->wsencoder) {
+      // Set the enocder instance.
+      $wsencoderManager = \Drupal::service('plugin.manager.wsencoder');
+      $wspenfs = $wsencoderManager->getDefinitions();
+      $this->wsencoderInst = $wsencoderManager->createInstance($this->wsencoder);
+    }
 
     $this->status = [];
   }
@@ -202,24 +207,24 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
     $this->addData($result, $context);
     $data = $this->getData($key);
-
+    $result_expires = (int) $conn->expires();
     $this->status['called'] = TRUE;
     $this->status['cache']['wsencoder'] = $this->wsencoderInst->isCacheable();
     $this->status['cache']['wsdecoder'] = $this->wsdecoderInst->isCacheable();
     $this->status['cache']['wsconnect'] = $conn->supportsCaching($method);
-    $this->status['cache']['expires'] = $conn->expires();
-    $expires = time() + $conn->expires();
+    $this->status['cache']['expires'] = $result_expires;
+    $expires = time() + $result_expires;
 
     // Fetch the cache tags for this call and the server instance call.
     $cache_tags = array_merge($this->wsserverInst->getCacheTags(), $this->getCacheTags(), $cache_tag);
     $this->status['cache']['tags'] = $cache_tags;
 
-    if ($conn->supportsCaching($method) && $this->wsencoderInst->isCachable()) {
+    if ($conn->supportsCaching($method) && $this->wsencoderInst->isCacheable()) {
       if ($this->wsdecoderInst->isCacheable()) {
-        $this->status['cache']['debug'] = 'Caching the parsed results of the WSCall.';
+        $this->status['cache']['debug'] = 'Caching the parsed results of the WSCall for ' . $result_expires . 's';
         \Drupal::cache('wsdata')->set($cid, $data, $expires, $cache_tags);
       } else {
-        $this->status['cache']['debug'] = 'Caching the verbatim result of the WSCall';
+        $this->status['cache']['debug'] = 'Caching the verbatim result of the WSCall for ' . $result_expires . 's';
         \Drupal::cache('wsdata')->set($cid, $result, $expires, $cache_tags);
       }
     }
