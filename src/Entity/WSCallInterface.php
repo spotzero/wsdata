@@ -25,6 +25,11 @@ interface WSCallInterface extends ConfigEntityInterface {
   public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = []);
 
   /**
+   * Retrieve information about the last call made.
+   */
+  public function lastCallStatus();
+
+  /**
    * Get the available replacement tokens.
    */
   public function getReplacements();

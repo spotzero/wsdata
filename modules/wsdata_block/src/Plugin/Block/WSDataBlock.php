@@ -67,7 +67,7 @@ class WSDataBlock extends BlockBase {
   public function build() {
     $form = [];
     $wsdata  = \Drupal::service('wsdata');
-    $result = $wsdata->call($this->configuration['wscall'], NULL, $this->configuration['replacements'], $this->configuration['data'], array(), $this->configuration['returnToken']);
+    $result = $wsdata->call($this->configuration['wscall'], NULL, $this->configuration['replacements'], $this->configuration['data'], [], $this->configuration['returnToken']);
 
     $form['wsdata_block_data'] = [
       '#prefix' => '<div class="wsdata_block">',

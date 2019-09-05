@@ -29,9 +29,9 @@ class WSExampleBlockDecoder extends WSDecoderBase {
     $data = trim($data);
     $json_data = Json::decode($data);
     foreach ($json_data as $element) {
-      $items[] = array(
+      $items[] = [
         '#markup' => '<h2>' . $element['title'] . '</h2><p>' . $element['body'] . '</p>',
-      );
+      ];
     }
     $content = [
       '#theme' => 'item_list',

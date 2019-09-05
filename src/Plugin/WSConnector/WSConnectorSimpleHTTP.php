@@ -60,7 +60,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    */
   public function getOptions() {
     return [
-      'path' => NULL,
+      'path' => '',
       'method' => [],
       'headers' => [],
     ];
@@ -75,8 +75,10 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     foreach ($values as $key => $value) {
       if (preg_match("/^key_([0-9]+)/", $key, $matches)) {
         if (isset($matches[1]) && !empty($values['key_' . $matches[1]])) {
-          $values['headers'][$header] = array('key_' . $header => $values['key_' . $matches[1]],
-                                                  'value_' . $header => $values['value_' . $matches[1]]);
+          $values['headers'][$header] = [
+            'key_' . $header => $values['key_' . $matches[1]],
+            'value_' . $header => $values['value_' . $matches[1]],
+          ];
           unset($values['key_' . $matches[1]]);
           unset($values['value_' . $matches[1]]);
           $header++;
@@ -184,6 +186,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
+    $this->status = [];
     $token_service = \Drupal::token();
     if (!in_array($method, $this->getMethods())) {
       throw new WSDataInvalidMethodException(sprintf('Invalid method %s on connector type %s', $method, __CLASS__));
@@ -214,14 +217,12 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $response = $this->http_client->request($method, $uri, $options);
 
-    // If the debug mode is enabled let's create a payload to display to ksm.
+    $this->status['method'] = $method;
+    $this->status['uri'] = $uri;
+    $this->status['response']['code'] = $response->getStatusCode();
     if (\Drupal::state()->get('wsdata_debug_mode')) {
-      $debug['method'] = $method;
-      $debug['uri'] = $uri;
-      $debug['options'] = $options;
-      $debug['response']['code'] = $response->getStatusCode();
-      $debug['response']['body'] = (string)$response->getBody();
-      ksm($debug);
+      $this->status['options'] = $options;
+      $this->status['response']['body'] = (string)$response->getBody();
     }
 
     // Set the cache expire time.

@@ -14,7 +14,7 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
       // Also need to check see if there is a wsfield_config associated to it.
       $wsfield_config = entity_load('wsfield_config', $entity->get('field_name'));
       if ($wsfield_config != NULL) {
-        $operations = array();
+        $operations = [];
 
         $route_parameters = [
           'field_config' => $entity->id(),
@@ -25,7 +25,10 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
           'title' => t('Web service configurations'),
           'weight' => 50,
           'url' =>  Url::fromRoute("entity.field_config.{$entity->getTargetEntityTypeId()}_wsfield_edit_form", $route_parameters),
-          'attributes' => ['title' => t('Edit web service configurations'), 'class' => array('dropbutton-action', 'web-service-config')],
+          'attributes' => [
+            'title' => t('Edit web service configurations'),
+            'class' => ['dropbutton-action', 'web-service-config']
+          ],
         ];
 
         return $operations;
@@ -73,7 +76,21 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
 
               $wsdata  = \Drupal::service('wsdata');
 
-              $result = $wsdata->call($wsfield_config->wscall, NULL, $replacements, $wsfield_config->data, array(), $wsfield_config->returnToken, array($entity_type_id => $entity), $tags);
+              $result = $wsdata->call(
+                $wsfield_config->wscall,
+                NULL,
+                $replacements,
+                $wsfield_config->data,
+                [
+                  'langcode' => $entity->language()->getId(),
+                ],
+                $wsfield_config->returnToken,
+                [
+                  $entity_type_id => $entity,
+                ],
+                $tags
+              );
+
               // Set the field with the wsdata results.
               $entity->set($field_storage->get('field_name'), $result);
             }
@@ -103,9 +120,7 @@ function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $f
             $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
             if ($wsfield_config != NULL) {
               // Make the field hidden by adding a class.
-              $form[$field_storage->get('field_name')]['#attributes'] = array(
-                'class' => 'hidden',
-              );
+              $form[$field_storage->get('field_name')]['#attributes']['class'][] = 'hidden';
             }
           }
         }
@@ -123,13 +138,13 @@ function wsdata_field_views_data_alter(array &$data) {
     // Load the field name to generate the views fields.
     $field_name = $wsfield_config->id();
 
-    $data['node'][$field_name] = array(
+    $data['node'][$field_name] = [
       'title' => $field_name,
       'help' => t('WSdata field.'),
-      'field' => array(
+      'field' => [
         'title' => $field_name,
         'id' => 'wsdata_field_views',
-      ),
-    );
+      ],
+    ];
   }
 }

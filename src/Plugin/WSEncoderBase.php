@@ -14,4 +14,11 @@ abstract class WSEncoderBase extends PluginBase implements WSEncoderInterface {
    */
   abstract public function encode(&$data, &$replacement, &$url);
 
+  /**
+   * Returns whether or not the result on the encoder are cacheable.
+   */
+  public function isCacheable() {
+    return TRUE;
+  }
+
 }

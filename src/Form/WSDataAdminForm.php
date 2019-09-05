@@ -46,6 +46,13 @@ class WSDataAdminForm extends ConfigFormBase {
       '#default_value' => \Drupal::state()->get('wsdata_debug_mode'),
     ];
 
+    $form['performance_log'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Performance log'),
+      '#description' => $this->t('Log WSData performace to watchdog'),
+      '#default_value' => \Drupal::state()->get('wsdata_performance_log', 0),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -55,11 +62,7 @@ class WSDataAdminForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     \Drupal::state()->set('wsdata_debug_mode', $values['debug_mode']);
-    /**
-    $this->config('wsdata_admin.settings')
-      ->set('debug_mode', $values['debug_mode'])
-      ->save();
-      */
+    \Drupal::state()->set('wsdata_performance_log', $values['performance_log']);
     parent::submitForm($form, $form_state);
   }
 }

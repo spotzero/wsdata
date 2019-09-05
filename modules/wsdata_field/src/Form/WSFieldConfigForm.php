@@ -84,12 +84,12 @@ class WSFieldConfigForm extends EntityForm {
 
     $form = array_merge($form, $elements);
 
-    $form['replacements']['token_tree'] = array(
+    $form['replacements']['token_tree'] = [
       '#theme' => 'token_tree_link',
-      '#token_types' => array('node'),
+      '#token_types' => ['node'],
       '#show_restricted' => TRUE,
       '#weight' => 90,
-    );
+    ];
 
     return $form;
   }
