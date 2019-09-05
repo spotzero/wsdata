@@ -76,7 +76,9 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    */
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
-    $this->wsserverInst = entity_load('wsserver', $this->wsserver);
+    if ($this->wsserver) {
+      $this->wsserverInst = entity_load('wsserver', $this->wsserver);
+    }
 
     if ($this->wsdecoder) {
       // Set the decoder instance.
@@ -123,7 +125,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     if (!$this->wsserverInst) {
       $this->status['status'] = 'error';
       $this->status['error_message'] = $this->t('No WSServer Instance to found.');
-      $this->Status['error'] = TRUE;
+      $this->status['error'] = TRUE;
       return FALSE;
     }
     // Build out the Cache ID based on the parameters passed.
@@ -151,11 +153,11 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
       $cache_data = $cache->data;
 
       if ($this->wsdecoderInst->isCacheable()) {
-        $this->status['cache']['debug'] = 'Returning parsed data from cache';
+        $this->status['cache']['debug'] = $this->t('Returning parsed data from cache');
         return $cache_data;
       }
 
-      $this->status['cache']['debug'] = 'Loaded WSCall result from cache and parsed the data';
+      $this->status['cache']['debug'] = $this->t('Loaded WSCall result from cache and re-parsed the data');
       $this->addData($cache_data);
       return $this->getData($key);
     }
@@ -221,15 +223,15 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
     if ($conn->supportsCaching($method) && $this->wsencoderInst->isCacheable()) {
       if ($this->wsdecoderInst->isCacheable()) {
-        $this->status['cache']['debug'] = 'Caching the parsed results of the WSCall for ' . $result_expires . 's';
+        $this->status['cache']['debug'] = $this->t('Caching the parsed results of the WSCall for %ex seconds', ['%ex'=> $result_expires]);
         \Drupal::cache('wsdata')->set($cid, $data, $expires, $cache_tags);
       } else {
-        $this->status['cache']['debug'] = 'Caching the verbatim result of the WSCall for ' . $result_expires . 's';
+        $this->status['cache']['debug'] = $this->t('Caching the verbatim result of the WSCall for %ex seconds.', ['%ex'=> $result_expires]);
         \Drupal::cache('wsdata')->set($cid, $result, $expires, $cache_tags);
       }
     }
     else {
-      $this->status['cache']['debug'] = 'Result is not cachable';
+      $this->status['cache']['debug'] = $this->t('Result is not cachable');
     }
 
     return $data;
@@ -285,7 +287,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
    * {@inheritdoc}
    */
   public function getMethods() {
-    return $this->wsserverInst->getMethods();
+    return $this->wsserverInst ? $this->wsserverInst->getMethods() : [];
   }
 
   /**

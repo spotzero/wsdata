@@ -219,9 +219,11 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
 
     $this->status['method'] = $method;
     $this->status['uri'] = $uri;
-    $this->status['options'] = $options;
     $this->status['response']['code'] = $response->getStatusCode();
-    $this->status['response']['body'] = (string)$response->getBody();
+    if (\Drupal::state()->get('wsdata_debug_mode')) {
+      $this->status['options'] = $options;
+      $this->status['response']['body'] = (string)$response->getBody();
+    }
 
     // Set the cache expire time.
     if (isset($options['expires']) && !empty($options['expires'])) {

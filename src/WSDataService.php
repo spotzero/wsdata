@@ -14,6 +14,7 @@ class WSDataService {
 
   protected $error;
   protected $performance;
+  protected $status;
 
   /**
    * {@inheritdoc}
@@ -25,6 +26,7 @@ class WSDataService {
       'runtime' => 0.0,
       'log' => [],
     ];
+    $this->status = [];
   }
 
   /**
@@ -37,7 +39,6 @@ class WSDataService {
         [
           '%calls' => $this->performance['calls'],
           '%runtime' => round($this->performance['runtime'], 3),
-          '%path' => $this->performance['path'],
         ]);
       $message .= "<br>\nCall list:\n<ol>\n";
       foreach ($this->performance['log'] as $log) {
@@ -56,6 +57,7 @@ class WSDataService {
    * Call method to make the WSCall.
    */
   public function call($wscall, $method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [], $cache_tag = []) {
+    $this->status = [];
     if (!is_object($wscall)) {
       $wscall = $this->entity_type_manager->getStorage('wscall')->load($wscall);
     }
@@ -63,9 +65,9 @@ class WSDataService {
     $data = $wscall->call($method, $replacements, $data, $options, $key, $tokens, $cache_tag);
     $end = microtime(TRUE);
 
-    $status = $wscall->lastCallStatus();
+    $this->status = $wscall->lastCallStatus();
     if (\Drupal::state()->get('wsdata_debug_mode')) {
-      ksm($status);
+      ksm($this->status);
     }
 
     // Track performance information.
@@ -76,7 +78,7 @@ class WSDataService {
       'wscall' => $wscall->label(),
       'method' => $method,
       'runtime' => $duration,
-      'cached' => $status['cache']['debug'],
+      'cached' => $this->status['cache']['debug'],
     ];
     return $data;
   }
@@ -142,6 +144,13 @@ class WSDataService {
       '#default_value' => (isset($configurations['returnToken']) ? $configurations['returnToken'] : '')
     ];
     return $element;
+  }
+
+  /**
+   * Expose the status of the last call.
+   */
+  public function lastCallStatus() {
+    return $this->status;
   }
 
   /**
