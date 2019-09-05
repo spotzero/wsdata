@@ -43,14 +43,14 @@ $this->language_manager = $language_manager;
 * {@inheritdoc}
 */
 public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-return new static(
-  $configuration,
-  $plugin_id,
-  $plugin_definition,
-  $container->get('http_client'),
-  $container->get('token'),
-  $container->get('language_manager')
-);
+  return new static(
+    $configuration,
+    $plugin_id,
+    $plugin_definition,
+    $container->get('http_client'),
+    $container->get('token'),
+    $container->get('language_manager')
+  );
 }
   /**
    * {@inheritdoc}
