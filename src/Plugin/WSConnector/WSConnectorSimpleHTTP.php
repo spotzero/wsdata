@@ -214,8 +214,12 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     if (isset($options['body'])) {
       $options['body'] = $token_service->replace($options['body'], $tokens);
     }
-
-    $response = $this->http_client->request($method, $uri, $options);
+    try {
+      $response = $this->http_client->request($method, $uri, $options);
+    } catch (Exception $e) {
+      $this->setError(get_class($e), $e->getMessage());
+      return FALSE;
+    }
 
     $this->status['method'] = $method;
     $this->status['uri'] = $uri;

@@ -119,7 +119,7 @@ public static function create(ContainerInterface $container, array $configuratio
       $options['headers'] = [];
     }
     foreach ($options['headers'] as $key => $header) {
-      if (strtolower($header['key_' . $key]) == strtolower('Content-Type')) {
+      if (isset($header['key_' . $key]) and strtolower($header['key_' . $key]) == strtolower('Content-Type')) {
         $contenttype = TRUE;
       }
     }
