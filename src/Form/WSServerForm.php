@@ -63,7 +63,7 @@ class WSServerForm extends EntityForm {
 
     if (isset($wsserver_entity->state['endpoint'])) {
       $this->messenger->addWarning(
-        $this->t('The endpoint is currently being override by the State API.  The configured endpoint %configured and is being replaced with %endpoint.',
+        $this->t('The endpoint is currently being overridden by the State API.  The configured endpoint %configured and is being replaced with %endpoint.',
         [
           '%configured' => $wsserver_entity->overrides['endpoint'],
           '%endpoint' => $wsserver_entity->getEndpoint(),
