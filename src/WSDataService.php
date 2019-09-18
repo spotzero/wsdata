@@ -78,7 +78,7 @@ class WSDataService {
       'wscall' => $wscall->label(),
       'method' => $method,
       'runtime' => $duration,
-      'cached' => $this->status['cache']['debug'],
+      'cached' => $this->status['cache']['debug'] ?? '',
     ];
     return $data;
   }

@@ -4,6 +4,7 @@ namespace Drupal\wsdata\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\wsdata\Plugin\WSConnectorManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,8 +18,9 @@ class WSServerForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __construct(WSConnectorManager $plugin_manager_wsconnector) {
+  public function __construct(WSConnectorManager $plugin_manager_wsconnector, MessengerInterface $messenger) {
     $this->plugin_manager_wsconnector = $plugin_manager_wsconnector;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -27,7 +29,8 @@ class WSServerForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     // Instantiates this form class.
     return new static(
-      $container->get('plugin.manager.wsconnector')
+      $container->get('plugin.manager.wsconnector'),
+      $container->get('messenger')
     );
   }
 
@@ -56,12 +59,25 @@ class WSServerForm extends EntityForm {
       '#disabled' => !$wsserver_entity->isNew(),
     ];
 
+    $endpoint = $wsserver_entity->getEndpoint();
+
+    if (isset($wsserver_entity->state['endpoint'])) {
+      $this->messenger->addWarning(
+        $this->t('The endpoint is currently being override by the State API.  The configured endpoint %configured and is being replaced with %endpoint.',
+        [
+          '%configured' => $wsserver_entity->overrides['endpoint'],
+          '%endpoint' => $wsserver_entity->getEndpoint(),
+        ]
+      ));
+      $endpoint = $wsserver_entity->overrides['endpoint'];
+    }
+
     $form['endpoint'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Endpoint'),
       '#maxlength' => 1024,
-      '#default_value' => $wsserver_entity->endpoint,
-      '#description' => $this->t("Endpoint for this webservice entity."),
+      '#default_value' => $endpoint,
+      '#description' => $this->t('Endpoint for this webservice entity.'),
       '#required' => TRUE,
     ];
 

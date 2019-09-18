@@ -60,7 +60,9 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
   public $settings;
   public $wsconnectorInst;
 
-  protected $state;
+  public $state;
+  public $overrides;
+
   protected $languagehandling;
 
   /**
@@ -68,22 +70,29 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
    */
   public function __construct(array $values, $entity_type) {
     parent::__construct($values, $entity_type);
+    $this->state = \Drupal::state()->get('wsdata.wsserver.' . $this->id, []);
+    $this->overrides = [];
+
+    // Allow the state to override the configured endpoint.
+    $this->setEndpoint($this->endpoint);
+
     $wsconnectorman = \Drupal::service('plugin.manager.wsconnector');
     $wscdefs = $wsconnectorman->getDefinitions();
+
     if (isset($wscdefs[$this->wsconnector])) {
       $this->wsconnectorInst = $wsconnectorman->createInstance($this->wsconnector);
       $this->wsconnectorInst->setEndpoint($this->endpoint);
     }
-    $drupalstate = \Drupal::state();
-    $this->state = $drupalstate->get('wsdata.wsserver.' . $this->id, []);
+
   }
 
   /**
    * {@inheritdoc}
    */
   public function __destruct() {
-    $drupalstate = \Drupal::state();
-    $drupalstate->set('wsdata.wsserver.' . $this->id, $this->state);
+    if (!empty($this->id)) {
+      \Drupal::state()->set('wsdata.wsserver.' . $this->id, $this->state);
+    }
   }
 
   /**
@@ -105,7 +114,13 @@ class WSServer extends ConfigEntityBase implements WSServerInterface {
    * {@inheritdoc}
    */
   public function setEndpoint($endpoint) {
-    $this->endpoint = $endpoint;
+    if (isset($this->state['endpoint'])) {
+      $this->overrides['endpoint'] = $endpoint;
+      $this->endpoint = $this->state['endpoint'];
+    }
+    else {
+      $this->endpoint = $endpoint;
+    }
   }
 
   /**
