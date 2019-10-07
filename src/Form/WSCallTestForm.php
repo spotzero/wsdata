@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class WSCallTestForm extends EntityForm {
 
+  protected $wsdata;
+
   /**
    * {@inheritdoc}
    */
