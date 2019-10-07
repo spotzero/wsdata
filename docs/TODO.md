@@ -7,7 +7,7 @@ Missing features for a full release:
 - [x] Add caching support
 - [x] Implement sub-modules with specific suport:
   - [x] wsdata_block
-  - [x] wsdata_extras 
+  - [x] wsdata_extras
   - [x] wsdata_field
 - [x] Better header Control
   - [x] Implement the header options for the wscall and wsconnectors.
@@ -16,14 +16,21 @@ Missing features for a full release:
 
 ### Overview
 
-In D7, field storage was handled seperately from entity storage. Per the follow pseudo code:
+In D7, field storage was handled seperately from entity storage.
+Per the follow pseudo code:
 
+```
 function Entity Load ($id) {
-  StubEntity = Entity Storage Controller -> Load ($id)  // Load the stub entity with no field data.
+  // Load the stub entity with no field data.
+  StubEntity = Entity Storage Controller -> Load ($id)
   foreach (field configured on the entity type of StubEntity) {
-    Field->Field Storage Controller -> Load (StubEntity) // Load the data for each field on at a time, from potentially different backends.
+
+     /* Load the data for each field on at a time,
+      from potentially different backends. */
+    Field->Field Storage Controller -> Load (StubEntity)
   }
 }
+```
 
 In D8, the entity storage controller controls loading both the entity and field data from the backend (SQL).
 So a replacements field storage controller cannot be written as in the D7 implementation.
@@ -56,4 +63,3 @@ Search API will need to be tested with fields where "custom_storage" is set to T
   - [x] Call the correct WSCalls with configured replacements and such via the WSData service
   - [x] Injects the resulting data into the entities.
   - [ ] Store the result in a particular way that the field display can render the data with the appropriate data.
-

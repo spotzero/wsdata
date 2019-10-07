@@ -2,16 +2,10 @@
 
 namespace Drupal\wsdata_field\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Field\FieldTypePluginManagerInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field\FieldStorageConfigInterface;
 use Drupal\field_ui\FieldUI;
 use Drupal\field_ui\Form\FieldStorageAddForm;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form for the "field storage" add page.
@@ -19,35 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WSFieldAddFieldForm extends FieldStorageAddForm {
 
   /**
-   * Constructs a new FieldStorageAddForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
-   * @param \Drupal\Core\Field\FieldTypePluginManagerInterface $field_type_plugin_manager
-   *   The field type plugin manager.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
-   */
-  public function __construct(EntityManagerInterface $entity_manager, FieldTypePluginManagerInterface $field_type_plugin_manager, ConfigFactoryInterface $config_factory) {
-    parent::__construct($entity_manager, $field_type_plugin_manager, $config_factory);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getFormId() {
     return 'wsfield_field_add_form';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.manager'),
-      $container->get('plugin.manager.field.field_type'),
-      $container->get('config.factory')
-    );
   }
 
   /**
@@ -136,13 +105,6 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
     $form['#attached']['library'][] = 'field_ui/drupal.field_ui';
 
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
   }
 
   /**
@@ -241,4 +203,5 @@ class WSFieldAddFieldForm extends FieldStorageAddForm {
       drupal_set_message($this->t('Your settings have been saved.'));
     }
   }
+
 }

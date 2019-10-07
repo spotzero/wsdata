@@ -21,4 +21,5 @@ class WSEncoderJSON extends WSEncoderBase {
   public function encode(&$data, &$replacements, &$url) {
     $data = Json::encode($data);
   }
+
 }

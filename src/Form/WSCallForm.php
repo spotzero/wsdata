@@ -19,20 +19,6 @@ class WSCallForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
-    return parent::__sleep();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __wakeup() {
-    return parent::__wakeup();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function __construct(
     WSEncoderManager $plugin_manager_wsencoder,
     WSDecoderManager $plugin_manager_wsdecoder,
@@ -110,7 +96,9 @@ class WSCallForm extends EntityForm {
       $values = $form_state->getValues();
       $wscall_entity->setMethod($values['add_method'], $values['new_method_name'], $values['new_method_path']);
     }
-    // Setting the form state in the options so that we can see values in the get options form.
+
+    /* Setting the form state in the options so that
+    we can see values in the get options form. */
     $form_options = $options = $wscall_entity->getOptions();
     $form_options['form_state'] = $form_state;
 

@@ -5,6 +5,8 @@ namespace Drupal\wsdata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\State\State;
+use Drupal\Core\Logger\LoggerChannelFactory;
 
 /**
  * Service for processing WSData requests.
@@ -19,8 +21,14 @@ class WSDataService {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    State $state,
+    LoggerChannelFactory $logger
+  ) {
     $this->entity_type_manager = $entity_type_manager;
+    $this->state = $state;
+    $this->logger = $logger;
     $this->performance = [
       'calls' => 0,
       'runtime' => 0.0,
@@ -33,7 +41,7 @@ class WSDataService {
    * {@inheritdoc}
    */
   public function __destruct() {
-    if ($this->performance['calls'] > 0 and \Drupal::state()->get('wsdata_performance_log', 0)) {
+    if ($this->performance['calls'] > 0 and $this->state->get('wsdata_performance_log', 0)) {
       $message = $this->t(
         'WSData Performance - %calls calls in %runtime seconds.',
         [
@@ -49,7 +57,7 @@ class WSDataService {
         $message .= '<li>' . $log['wscall'] . $method . ' - ' . round($log['runtime'], 3) . "s (" . $log['cached'] . ")</li>\n";
       }
       $message .= '</ol>';
-      \Drupal::logger('wsdata')->debug($message);
+      $this->logger->get('wsdata')->debug($message);
     }
   }
 
@@ -66,7 +74,7 @@ class WSDataService {
     $end = microtime(TRUE);
 
     $this->status = $wscall->lastCallStatus();
-    if (\Drupal::state()->get('wsdata_debug_mode')) {
+    if ($this->state->get('wsdata_debug_mode')) {
       ksm($this->status);
     }
 
@@ -83,6 +91,9 @@ class WSDataService {
     return $data;
   }
 
+  /**
+   * Return the error from the last call.
+   */
   public function getError() {
     if ($this->error) {
       $error = $this->error;
@@ -111,7 +122,7 @@ class WSDataService {
         'callback' => 'Drupal\wsdata\WSDataService::wscallConfigurationsReplacements',
         'wrapper' => 'wscall-replacement-tokens-wrapper',
       ],
-      '#default_value' => (isset($configurations['wscall']) ? $configurations['wscall'] : '')
+      '#default_value' => (isset($configurations['wscall']) ? $configurations['wscall'] : ''),
     ];
 
     // Fetch the replacement tokens for this wscall.
@@ -126,7 +137,7 @@ class WSDataService {
         $element['replacements'][$replacement] = [
           '#type' => 'textfield',
           '#title' => $replacement,
-          '#default_value' => (isset($configurations['replacements'][$replacement]) ? $configurations['replacements'][$replacement] : '')
+          '#default_value' => (isset($configurations['replacements'][$replacement]) ? $configurations['replacements'][$replacement] : ''),
         ];
       }
     }
@@ -134,14 +145,14 @@ class WSDataService {
     $element['data'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Data'),
-      '#default_value' => (isset($configurations['data']) ? $configurations['data'] : '')
+      '#default_value' => (isset($configurations['data']) ? $configurations['data'] : ''),
     ];
 
     $element['returnToken'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Token to select'),
       '#description' => $this->t('Seperate element names with a ":" to select nested elements.'),
-      '#default_value' => (isset($configurations['returnToken']) ? $configurations['returnToken'] : '')
+      '#default_value' => (isset($configurations['returnToken']) ? $configurations['returnToken'] : ''),
     ];
     return $element;
   }
@@ -156,15 +167,16 @@ class WSDataService {
   /**
    * Ajax call back for the replacement pattern.
    */
-  function wscallConfigurationsReplacements(array &$form, FormStateInterface $form_state) {
+  public function wscallConfigurationsReplacements(array &$form, FormStateInterface $form_state) {
     if (isset($form['replacements'])) {
       return $form['replacements'];
     }
-    elseif(isset($form['settings']['replacements'])) {
+    elseif (isset($form['settings']['replacements'])) {
       return $form['settings']['replacements'];
     }
     else {
       return $form;
     }
   }
+
 }

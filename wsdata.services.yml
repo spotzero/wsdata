@@ -12,6 +12,8 @@ services:
     class: Drupal\wsdata\WSDataService
     arguments:
       - '@entity_type.manager'
+      - '@state'
+      - '@logger.factory'
   cache.wsdata:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:

@@ -1,16 +1,10 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\wsdata_block\Plugin\Block\WSDataBlock.
- */
-
 namespace Drupal\wsdata_block\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\SubformState;
 
 /**
  * Provides a 'Green House Gas Emissions' block.
@@ -29,8 +23,8 @@ class WSDataBlock extends BlockBase {
   public function blockForm($form, FormStateInterface $form_state) {
     $wscall = $this->configuration['wscall'];
 
-    // Occasionally this can return a subfomstate and not a form_state interface.
-    if ($form_state instanceof \Drupal\Core\Form\SubformState) {
+    // This can return a subfomstate and not a form_state interface.
+    if ($form_state instanceof SubformState) {
       $form_state = $form_state->getCompleteFormState();
     }
 
@@ -39,7 +33,7 @@ class WSDataBlock extends BlockBase {
       $wscall = $form_state_wscall['wscall'];
     }
 
-    $wsdata  = \Drupal::service('wsdata');
+    $wsdata = \Drupal::service('wsdata');
     $elements = $wsdata->wscallForm($this->configuration, $wscall);
     $form = array_merge($form, $elements);
     return $form;
@@ -52,6 +46,8 @@ class WSDataBlock extends BlockBase {
     $this->configuration['wscall'] = $form_state->getValue('wscall');
     // Loop thru the replacements and save them as an array.
     $replacement = [];
+    /* TODO: replace this workflow, this should be all done through the server
+    and not the config entities directly. */
     $wscall = entity_load('wscall', $this->configuration['wscall']);
     foreach ($wscall->getReplacements() as $rep) {
       $replacement[$rep] = $form_state->getValue('replacements')[$rep];
@@ -66,7 +62,7 @@ class WSDataBlock extends BlockBase {
    */
   public function build() {
     $form = [];
-    $wsdata  = \Drupal::service('wsdata');
+    $wsdata = \Drupal::service('wsdata');
     $result = $wsdata->call($this->configuration['wscall'], NULL, $this->configuration['replacements'], $this->configuration['data'], [], $this->configuration['returnToken']);
 
     $form['wsdata_block_data'] = [
@@ -77,4 +73,5 @@ class WSDataBlock extends BlockBase {
 
     return $form;
   }
+
 }

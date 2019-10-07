@@ -3,11 +3,9 @@
 namespace Drupal\wsdata_field\Form;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field_ui\FieldUI;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class WSFieldsConfigForm.
@@ -27,9 +25,6 @@ class WSFieldConfigForm extends EntityForm {
 
   /**
    * {@inheritdoc}
-   *
-   * @param string $field_config
-   *   The ID of the field config whose field storage config is being edited.
    */
   public function buildForm(array $form, FormStateInterface $form_state, $field_config = NULL) {
     if ($field_config) {
@@ -47,7 +42,7 @@ class WSFieldConfigForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-     // Load the field configurations.
+    // Load the field configurations.
     $field_config = $form_state->get('field_config');
     if (entity_load('wsfield_config', $field_config->get('field_name')) == NULL) {
       $wsfield_config_entity = $this->entity;
@@ -79,7 +74,7 @@ class WSFieldConfigForm extends EntityForm {
       $wscall = $form_state_wscall;
     }
 
-    $wsdata  = \Drupal::service('wsdata');
+    $wsdata = \Drupal::service('wsdata');
     $elements = $wsdata->wscallForm($wsfield_config, $wscall);
 
     $form = array_merge($form, $elements);
@@ -108,7 +103,7 @@ class WSFieldConfigForm extends EntityForm {
     $wsfieldconfig_entity = $this->entity;
     $wsfieldconfig_entity->replacements = $replacements;
     $wsfieldconfig_entity->data = $form_state->getValue('data');
-    $status = $wsfieldconfig_entity->save();
+    $wsfieldconfig_entity->save();
 
     // Set the redirect to the next destination in the steps.
     $request = $this->getRequest();
@@ -117,9 +112,10 @@ class WSFieldConfigForm extends EntityForm {
       $form_state->setRedirectUrl($next_destination);
     }
     else {
-      // if no redirect is set go to the entity type and bundle field UI page.
+      // If no redirect is set go to the entity type and bundle field UI page.
       $field_config = $form_state->get('field_config');
       $form_state->setRedirectUrl(FieldUI::getOverviewRouteInfo($field_config->getTargetEntityTypeId(), $field_config->getTargetBundle()));
     }
   }
+
 }

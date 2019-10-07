@@ -3,12 +3,8 @@
 namespace Drupal\wsdata\Plugin\WSConnector;
 
 use Drupal\Core\Utility\Token;
-use Drupal\wsdata\WSDataInvalidMethodException;
-use Drupal\wsdata\Plugin\WSConnectorBase;
 use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 
@@ -32,26 +28,27 @@ class WSConnectorGraphQL extends WSConnectorSimpleHTTP {
     Client $http_client,
     Token $token,
     LanguageManagerInterface $language_manager
-) {
-parent::__construct($configuration, $plugin_id, $plugin_definition, $http_client, $token, $language_manager);
-$this->http_client = $http_client;
-$this->token = $token;
-$this->language_manager = $language_manager;
-}
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $http_client, $token, $language_manager);
+    $this->http_client = $http_client;
+    $this->token = $token;
+    $this->language_manager = $language_manager;
+  }
 
-/**
-* {@inheritdoc}
-*/
-public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-  return new static(
-    $configuration,
-    $plugin_id,
-    $plugin_definition,
-    $container->get('http_client'),
-    $container->get('token'),
-    $container->get('language_manager')
-  );
-}
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('http_client'),
+      $container->get('token'),
+      $container->get('language_manager')
+    );
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -107,7 +104,7 @@ public static function create(ContainerInterface $container, array $configuratio
     return $form;
   }
 
-    /**
+  /**
    * {@inheritdoc}
    */
   public function call($options, $method, $replacements = [], $data = NULL, array $tokens = []) {
@@ -124,7 +121,7 @@ public static function create(ContainerInterface $container, array $configuratio
       }
     }
     if (!$contenttype) {
-      $i = sizeof($options['headers']);
+      $i = count($options['headers']);
       $options['headers'][$i] = [
         'key_' . $i => 'Content-Type',
         'value_' . $i => 'application/json',

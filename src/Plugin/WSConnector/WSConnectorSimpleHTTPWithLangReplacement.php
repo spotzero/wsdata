@@ -3,11 +3,8 @@
 namespace Drupal\wsdata\Plugin\WSConnector;
 
 use Drupal\Core\Utility\Token;
-use Drupal\wsdata\WSDataInvalidMethodException;
-use Drupal\wsdata\Plugin\WSConnectorBase;
 use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -69,7 +66,7 @@ class WSConnectorSimpleHTTPWithLangReplacement extends WSConnectorSimpleHTTP {
     $form = parent::getOptionsForm($options);
 
     $form['intructions'] = [
-      '#markup' => $this->t('This connector will replace the string [LANGUAGE] in the path or the WSServer URL with the strings defined below, depending on the site\'s current content language'),
+      '#markup' => $this->t("This connector will replace the string [LANGUAGE] in the path or the WSServer URL with the strings defined below, depending on the site's current content language"),
       '#weight' => -50,
     ];
 
@@ -110,4 +107,5 @@ class WSConnectorSimpleHTTPWithLangReplacement extends WSConnectorSimpleHTTP {
   public function getCache() {
     return $this->language_manager->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
   }
+
 }

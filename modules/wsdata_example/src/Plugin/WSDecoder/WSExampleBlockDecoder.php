@@ -14,6 +14,7 @@ use Drupal\Component\Serialization\Json;
  * )
  */
 class WSExampleBlockDecoder extends WSDecoderBase {
+
   /**
    * {@inheritdoc}
    */
@@ -43,10 +44,12 @@ class WSExampleBlockDecoder extends WSDecoderBase {
     ];
     return \Drupal::service('renderer')->render($content);
   }
+
   /**
    * {@inheritdoc}
    */
   public function accepts() {
     return ['text/json'];
   }
+
 }

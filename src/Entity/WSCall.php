@@ -4,8 +4,6 @@ namespace Drupal\wsdata\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
@@ -83,14 +81,12 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     if ($this->wsdecoder) {
       // Set the decoder instance.
       $wsdecoderManager = \Drupal::service('plugin.manager.wsdecoder');
-      $wspdefs = $wsdecoderManager->getDefinitions();
       $this->wsdecoderInst = $wsdecoderManager->createInstance($this->wsdecoder);
     }
 
     if ($this->wsencoder) {
       // Set the enocder instance.
       $wsencoderManager = \Drupal::service('plugin.manager.wsencoder');
-      $wspenfs = $wsencoderManager->getDefinitions();
       $this->wsencoderInst = $wsencoderManager->createInstance($this->wsencoder);
     }
 
@@ -116,7 +112,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   /**
    * {@inheritdoc}
    */
-  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [], $cache_tag = [], &$context = [])  {
+  public function call($method = NULL, $replacements = [], $data = NULL, $options = [], $key = NULL, $tokens = [], $cache_tag = [], &$context = []) {
     $this->status = [
       'method' => $method,
       'status' => 'called',
@@ -191,7 +187,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     $result = $conn->call($options, $method, $replacements, $data, $tokens);
     $this->status['call-status'] = $conn->getStatus();
     // Handle error case.
-    if(!empty($conn->getError())) {
+    if (!empty($conn->getError())) {
       $this->status['error'] = TRUE;
 
       $message = $this->t(
@@ -199,7 +195,7 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
         [
           '%wsdata_name' => $this->id,
           '%code' => $conn->getError()['code'],
-          '%message' => $conn->getError()['message']
+          '%message' => $conn->getError()['message'],
         ]
       );
       $this->status['error_message'] = $message;
@@ -223,10 +219,11 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
 
     if ($conn->supportsCaching($method) && $this->wsencoderInst->isCacheable()) {
       if ($this->wsdecoderInst->isCacheable()) {
-        $this->status['cache']['debug'] = $this->t('Caching the parsed results of the WSCall for %ex seconds', ['%ex'=> $result_expires]);
+        $this->status['cache']['debug'] = $this->t('Caching the parsed results of the WSCall for %ex seconds', ['%ex' => $result_expires]);
         \Drupal::cache('wsdata')->set($cid, $data, $expires, $cache_tags);
-      } else {
-        $this->status['cache']['debug'] = $this->t('Caching the verbatim result of the WSCall for %ex seconds.', ['%ex'=> $result_expires]);
+      }
+      else {
+        $this->status['cache']['debug'] = $this->t('Caching the verbatim result of the WSCall for %ex seconds.', ['%ex' => $result_expires]);
         \Drupal::cache('wsdata')->set($cid, $result, $expires, $cache_tags);
       }
     }
@@ -248,10 +245,12 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
     }
     $this->options[$this->wsserver] = $this->wsserverInst->wsconnectorInst->saveOptions($values);
 
-
     $this->needSave = TRUE;
   }
 
+  /**
+   * Returns the status of the last call.
+   */
   public function lastCallStatus() {
     return $this->status;
   }
@@ -317,4 +316,5 @@ class WSCall extends ConfigEntityBase implements WSCallInterface {
   public function getConnector() {
     return $this->wsserverInst ? $this->wsserverInst->getConnector() : FALSE;
   }
+
 }

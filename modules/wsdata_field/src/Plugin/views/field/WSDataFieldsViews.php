@@ -2,8 +2,6 @@
 
 namespace Drupal\wsdata_field\Plugin\views\field;
 
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\NodeType;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 
@@ -17,28 +15,14 @@ use Drupal\views\ResultRow;
 class WSDataFieldsViews extends FieldPluginBase {
 
   /**
-   * @{inheritdoc}
+   * {@inheritdoc}
    */
   public function query() {
     // Leave empty to avoid a query on this field.
   }
 
   /**
-   * @{inheritdoc}
-   */
-  protected function defineOptions() {
-    return parent::defineOptions();
-  }
-
-  /**
-   * @{inheritdoc}
-   */
-  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-    parent::buildOptionsForm($form, $form_state);
-  }
-
-  /**
-   * @{inheritdoc}
+   * {@inheritdoc}
    */
   public function render(ResultRow $values) {
     $return = '';
@@ -51,7 +35,7 @@ class WSDataFieldsViews extends FieldPluginBase {
 
       // Get the replacements.
       $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
-      $wsdata  = \Drupal::service('wsdata');
+      $wsdata = \Drupal::service('wsdata');
       // Create the call based on the wsfield configurations.
       $return = $wsdata->call(
         $wsfield_config->wscall,
@@ -69,4 +53,5 @@ class WSDataFieldsViews extends FieldPluginBase {
     }
     return $return;
   }
+
 }

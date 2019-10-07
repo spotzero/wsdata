@@ -68,15 +68,15 @@ class WSCallHtmlRouteProvider extends AdminHtmlRouteProvider {
       if ($entity_type->getFormClass('test')) {
         $operation = 'test';
       }
-      $route
-      ->setDefaults([
+      $route->setDefaults([
         '_entity_form' => "{$entity_type_id}.{$operation}",
-        '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title'
+        '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
       ])
-      ->setRequirement('_entity_access', "{$entity_type_id}.view")
-      ->setOption('parameters', [
-        $entity_type_id => ['type' => 'entity:' . $entity_type_id],
-      ]);
+        ->setRequirement('_entity_access', "{$entity_type_id}.view")
+        ->setOption('parameters', [
+          $entity_type_id => ['type' => 'entity:' . $entity_type_id],
+        ]
+      );
 
       // Entity types with serial IDs can specify this in their route
       // requirements, improving the matching process.
