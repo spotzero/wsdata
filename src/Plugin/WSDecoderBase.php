@@ -189,6 +189,8 @@ abstract class WSDecoderBase extends PluginBase implements WSDecoderInterface {
    *   A set of data to decode.
    * @param string $lang
    *   Optional - Language key for the data being added.
+   * @param mixed $context
+   *   Optional - A list of all the other settings and details for the call.
    */
   public function addData($data, $lang = NULL, $context = []) {
     $this->context = $context;

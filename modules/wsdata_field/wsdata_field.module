@@ -1,13 +1,20 @@
 <?php
 
+/**
+ * @file
+ * Main module file for wsdata_field.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
-use Drupal\field\Entity;
 use Drupal\field_ui\FieldUI;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_entity_operation().
  */
-function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $entity) {
+function wsdata_field_entity_operation(EntityInterface $entity) {
   // Check if this field has the custom stroage flag set to true.
   if ('field_config' == $entity->getEntityTypeId()) {
     if ($entity->getFieldStorageDefinition()->hasCustomStorage()) {
@@ -24,10 +31,10 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
         $operations['edit_wsfield'] = [
           'title' => t('Web service configurations'),
           'weight' => 50,
-          'url' =>  Url::fromRoute("entity.field_config.{$entity->getTargetEntityTypeId()}_wsfield_edit_form", $route_parameters),
+          'url' => Url::fromRoute("entity.field_config.{$entity->getTargetEntityTypeId()}_wsfield_edit_form", $route_parameters),
           'attributes' => [
             'title' => t('Edit web service configurations'),
-            'class' => ['dropbutton-action', 'web-service-config']
+            'class' => ['dropbutton-action', 'web-service-config'],
           ],
         ];
 
@@ -40,9 +47,9 @@ function wsdata_field_entity_operation(\Drupal\Core\Entity\EntityInterface $enti
 /**
  * Implements hook_entity_delete().
  */
-function wsdata_field_entity_delete(Drupal\Core\Entity\EntityInterface $entity) {
+function wsdata_field_entity_delete(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'field_storage_config' && $entity->hasCustomStorage()) {
-    // It's a field storage config that has a custom storage,
+    // It's a field storage config that has a custom storage.
     $wsfield_config = entity_load('wsfield_config', $entity->get('field_name'));
     if ($wsfield_config != NULL) {
       // If there is a wsfield config we should delete it.
@@ -56,25 +63,27 @@ function wsdata_field_entity_delete(Drupal\Core\Entity\EntityInterface $entity) 
  */
 function wsdata_field_entity_load(array $entities, $entity_type_id) {
   foreach ($entities as $entity) {
-    if ($entity instanceof \Drupal\Core\Entity\ContentEntityInterface) {
+    if ($entity instanceof ContentEntityInterface) {
       // Fetch the field definitions for the this node.
       $fields = $entity->getFieldDefinitions();
       foreach ($fields as $field) {
         // Get the fields storage definitions.
         $field_storage = $field->getFieldStorageDefinition();
-        // Check if it has the custom storage flag set to true. && Check to make sure the object is of type FieldStorageConfig.
+        /* Check if the field has the custom storage flag set to true
+        and c heck to make sure the object is of type FieldStorageConfig. */
         if ($field_storage->hasCustomStorage()) {
           if (is_a($field_storage, 'Drupal\field\Entity\FieldStorageConfig')) {
             // Fetch the wsfield config entity.
             $wsfield_config = entity_load('wsfield_config', $field_storage->get('field_name'));
             if ($wsfield_config != NULL) {
-              // If the wsfield config exist we are in business replace the value with the return of the wscall.
+              /* If the wsfield config exist we are in business
+              replace the value with the return of the wscall. */
               $replacements = is_array($wsfield_config->replacements) ? $wsfield_config->replacements : [];
 
               // Get the cache tags.
               $tags = $entity->getCacheTagsToInvalidate();
 
-              $wsdata  = \Drupal::service('wsdata');
+              $wsdata = \Drupal::service('wsdata');
 
               $result = $wsdata->call(
                 $wsfield_config->wscall,
@@ -104,7 +113,7 @@ function wsdata_field_entity_load(array $entities, $entity_type_id) {
 /**
  * Implements hook_form_alter().
  */
-function wsdata_field_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function wsdata_field_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ('node_delete_multiple_confirm_form' !== $form_id && (preg_match('/^node_(.*)_edit_form/', $form_id) || preg_match('/^node_(.*)_form/', $form_id))) {
     $entity = $form_state->getFormObject()->getEntity();
     if ($entity->getEntityTypeId() == 'node') {

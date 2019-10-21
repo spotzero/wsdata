@@ -7,7 +7,6 @@ use Drupal\wsdata\WSDataInvalidMethodException;
 use Drupal\wsdata\Plugin\WSConnectorBase;
 use GuzzleHttp\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -117,14 +116,14 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $form['expires'] = [
       '#type' => 'number',
       '#title' => $this->t('Expire'),
-      '#description' => $this->t('Cache the response for number of seconds. This values will override the Cache-Control header value if it\'s set'),
+      '#description' => $this->t("Cache the response for number of seconds. This values will override the Cache-Control header value if it's set"),
     ];
 
     if (!isset($options['headers'])) {
       $options['headers'] = [];
     }
 
-    $header_count = sizeof($options['headers']);
+    $header_count = count($options['headers']);
 
     if (isset($options['form_state'])) {
       $input = $options['form_state']->getUserInput();
@@ -144,7 +143,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
       '#value' => $header_count,
     ];
 
-    for($i = 0; $i < $header_count; $i++) {
+    for ($i = 0; $i < $header_count; $i++) {
       $form['headers'][$i] = [
         '#title' => 'header',
         '#type' => 'fieldset',
@@ -216,7 +215,8 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
     try {
       $response = $this->http_client->request($method, $uri, $options);
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       $this->setError(get_class($e), $e->getMessage());
       return FALSE;
     }
@@ -226,12 +226,12 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $this->status['response']['code'] = $response->getStatusCode();
     if (\Drupal::state()->get('wsdata_debug_mode')) {
       $this->status['options'] = $options;
-      $this->status['response']['body'] = (string)$response->getBody();
+      $this->status['response']['body'] = (string) $response->getBody();
     }
 
     // Set the cache expire time.
     if (isset($options['expires']) && !empty($options['expires'])) {
-      $this->expires = (integer)$options['expires'];
+      $this->expires = (integer) $options['expires'];
     }
     else {
       $this->setCacheExpire($response);
@@ -240,7 +240,7 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     $status = $response->getStatusCode();
 
     if ($status >= 199 and $status <= 300) {
-      return (string)$response->getBody();
+      return (string) $response->getBody();
     }
 
     $this->setError($status, $response->getReasonPhrase());
@@ -260,13 +260,16 @@ class WSConnectorSimpleHTTP extends WSConnectorBase {
     }
   }
 
+  /**
+   * Sets the expires times based on the response.
+   */
   public function setCacheExpire($response) {
-    // Check the
     $cache_header = $response->getHeader('Cache-Control');
     foreach ($cache_header as $control_header) {
       if (preg_match("/^max-age=\d+/", $control_header)) {
-        $this->expires = (integer)str_replace('max-age=', '' ,$control_header);
+        $this->expires = (integer) str_replace('max-age=', '', $control_header);
       }
     }
   }
+
 }

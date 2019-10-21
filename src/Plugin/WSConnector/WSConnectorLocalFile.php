@@ -2,7 +2,6 @@
 
 namespace Drupal\wsdata\Plugin\WSConnector;
 
-use Drupal\Core\Utility\Token;
 use Drupal\wsdata\Plugin\WSConnectorBase;
 
 /**
